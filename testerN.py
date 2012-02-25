@@ -8,9 +8,9 @@ Created on Sat Feb 25 17:27:24 2012
 import unittest
 from clusterRank import cRanking
 
-class testCRank(unittest.TestCase):
+class testNRank(unittest.TestCase):
     
-    def testCRankNoClusters(self):
+    def testNRankNoClusters(self):
         
         mat1 = [[0,0,1,0.5],[1.0/3,0,0,0],[1.0/3,1.0/2,0,1.0/2],[1.0/3,1.0/2,0,0]]
         mat2 = ['var1','var2','var3','var4']
@@ -29,5 +29,8 @@ class testCRank(unittest.TestCase):
         
         self.assertAlmostEqual(test.maxeig, 1.0, digits)
         
-        
+if __name__ == "__main__":
+    unittest.main()
+
+    
 
