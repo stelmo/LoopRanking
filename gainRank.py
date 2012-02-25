@@ -5,7 +5,7 @@ Created on Fri Feb 24 16:33:40 2012
 @author: St Elmo Wilken
 """
 
-class rErr(Exception):
+class rErr(Exception): #not going to use this for a while...
     def __init__(self,message):
         self.message = message
     
@@ -19,14 +19,17 @@ class gRanking:
     """ this class just needs an input gain matrix to work its magic. """
     
     def __init__(self,mat,var):
-        from numpy import array, where, ones, argmax
-        from numpy import linalg as linCalc
-        
-        #input
+        from numpy import array        
         self.gMatrix = array(mat) #feed in a normalised gain matrix
         self.gVariables = var #feed in ordered variables wrt gMatrix
+        self.constructRankArray()        
         
-        #output
+
+    
+    def constructRankArray(self):
+        from numpy import ones, argmax
+        from numpy import linalg as linCalc
+        
         self.n = len(self.gMatrix) #length of gain matrix = number of nodes
         S = (1.0/self.n)*ones((self.n,self.n))
         m = 0.15
@@ -39,8 +42,7 @@ class gRanking:
         self.rankArray = eigVec[:,maxeigindex] #cuts array into the eigenvector corrosponding to the eigenvalue above
         self.rankArray = (1/sum(self.rankArray))*self.rankArray #this is the 1 dimensional array composed of rankings (normalised)
         self.rankArray = self.rankArray.real #to take away the useless +0j part...
-
-
+        
     def showConnectRank(self):
         import networkx as nx
         import matplotlib.pyplot as plot
@@ -62,8 +64,8 @@ class gRanking:
 
 #manual testing: this part works
 if __name__ == "__main__":
-    mat1 = [[0,0,1,0.5],[1.0/3,0,0,0],[1.0/3,1.0/2,0,1.0/2],[1.0/3,1.0/2,0,0]]
-    mat2 = ['var1','var2','var3','var4']
+    mat1 = [[0,0,0,0,0,0,1.0/3,0],[1.0/2,0,1.0/2,1.0/3,0,0,0,0],[1.0/2,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1.0/2,1.0/3,0,0,1.0/3,0],[0,0,0,1.0/3,1.0/3,0,0,1.0/2],[0,0,0,0,1.0/3,0,0,1.0/2],[0,0,0,0,1.0/3,1,1.0/3,0]]
+    mat2 = ['var1','var2','var3','var4','var5','var6','var7','var8']
 
     testOne = gRanking(mat1,mat2)
     print(testOne.rankArray)
