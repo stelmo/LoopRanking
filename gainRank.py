@@ -20,7 +20,7 @@ class gRanking:
     
     def __init__(self,mat,var):
         from numpy import array        
-        self.gMatrix = array(mat) #feed in a normalised gain matrix
+        self.gMatrix = array(mat) #feed in a normalised gain matrix NB: no dangling nodes!!!
         self.gVariables = var #feed in ordered variables wrt gMatrix
         self.constructRankArray()        
         
@@ -48,25 +48,46 @@ class gRanking:
         import matplotlib.pyplot as plot
 
         rG = nx.DiGraph()
-
         for i in range(self.n):
             for j in range(self.n):
                 if (self.gMatrix[i,j] != 0):
                     rG.add_edge(self.gVariables[j],self.gVariables[i]) #draws the connectivity graph to visualise rankArray
 
-        sizeArray = 10000*self.rankArray #gives you a nice spread of node size for a small (less than 20 nodes) system
-        #import matplotlib.colors as cp
-        #colorList = cp.LinearSegmentedColormap.from_list([0.1,0.9],['r','b'],N=n,gamma=1.0)
-        #I cant get the above method to work... Basically it is supposed to change the colours based on importance where more important is more red...
-        nx.draw_circular(rG,node_size=sizeArray,node_color=self.rankArray)
+        
+        #create a dictionary of the rankings with their respective nodes ie {NODE:RANKING}
+        self.rankDict = dict(zip(self.gVariables,self.rankArray))
+        #print(self.rankDict) this works. now need to rearrange the rank sizes to corrospond to the drawing...
+        self.rearrange = rG.nodes()
+        #print(self.rearrange)
+        self.sizeArray = [self.rankDict[var]*10000 for var in self.rearrange]
+        
+        nx.draw_circular(rG,node_size = self.sizeArray) #took out the colour... for some reason the nodes rearrange themselves... need to fix this.. and hence the code changes above... 
         plot.show()
 
 
 #manual testing: this part works
 if __name__ == "__main__":
-    mat1 = [[0,0,0,0,0,0,1.0/3,0],[1.0/2,0,1.0/2,1.0/3,0,0,0,0],[1.0/2,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1.0/2,1.0/3,0,0,1.0/3,0],[0,0,0,1.0/3,1.0/3,0,0,1.0/2],[0,0,0,0,1.0/3,0,0,1.0/2],[0,0,0,0,1.0/3,1,1.0/3,0]]
-    mat2 = ['var1','var2','var3','var4','var5','var6','var7','var8']
 
+    #this is the new test plant...
+    mat1 = [[0,0,0,0,0,0,0,0,0,0,0,0.5,0,0],[0,0,0,0,0,0,0,0,0,0,0.5,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0.5,0,0],[0,0,0,0,0,0,0,0,0,0,0.5,0,0,0],[1.0/3,0,1.0/3,0,0,0,1.0/3,0,0,0,0,0,0,1.0/3],[1.0/3,0,1.0/3,0,1,0,1.0/3,0,0,0,0,0,0,1.0/3],[0,1,0,1,0,0.5,0,0,0,0,0,0,1,0],[1.0/3,0,1.0/3,0,0,0.5,0,0,0,0,0,0,0,1.0/3],[0,0,0,0,0,0,1.0/3,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0.5,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0.5,0,0,0,0],[0,0,0,0,0,0,0,0,0.5,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0.5,0,0,0,0]]   
+    mat2 = ["T1","F1","T2","F2","R1","X1","F3","T3","F4","T4","F6","T6","F5","T5"]
+        
     testOne = gRanking(mat1,mat2)
     print(testOne.rankArray)
     testOne.showConnectRank()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

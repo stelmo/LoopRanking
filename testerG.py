@@ -32,9 +32,6 @@ class testGRank(unittest.TestCase):
         for calculated, expected in zip(expectedvalues, testOne.rankArray): #shouldnt this be the other way around?
             self.assertAlmostEqual(calculated, expected, digits)
         
-        
-        #how do I check if testOne has thrown an error? CS: use assertRaises
-        
     def testGRankInputMatrixTwo(self):
         mat1 = [[0,1,0,0,0],[1,0,0,0,0],[0,0,0,1,0.5],[0,0,1,0,0.5],[0,0,0,0,0]] #this test contains a disconnected graph (2 components)
         mat2 = ['var1','var2','var3','var4','var5']

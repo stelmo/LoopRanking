@@ -6,28 +6,76 @@ Created on Sat Feb 25 17:27:24 2012
 """
 
 import unittest
-from clusterRank import cRanking
+from nodeRank import nRanking
+from gainRank import gRanking
 
 class testNRank(unittest.TestCase):
     
-    def testNRankNoClusters(self):
+    def testNRankInputMatrixOne(self):
         
         mat1 = [[0,0,1,0.5],[1.0/3,0,0,0],[1.0/3,1.0/2,0,1.0/2],[1.0/3,1.0/2,0,0]]
-        mat2 = ['var1','var2','var3','var4']
-
-        test = cRanking(mat1,mat2)
+        mat2 = ['var1','var2','var3','var4'] 
+        mat3 = [1,2,1,1] #so var2 is twice as important as the other variables
         
-        from numpy import shape #check if gain matrix is square
-        [row,col] = shape(test.gMatrix) 
-        self.assertNotEqual(row, test.n+1, "The matrix is not square: rows")
-        self.assertNotEqual(col, test.n+1, "The matrix is not square: columns")
         
-        digits = 5 # number of digits of accuracy
+        #test to see if nRanking defaults to gRanking if alpha = 0
+        test = nRanking(mat1,mat2,0,mat3) #node and gain ranking are of equal importance
+        testCompare = gRanking(mat1,mat2)
         
-        for i in range(test.n): #check if all columns sum to 1 in the gain Matrix (otherwise not-stochastic and not solution is not meaningful)
-            self.assertAlmostEqual(sum(test.gMatrix[:,i]),1.0,digits)        
+        for inclIntrinsic, exclIntrinsic in zip(test.rankArray, testCompare.rankArray):
+            self.assertAlmostEqual(inclIntrinsic, exclIntrinsic,msg="Does not simplify to gRanking")
         
-        self.assertAlmostEqual(test.maxeig, 1.0, digits)
+        #test to see if important node is more important using this algorithm
+        test = nRanking(mat1, mat2, 0.5, mat3)
+        from numpy import array
+        highlighted = array((array(mat3) > 1), dtype=int)
+        for nrank, grank, high in zip(test.rankArray, testCompare.rankArray, highlighted):
+            if (high == 1):
+                self.assertGreater(nrank,grank,"The more important node is not more important!")
+    
+    def testNRankInputMatrixThree(self):
+        
+        mat1 = [[0,0,0,0,0,0,1.0/3,0],[1.0/2,0,1.0/2,1.0/3,0,0,0,0],[1.0/2,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1.0/2,1.0/3,0,0,1.0/3,0],[0,0,0,1.0/3,1.0/3,0,0,1.0/2],[0,0,0,0,1.0/3,0,0,1.0/2],[0,0,0,0,1.0/3,1,1.0/3,0]]
+        mat2 = ['var1','var2','var3','var4','var5','var6','var7','var8'] 
+        mat3 = [1,2,1,1,2,1,1,1] #so var2,var5 is twice as important as the other variables 
+        
+        #test to see if nRanking defaults to gRanking if alpha = 0
+        test = nRanking(mat1,mat2,0,mat3) #node and gain ranking are of equal importance
+        testCompare = gRanking(mat1,mat2)
+        
+        for inclIntrinsic, exclIntrinsic in zip(test.rankArray, testCompare.rankArray):
+            self.assertAlmostEqual(inclIntrinsic, exclIntrinsic,msg="Does not simplify to gRanking")
+        
+        #test to see if important node is more important using this algorithm
+        test = nRanking(mat1, mat2, 0.5, mat3)
+        from numpy import array
+        highlighted = array((array(mat3) > 1), dtype=int)
+        for nrank, grank, high in zip(test.rankArray, testCompare.rankArray, highlighted):
+            if (high == 1):
+                self.assertGreater(nrank,grank,"The more important node is not more important!")
+    
+    def testNRankTestPlantFeedReactorSeparatorRecycleOutput(self):
+        
+        mat1 = [[0,0,0,0,0,0,0,0,0,0,0,0.5,0,0],[0,0,0,0,0,0,0,0,0,0,0.5,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0.5,0,0],[0,0,0,0,0,0,0,0,0,0,0.5,0,0,0],[1.0/3,0,1.0/3,0,0,0,1.0/3,0,0,0,0,0,0,1.0/3],[1.0/3,0,1.0/3,0,1,0,1.0/3,0,0,0,0,0,0,1.0/3],[0,1,0,1,0,0.5,0,0,0,0,0,0,1,0],[1.0/3,0,1.0/3,0,0,0.5,0,0,0,0,0,0,0,1.0/3],[0,0,0,0,0,0,1.0/3,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0.5,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0.5,0,0,0,0],[0,0,0,0,0,0,0,0,0.5,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0.5,0,0,0,0]]   
+        mat2 = ["T1","F1","T2","F2","R1","X1","F3","T3","F4","T4","F6","T6","F5","T5"]
+        mat3 = [4,1,4,1,1,1,1,4,1,4,1,4,1,4] #all the temperature variable are 4 times more important than the other ones (why? for safety reasons)
+       
+        #test to see if nRanking defaults to gRanking if alpha = 0
+        test = nRanking(mat1,mat2,0,mat3) #node and gain ranking are of equal importance
+        testCompare = gRanking(mat1,mat2)
+        
+        for inclIntrinsic, exclIntrinsic in zip(test.rankArray, testCompare.rankArray):
+            self.assertAlmostEqual(inclIntrinsic, exclIntrinsic,msg="Does not simplify to gRanking")
+        
+        #test to see if important node is more important using this algorithm
+        test = nRanking(mat1, mat2, 0.5, mat3)
+        from numpy import array
+        highlighted = array((array(mat3) > 1), dtype=int)
+        for nrank, grank, high in zip(test.rankArray, testCompare.rankArray, highlighted):
+            if (high == 1):
+                self.assertGreater(nrank,grank,"The more important node is not more important!")
+    
+    
         
 if __name__ == "__main__":
     unittest.main()
