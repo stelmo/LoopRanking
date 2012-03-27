@@ -7,8 +7,13 @@ Created on Mon Mar 26 23:24:42 2012
 
 from localGainCalculator import localgains
 
-test = localgains("connections.csv","inputgains.txt")
-print(test.connections)
+test = localgains("connections.csv","inputgains.txt",13)
+#print(test.connectionmatrix) #works
+#print(test.localchangematrix) #works
+print(test.localgainmatrix) #how do I see whats happening here?
+
+
+
 
 
 
