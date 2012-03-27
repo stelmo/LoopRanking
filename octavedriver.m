@@ -1,4 +1,4 @@
-function [outvec] = octavedriver(inputchangeid,numberofhours)
+function [outvec,outu] = octavedriver(inputchangeid,numberofhours)
 
 % Call with flag=0 to initialise
 
@@ -78,11 +78,12 @@ switch (inputchangeid)
 		u(32) = 100;
 endswitch
 	
+outu = u;
+
 %          
 %  u   +---------------------+  y
 % ---->| x (internal states) |------>
 %      +---------------------+
-starttime = time;
 % Euler integration
 t = 0;
 yplot = [];
@@ -96,47 +97,11 @@ for i = 1:N
     x = x + dt*dx;
     t = t + dt;
 end
-endtime = time;
 % plot(0:dt:(t-dt), yplot')
 % plot(yplot')
 % pause(10)
-% timetaken = endtime- starttime
 arr = yplot';
 outvec = arr(end,:)';
-
-%     XMV(1,1)     D Feed Flow (stream 2)            (Corrected Order)
-%     XMV(1,2)     E Feed Flow (stream 3)            (Corrected Order)
-%     XMV(1,3)     A Feed Flow (stream 1)            (Corrected Order)
-%     XMV(1,4)     A and C Feed Flow (stream 4)
-%     XMV(1,5)     Compressor Recycle Valve (stream 8)
-%     XMV(1,6)     Purge Valve (stream 9)
-%     XMV(1,7)     Separator Pot Liquid Flow (stream 10)
-%     XMV(1,8)     Stripper Liquid Product Flow (stream 11)
-%     XMV(1,9)     Stripper Steam Valve
-%     XMV(1,10)    Reactor Cooling Water Flow
-%     XMV(1,11)    Condenser Cooling Water Flow
-%     XMV(1,12)    Agitator Speed
-
-%     IDV(1,1)   A/C Feed Ratio, B Composition Constant (Stream 4)          Step
-%     IDV(1,2)   B Composition, A/C Ratio Constant (Stream 4)               Step
-%     IDV(1,3)   D Feed Temperature (Stream 2)                              Step
-%     IDV(1,4)   Reactor Cooling Water Inlet Temperature                    Step
-%     IDV(1,5)   Condenser Cooling Water Inlet Temperature                  Step
-%     IDV(1,6)   A Feed Loss (Stream 1)                                     Step
-%     IDV(1,7)   C Header Pressure Loss - Reduced Availability (Stream 4)   Step
-%     IDV(1,8)   A, B, C Feed Composition (Stream 4)            Random Variation
-%     IDV(1,9)   D Feed Temperature (Stream 2)                  Random Variation
-%     IDV(1,10)  C Feed Temperature (Stream 4)                  Random Variation
-%     IDV(1,11)  Reactor Cooling Water Inlet Temperature        Random Variation
-%     IDV(1,12)  Condenser Cooling Water Inlet Temperature      Random Variation
-%     IDV(1,13)  Reaction Kinetics                                    Slow Drift
-%     IDV(1,14)  Reactor Cooling Water Valve                            Sticking
-%     IDV(1,15)  Condenser Cooling Water Valve                          Sticking
-%     IDV(1,16)  Unknown
-%     IDV(1,17)  Unknown
-%     IDV(1,18)  Unknown
-%     IDV(1,19)  Unknown
-%     IDV(1,20)  Unknown
 
 %   Continuous Process Measurements
 % 
