@@ -5,15 +5,6 @@ Created on Fri Feb 24 16:33:40 2012
 @author: St Elmo Wilken
 """
 
-class rErr(Exception): #not going to use this for a while...
-    def __init__(self,message):
-        self.message = message
-    
-    def __str__(self):
-        return repr(self.message)
-
-
-#the "gain" matrix i input here comes from that pagerank document you gave me
 #I kind of started over in lieu of our conversation earlier today i.e. assume the gain matrix is given and then go from there. 
 class gRanking:
     """ this class just needs an input gain matrix to work its magic. """

@@ -7,5 +7,10 @@ Created on Mon Mar 26 23:24:42 2012
 
 from localGainCalculator import localgains
 
-localgains("connections.csv")
+test = localgains("connections.csv","inputgains.txt")
+print(test.connections)
+
+
+
+
 

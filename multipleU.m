@@ -1,6 +1,6 @@
 %%script to change inputs one by one and generate the base case at i == 13
 
-array = []; %empty cell array because otherwise there are issues with the string variable names
+array = []; %empty array
 
 for i=1:1:13
 [temp,temp2] = octavedriver(i,0.1);
