@@ -3,7 +3,7 @@
 array = []; %empty array
 
 for i=1:1:13
-[temp,temp2] = octavedriver(i,0.1);
+[temp,temp2] = octavedriver(i,45);
 array(1:1:5,i) = temp(1:1:5,1);
 array(6,i) = temp2(9+20,1);
 array(7,i) = temp2(10+20,1);

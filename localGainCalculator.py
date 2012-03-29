@@ -58,7 +58,7 @@ class localgains:
         self.localdiffmatrix = array(self.localdiffmatrix).reshape(self.n,-1)
         #now you have all the necessary inputs i.e. delta y and delta u (all in one matrix row wise)        
         #now go in to the connection matrix and determine local gains row by row
-       #*************************************works well
+           #*************************************works well
         for row in range(self.n):
            index = self.connectionmatrix[row,:].reshape(1,self.n) #see the next line as well... there seems to be a persistent wrapping error... this fixes it
            if (max(max(index)) > 0): #crude but it works...    
@@ -80,8 +80,8 @@ class localgains:
                    if index[0, position] == 1:
                        self.linlocalgainmatrix[row,position] = localgains[0,tempindex]
                        tempindex = tempindex + 1
-                   else:
-                       pass #do nothing as the index will sort out the order of gain association
+               else:
+                   pass #do nothing as the index will sort out the order of gain association
            else:
                pass #everything works
     
