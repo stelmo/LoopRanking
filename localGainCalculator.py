@@ -72,7 +72,7 @@ class localgains:
                    else:
                        pass #do nothing as the index will sort out the order of gain association
                yvec = compoundvec[:,0].reshape(-1,1)
-               uvec = compoundvec[:,1:states]
+               uvec = compoundvec[:,1:]
                import numpy as np #is the good?        
                localgains =  np.linalg.lstsq(uvec,yvec)[0].reshape(1,-1)
                tempindex = 0        
