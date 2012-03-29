@@ -58,7 +58,7 @@ class localgains:
         self.localdiffmatrix = array(self.localdiffmatrix).reshape(self.n,-1)
         #now you have all the necessary inputs i.e. delta y and delta u (all in one matrix row wise)        
         #now go in to the connection matrix and determine local gains row by row
-       
+       #*************************************works well
         for row in range(self.n):
            index = self.connectionmatrix[row,:].reshape(1,self.n) #see the next line as well... there seems to be a persistent wrapping error... this fixes it
            if (max(max(index)) > 0): #crude but it works...    
@@ -83,7 +83,7 @@ class localgains:
                    else:
                        pass #do nothing as the index will sort out the order of gain association
            else:
-               pass
+               pass #everything works
     
     def createLocalChangeMatrix(self, nameofgains,states): #NB NB NB the octave output inserts a white space before every row!!! if you use a different source file make sure it is as such or this method will either bomb out or neglect an entire column of data
         #this method should return an array of local changes   
