@@ -8,15 +8,15 @@ Created on Mon Mar 26 23:24:42 2012
 from localGainCalculator import localgains
 from RGABristol import RGA
 
-test = localgains("testOneConnections.csv","testOneIG.txt",4) #dont forget to update the state-case variable
+#test = localgains("testOneConnections.csv","testOneIG.txt",4) #dont forget to update the state-case variable
 ###test = localgains("connections.csv","inputgains45.txt",13)
 ##print(test.connectionmatrix) #works
 ##print(test.localchangematrix) #works
 ###print(test.localdiffmatrix) #works
-#print(test.linlocalgainmatrix) #testing this
-#print(test.linlocalgainmatrixAV)
-print(test.avelocalgainmatrix)
-print(test.avelocalgainmatrixAV)
+#print(test.normaliseGainMatrix(test.linlocalgainmatrix)) #works
+##print(test.linlocalgainmatrix)
+#print(test.linlocalgainmatrix)
+#print(test.avelocalgainmatrixAV)
 ##gainarray = test.linlocalgainmatrix
 #
 ##import csv
@@ -26,9 +26,11 @@ print(test.avelocalgainmatrixAV)
 ##print("done")
 
 #localgains("testOneConnections.csv","testOneIG.txt",4)
-
+#
 test = RGA("testOneConnections.csv","testOneIG.txt",4)
-print(test.bristol)
+print(test.openloopgainmatrix)
+print(test.variablecorrection)
+print(test.bristolmatrix)
 
 
 
