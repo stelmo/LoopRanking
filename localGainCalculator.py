@@ -5,19 +5,17 @@ Created on Mon Mar 26 23:12:10 2012
 @author: St Elmo Wilken
 """
 
-#basically im trying to automate the local gain assigning mission... 
-#this wont seem useful just quite yet.. but hold on
+#calculates:
+    #1) non normalised local gain matrix by assuming local variables are linearly superimposed
+    #2) normalises a numpy array if commanded
+    #3) reads in the connection and steady state output matrix from plant model or experiments
 
 class localgains:
     
     def __init__(self, nameofconn, nameofgains,states):
         self.createConnectionMatrix(nameofconn)
         self.createLocalChangeMatrix(nameofgains,states)
-        self.createAverageLocalGainMatrix() #dont need to do this
         self.createLinearLocalGainMatrix(states)
-        self.createLinearLocalGainMatrixAllVariables(states)
-        self.createAverageLocalGainMatrixAllVariables()
-        
     
     def createAverageLocalGainMatrix(self): #this is not going to be used linear combination idea supercedes it
         #this method should calculate average gains based on the connectivity matrix and the local change matrix      
@@ -43,7 +41,7 @@ class localgains:
         from numpy import array
         self.avelocalgainmatrix = array(self.avelocalgainmatrix).reshape(self.n,self.n)
         
-    def createAverageLocalGainMatrixAllVariables(self):
+    def createAverageLocalGainMatrixAllVariables(self): #unnecessary: ignore
         self.avelocalgainmatrixAV = []
         from numpy import ones
         self.connectionmatrixAV = ones((self.n,self.n))
@@ -70,8 +68,25 @@ class localgains:
         
         
         
-    def normaliseGainMatrix(self): #the ranking algorithms expect a normalised input local gain matrix
-        pass
+    def normaliseGainMatrix(self,matrix): #the ranking algorithms expect a normalised input local gain matrix
+        #this should normalise columns i.e. all columns sum to 1
+        #assuming input is square
+        from numpy import array, transpose
+        n = int(matrix.size**0.5)
+
+        normalisedmatrix = []
+        
+        for col in range(n):
+            colsum = sum(matrix[:,col])
+            for row in range(n):
+                if (colsum!=0):
+                    normalisedmatrix.append(matrix[row,col]/colsum)
+                else:
+                    normalisedmatrix.append(0)
+                        
+        normalisedmatrix = transpose(array(normalisedmatrix).reshape(n,n))
+        return normalisedmatrix #works
+                
     
     def createLinearLocalGainMatrix(self, states): #note: not very efficient but it works... will try to improve later if necessary
         from numpy import array, zeros, hstack
@@ -115,7 +130,7 @@ class localgains:
                pass #everything works
     
     
-    def createLinearLocalGainMatrixAllVariables(self, states): #does not work
+    def createLinearLocalGainMatrixAllVariables(self, states): #unnecessary
         from numpy import array, zeros, hstack, ones
         self.connectionmatrixAV = ones((self.n,self.n))
         self.linlocalgainmatrixAV = array(zeros((self.n, self.n)))  #initialise the linear local gain matrix
