@@ -13,8 +13,11 @@ class localgains:
     def __init__(self, nameofconn, nameofgains,states):
         self.createConnectionMatrix(nameofconn)
         self.createLocalChangeMatrix(nameofgains,states)
-        self.createAverageLocalGainMatrix()
+        self.createAverageLocalGainMatrix() #dont need to do this
         self.createLinearLocalGainMatrix(states)
+        self.createLinearLocalGainMatrixAllVariables(states)
+        self.createAverageLocalGainMatrixAllVariables()
+        
     
     def createAverageLocalGainMatrix(self): #this is not going to be used linear combination idea supercedes it
         #this method should calculate average gains based on the connectivity matrix and the local change matrix      
@@ -25,7 +28,7 @@ class localgains:
                     bottomrow = self.localchangematrix[col,:] #this is the input row with base at the end (13 elements for TE)
                     toprow = self.localchangematrix[row,:] #this is the output row with base at the end (13 elements for TE)    
                     tempgain = 0 #dummy variable, needs to be reinitialised each time
-                    endofrow = len(bottomrow)-1 #this works out: dont change me
+                    endofrow = len(bottomrow)-1 #this works out: dont change me4
                     for index in range(endofrow): #iterate through top/bottomrow except last element (base case)
                         topdiff = toprow[index] - toprow[endofrow] #output change
                         bottomdiff = bottomrow[index] - bottomrow[endofrow] #input change
@@ -39,6 +42,32 @@ class localgains:
                     self.avelocalgainmatrix.append(0)
         from numpy import array
         self.avelocalgainmatrix = array(self.avelocalgainmatrix).reshape(self.n,self.n)
+        
+    def createAverageLocalGainMatrixAllVariables(self):
+        self.avelocalgainmatrixAV = []
+        from numpy import ones
+        self.connectionmatrixAV = ones((self.n,self.n))
+        for row in range(self.n):
+            for col in range(self.n):
+                if self.connectionmatrixAV[row,col] == 1: #local gain = top/bottom where top is output change and bottom is input change
+                    bottomrow = self.localchangematrix[col,:] #this is the input row with base at the end (13 elements for TE)
+                    toprow = self.localchangematrix[row,:] #this is the output row with base at the end (13 elements for TE)    
+                    tempgain = 0 #dummy variable, needs to be reinitialised each time
+                    endofrow = len(bottomrow)-1 #this works out: dont change me4
+                    for index in range(endofrow): #iterate through top/bottomrow except last element (base case)
+                        topdiff = toprow[index] - toprow[endofrow] #output change
+                        bottomdiff = bottomrow[index] - bottomrow[endofrow] #input change
+                        if (bottomdiff!=0): #if no input change: this stops infinite gains
+                            indextempgain = topdiff/bottomdiff
+                        else: #if the input didn't change then the variable is being affect by something else
+                            indextempgain = 0
+                        tempgain = tempgain + abs(indextempgain) #is this absolute good? bad? what to do about gains cancelling each other?
+                    self.avelocalgainmatrixAV.append(tempgain/endofrow) #remember to average it out! endofrow == number of runs
+                else:
+                    self.avelocalgainmatrixAV.append(0)
+        from numpy import array
+        self.avelocalgainmatrixAV = array(self.avelocalgainmatrixAV).reshape(self.n,self.n)
+        
         
         
     def normaliseGainMatrix(self): #the ranking algorithms expect a normalised input local gain matrix
@@ -84,6 +113,49 @@ class localgains:
                    pass #do nothing as the index will sort out the order of gain association
            else:
                pass #everything works
+    
+    
+    def createLinearLocalGainMatrixAllVariables(self, states): #does not work
+        from numpy import array, zeros, hstack, ones
+        self.connectionmatrixAV = ones((self.n,self.n))
+        self.linlocalgainmatrixAV = array(zeros((self.n, self.n)))  #initialise the linear local gain matrix
+        #this will be slightly inefficient at the moment... its this way to be sure of the method
+        self.localdiffmatrix = []        
+        for row in range(self.n):
+            for col in range(states-1):
+                temp = self.localchangematrix[row,col] - self.localchangematrix[row,states-1]
+                self.localdiffmatrix.append(temp)
+        
+        self.localdiffmatrix = array(self.localdiffmatrix).reshape(self.n,-1)
+        #now you have all the necessary inputs i.e. delta y and delta u (all in one matrix row wise)        
+        #now go in to the connection matrix and determine local gains row by row
+           #*************************************works well
+        for row in range(self.n):
+           index = self.connectionmatrixAV[row,:].reshape(1,self.n) #see the next line as well... there seems to be a persistent wrapping error... this fixes it
+           if (max(max(index)) > 0): #crude but it works...    
+               compoundvec = self.localdiffmatrix[row,:].reshape(states-1, 1) #this basically transposes the array... for some reason i cant get it to work with tranpose()... probably a wrapping fault somewhere
+               #now you need to get uvec so that you may calculate the aprox gains
+               #note: rows == number of experiments       
+               for position in range(self.n):
+                   if index[0, position] == 1:
+                       temp = self.localdiffmatrix[position,:].reshape(-1,1) # dummy variable
+                       compoundvec = hstack((compoundvec,temp))
+                   else:
+                       pass #do nothing as the index will sort out the order of gain association
+               yvec = compoundvec[:,0].reshape(-1,1)
+               uvec = compoundvec[:,1:]
+               import numpy as np #is the good?        
+               localgains =  np.linalg.lstsq(uvec,yvec)[0].reshape(1,-1)
+               tempindex = 0        
+               for position in range(self.n):
+                   if index[0, position] == 1:
+                       self.linlocalgainmatrixAV[row,position] = localgains[0,tempindex]
+                       tempindex = tempindex + 1
+               else:
+                   pass #do nothing as the index will sort out the order of gain association
+           else:
+               pass #everything works
+        
     
     def createLocalChangeMatrix(self, nameofgains,states): #NB NB NB the octave output inserts a white space before every row!!! if you use a different source file make sure it is as such or this method will either bomb out or neglect an entire column of data
         #this method should return an array of local changes   
