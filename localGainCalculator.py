@@ -5,23 +5,26 @@ Created on Mon Mar 26 23:12:10 2012
 @author: St Elmo Wilken
 """
 
-#calculates:
-    #1) non normalised local gain matrix by assuming local variables are linearly superimposed
-    #2) normalises a numpy array if commanded
-    #3) reads in the connection and steady state output matrix from plant model or experiments
-
 class localgains:
     
-    def __init__(self, nameofconn, nameofgains,states):
+    """This class calculates:
+        1) imports a connection matrix scheme and implictly the ordered variable collection
+        2) imports the Steady state values of all of the variables for (states) many experiments
+        3) creates difference matrix where experiment value - base case value are the elements
+        4) creates a local gain matrix by assuming all gains are linear combinations of the connected (locally) variables
+        """
+    
+    def __init__(self, nameofconn, nameofgains, states):
         self.createConnectionMatrix(nameofconn)
-        self.createLocalChangeMatrix(nameofgains,states) #run me so that local diff matrix is created
+        self.createLocalChangeMatrix(nameofgains,states)
+        self.createLocalDiffmatrix(states)
         self.createLinearLocalGainMatrix(states)  
         
-    def normaliseGainMatrix(self,matrix): #the ranking algorithms expect a normalised input local gain matrix
-        #this should normalise columns i.e. all columns sum to 1
-        #assuming input is square
+    """ it is important to run the constructor in this sequence """
+        
+    def normaliseGainMatrix(self,matrix):
         from numpy import array, transpose
-        n = int(matrix.size**0.5)
+        n = int(matrix.size**0.5) #assume square
 
         normalisedmatrix = []
         
@@ -34,14 +37,14 @@ class localgains:
                     normalisedmatrix.append(0)
                         
         normalisedmatrix = transpose(array(normalisedmatrix).reshape(n,n))
-        return normalisedmatrix #works
-                
-    
-    def createLinearLocalGainMatrix(self, states): #note: not very efficient but it works... will try to improve later if necessary
-        from numpy import array, zeros, hstack
+        return normalisedmatrix
         
-        self.linlocalgainmatrix = array(zeros((self.n, self.n)))  #initialise the linear local gain matrix
-        #this will be slightly inefficient at the moment... its this way to be sure of the method
+        """ this method should normalise all columns such that the sum of all elements in a column is 1.
+            this is necessary as the ranking algorithm requires an input of a normalised matrix to ensure
+            stochasticity. """
+                
+    def createLocalDiffmatrix(self, states):
+        from numpy import array
         self.localdiffmatrix = []        
         for row in range(self.n):
             for col in range(states-1):
@@ -49,13 +52,18 @@ class localgains:
                 self.localdiffmatrix.append(temp)
         
         self.localdiffmatrix = array(self.localdiffmatrix).reshape(self.n,-1)
-        #now you have all the necessary inputs i.e. delta y and delta u (all in one matrix row wise)        
-        #now go in to the connection matrix and determine local gains row by row
-           #*************************************works well
+        """this method calculates the changes of the inputs and measured variables from the base case
+        its output is a matrix of shape total number of variables x number of experiments run
+        the number of experiments run is one less than the number of columns in the data matrix"""
+    
+    def createLinearLocalGainMatrix(self, states):
+        from numpy import array, zeros, hstack
+        
+        self.linlocalgainmatrix = array(zeros((self.n, self.n)))  #initialise the linear local gain matrix
         for row in range(self.n):
-           index = self.connectionmatrix[row,:].reshape(1,self.n) #see the next line as well... there seems to be a persistent wrapping error... this fixes it
+           index = self.connectionmatrix[row,:].reshape(1,self.n)
            if (max(max(index)) > 0): #crude but it works...    
-               compoundvec = self.localdiffmatrix[row,:].reshape(states-1, 1) #this basically transposes the array... for some reason i cant get it to work with tranpose()... probably a wrapping fault somewhere
+               compoundvec = self.localdiffmatrix[row,:].reshape(states-1, 1)
                #now you need to get uvec so that you may calculate the aprox gains
                #note: rows == number of experiments       
                for position in range(self.n):
@@ -78,11 +86,15 @@ class localgains:
            else:
                pass #everything works
         self.linlocalgainmatrix = abs(self.linlocalgainmatrix) #some gains are negative but this has no effect on the eigenvector approach but it does pose some difficulties for the normalisation routine
-        
+        """this method creates a local gain matrix using the following method:
+           output_change|exp1 = gain1*input_change1|exp1 + gain2*input_change2|exp1 + etc...
+           output_change|exp2 = gain1*input_change1|exp2 + gain2*input_change2|exp2 + etc...
+           a least squares routine is used to determine the gains which result in the smallest error.
+           the connectivity is determined by the connection matrix
+           
+           the result is absoluted as the negative values can interfere with the normalisation routine"""
     
-    def createLocalChangeMatrix(self, nameofgains,states): #NB NB NB the octave output inserts a white space before every row!!! if you use a different source file make sure it is as such or this method will either bomb out or neglect an entire column of data
-        #this method should return an array of local changes   
-        #the variable name are already in order due to foresight (hopefully)
+    def createLocalChangeMatrix(self, nameofgains, states):
         import csv
         fromfile = csv.reader(open(nameofgains),delimiter=' ')
         self.localchangematrix = []
@@ -91,17 +103,17 @@ class localgains:
             for element in linefixed:
                 self.localchangematrix.append(float(element))
         from numpy import array
-        self.localchangematrix = array(self.localchangematrix).reshape(len(self.variables),states) #states = 13 TE => 12 input changes + 1 base case
-        #reasonably sure this works well
+        self.localchangematrix = array(self.localchangematrix).reshape(len(self.variables), -1)
+        """this method imports the states of the variables during the different test runs (at the end time which is assumed at SS)
+        octave inserts an empty space in front of every row so this program will assume this pattern for all inputs
+        this program will assume the base case is the last column of data
+        """
     
-    def createConnectionMatrix(self, nameofconn): # assigns variable names and connection scheme
+    def createConnectionMatrix(self, nameofconn):
         import csv
         from numpy import array
         fromfile = csv.reader(open(nameofconn))
-        #first row: empty space, var1, var2, var3, ... varN
-        #second row: var1, gain1, gain2, gain3, ... gainN
         self.variables = fromfile.next()[1:] #gets rid of that first space. Now the variables are all stored
-        #now to get the connection matrix
         self.connectionmatrix = []
         for row in fromfile:
             col = row[1:] #this gets rid of the variable name on each row (its there to help create the matrix before its read in)
@@ -113,13 +125,15 @@ class localgains:
         
         self.n = len(self.variables)
         self.connectionmatrix = array(self.connectionmatrix).reshape(self.n,self.n)
-        #I have a strong suspicion that this works...
 
-    def createInputOutputmatrix(self,arrayofinputs):
+    """this method imports the connection scheme for the data. the format should be:
+        empty space, var1, var2, etc... (first row)
+        var1, 1 if connected 0 if not for var 1, 1 if connected 0 if not for var 2, etc...
+        var2, dito, dito
         
-        [r, c] = self.localdiffmatrix.shape
-        for row in range(r):
-            if (arrayofinputs[row]==1):
+        this method also stores the names of all the variables in the connection matrix
+        it is important that the order of the variables in the connection matrix match
+        those in the data matrix"""
                 
                         
         
