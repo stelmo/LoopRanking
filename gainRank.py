@@ -4,17 +4,23 @@ Created on Fri Feb 24 16:33:40 2012
 
 @author: St Elmo Wilken
 """
-
-#I kind of started over in lieu of our conversation earlier today i.e. assume the gain matrix is given and then go from there. 
+ 
 class gRanking:
-    """ this class just needs an input gain matrix to work its magic. """
+    #description of the class gRanking
+    """This class has two inputs:
+        1) a normalised square local gain array 
+        2) an array containing all the variable tags written in order of the local gain array
+        
+        The class calculates the rankings of the variables using the eigenvector approach (Ax = x)"""
     
     def __init__(self,mat,var):
         from numpy import array        
         self.gMatrix = array(mat) #feed in a normalised gain matrix NB: no dangling nodes!!!
         self.gVariables = var #feed in ordered variables wrt gMatrix
-        self.constructRankArray()        
-        
+        self.constructRankArray()  
+        self.sortRankings()
+
+    """The constructor method creates a  """
 
     
     def constructRankArray(self):
@@ -38,6 +44,8 @@ class gRanking:
         self.rankDict = dict(zip(self.gVariables,self.rankArray))
         #print(self.rankDict) this works. now need to rearrange the rank sizes to corrospond to the drawing...
         
+        """The method constructRankArray actually implements the eigenvector approach """
+        
     def showConnectRank(self):
         import networkx as nx
         import matplotlib.pyplot as plot
@@ -50,22 +58,23 @@ class gRanking:
 
 
         self.rearrange = rG.nodes()
-        #print(self.rearrange)
         self.sizeArray = [self.rankDict[var]*10000 for var in self.rearrange]
         
-        nx.draw_circular(rG,node_size = self.sizeArray) #took out the colour... for some reason the nodes rearrange themselves... need to fix this.. and hence the code changes above... 
+        nx.draw_circular(rG,node_size = self.sizeArray)
         plot.show()
-
+        
+        """this method constructs a network graph showing connections and rankings ito node size"""
 
     def sortRankings(self):
         sortme = self.rankDict
-        self.key = []
-        self.value = []
-        for w in sorted(sortme, key=sortme.get):
-            self.key.append(w)
-            self.value.append(sortme[w])
+        from numpy import array
+        self.sortedRankings = []
+        for w in sorted(sortme, key=sortme.get, reverse=True):
+            self.sortedRankings.append(w)
+            self.sortedRankings.append(sortme[w])
+        self.sortedRankings = array(self.sortedRankings).reshape(-1, 2)
         #basically this method sorts the dictionary
-        
+        """ this method creates a matrix showing the ordered rankings"""
 
 
 
