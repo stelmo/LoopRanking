@@ -33,10 +33,6 @@ class gRanking:
         self.rankArray = eigVec[:,maxeigindex] #cuts array into the eigenvector corrosponding to the eigenvalue above
         self.rankArray = (1/sum(self.rankArray))*self.rankArray #this is the 1 dimensional array composed of rankings (normalised)
         self.rankArray = self.rankArray.real #to take away the useless +0j part...
-                
-        #create a dictionary of the rankings with their respective nodes ie {NODE:RANKING}
-        self.rankDict = dict(zip(self.gVariables,self.rankArray))
-        #print(self.rankDict) this works. now need to rearrange the rank sizes to corrospond to the drawing...
         
     def showConnectRank(self):
         import networkx as nx
@@ -48,7 +44,10 @@ class gRanking:
                 if (self.gMatrix[i,j] != 0):
                     rG.add_edge(self.gVariables[j],self.gVariables[i]) #draws the connectivity graph to visualise rankArray
 
-
+        
+        #create a dictionary of the rankings with their respective nodes ie {NODE:RANKING}
+        self.rankDict = dict(zip(self.gVariables,self.rankArray))
+        #print(self.rankDict) this works. now need to rearrange the rank sizes to corrospond to the drawing...
         self.rearrange = rG.nodes()
         #print(self.rearrange)
         self.sizeArray = [self.rankDict[var]*10000 for var in self.rearrange]
@@ -57,15 +56,6 @@ class gRanking:
         plot.show()
 
 
-    def sortRankings(self):
-        sortme = self.rankDict
-        self.key = []
-        self.value = []
-        for w in sorted(sortme, key=sortme.get):
-            self.key.append(w)
-            self.value.append(sortme[w])
-        #basically this method sorts the dictionary
-        
 
 
 

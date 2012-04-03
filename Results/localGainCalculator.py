@@ -14,7 +14,7 @@ class localgains:
     
     def __init__(self, nameofconn, nameofgains,states):
         self.createConnectionMatrix(nameofconn)
-        self.createLocalChangeMatrix(nameofgains,states) #run me so that local diff matrix is created
+        self.createLocalChangeMatrix(nameofgains,states)
         self.createLinearLocalGainMatrix(states)  
         
     def normaliseGainMatrix(self,matrix): #the ranking algorithms expect a normalised input local gain matrix
@@ -114,13 +114,7 @@ class localgains:
         self.n = len(self.variables)
         self.connectionmatrix = array(self.connectionmatrix).reshape(self.n,self.n)
         #I have a strong suspicion that this works...
-
-    def createInputOutputmatrix(self,arrayofinputs):
         
-        [r, c] = self.localdiffmatrix.shape
-        for row in range(r):
-            if (arrayofinputs[row]==1):
-                
                         
         
         

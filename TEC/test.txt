@@ -1,0 +1,10 @@
+ Reac Temp = 120.40  Stripper Lev =  50.00  Sripper Underflow =  16.43
+ Reac Temp = 120.40  Stripper Lev =  50.00  Sripper Underflow =  16.33
+ Reac Temp = 120.41  Stripper Lev =  50.14  Sripper Underflow =  16.51
+ Reac Temp = 120.41  Stripper Lev =  50.45  Sripper Underflow =  17.04
+ Reac Temp = 120.39  Stripper Lev =  47.81  Sripper Underflow =  11.65
+ Reac Temp = 120.39  Stripper Lev =  52.61  Sripper Underflow =  21.16
+ Reac Temp = 120.41  Stripper Lev =  50.03  Sripper Underflow =  15.91
+ Reac Temp = 120.39  Stripper Lev =  51.14  Sripper Underflow =  18.04
+ Reac Temp = 120.39  Stripper Lev =  50.92  Sripper Underflow =  17.50
+ Reac Temp = 120.40  Stripper Lev =  48.34  Sripper Underflow =  12.23

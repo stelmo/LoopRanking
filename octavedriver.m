@@ -50,33 +50,8 @@ u = [0;%     IDV(1,1)   A/C Feed Ratio, B Composition Constant (Stream 4)       
 	50]; %      XMV(1,12)    Agitator Speed
 	
 %now change u according to method parameters
-%this switch looks like this in case I want to change the "steps" to something other than 100...
-switch (inputchangeid)
-	case 1
-		u(21) = 100;
-	case 2
-		u(22) = 100;
-	case 3
-		u(23) = 100;
-	case 4
-		u(24) = 100;
-	case 5
-		u(25) = 100;
-	case 6
-		u(26) = 100;
-	case 7
-		u(27) = 100;
-	case 8
-		u(28) = 100;
-	case 9
-		u(29) = 100;
-	case 10
-		u(30) = 100;
-	case 11
-		u(31) = 100;
-	case 12
-		u(32) = 100;
-endswitch
+%in retrospect your method is much better... 
+u(20+inputchangeid) = 100;
 	
 outu = u;
 

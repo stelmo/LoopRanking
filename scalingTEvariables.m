@@ -1,7 +1,7 @@
 %scaling implementation
 
 %load file
-fromfile = load("inputgains45.txt");
+fromfile = load("inputgains25hto100.txt");
 
 [r, c] = size(fromfile);
 
@@ -19,7 +19,7 @@ for i=1:1:13
 	
 end
 
-save -ascii inputgains45Scaled.txt outfile
+save -ascii inputgains25hto100Scaled.txt outfile
 	
 			
 			
