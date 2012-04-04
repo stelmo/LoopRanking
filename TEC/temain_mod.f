@@ -215,15 +215,15 @@ C  increased by the number of additional differential equations.
 C
       NN = 50
 C
-C  Set the number of points to simulate
+C  Set the number of points to simulate: 48hrs of simulation
 C
-      NPTS = 172800
+      NPTS = 172800 
 
 C
-C  Set the number of pints to simulate in steady state operation
+C  Set the number of pints to simulate in steady state operation 3 hours of steady state so that 45 hour simulation
 C
 
-      SSPTS = 3600 * 8
+      SSPTS = 3600 * 3
 
 
 C
@@ -364,7 +364,7 @@ C  Simulation Loop
 C
         DO 1000 I = 1, NPTS
          IF (I.GE.SSPTS) THEN
-                 IDV(12)=1
+                 IDV(12)=0
           ENDIF
 	  TEST=MOD(I,3)
 	  IF (TEST.EQ.0) THEN
