@@ -17,7 +17,7 @@ class testRGA(unittest.TestCase):
         #this test a very simple 4x4 system
         #this is the only system where i could verify that the RGA is correctly calculated
         #mostly because the inverse is easy to calculate
-       test = RGA("testOneConnections.csv","testOneIG.txt",4)
+       test = RGA("testOneConnections.csv","testOneIG.txt",4,2)
        gainmatrix = test.openloopgainmatrix.transpose() #this is transposed for convenience
        variables = test.variablecorrection
        rga = test.bristolmatrix
@@ -36,7 +36,7 @@ class testRGA(unittest.TestCase):
            self.assertAlmostEquals(testelement, element,1)   
        
     def testRGA7x7(self):
-       test = RGA("testThreeConnections.csv","testThreeIG.txt",5)
+       test = RGA("testThreeConnections.csv","testThreeIG.txt",5, 2)
        gainmatrix = test.openloopgainmatrix.transpose()
        variables = test.variablecorrection
        
@@ -50,7 +50,7 @@ class testRGA(unittest.TestCase):
            self.assertAlmostEquals(testelement, element,1)
 
     def testRGA9x9(self):
-       test = RGA("testFourConnections.csv","testFourIG.txt",5)
+       test = RGA("testFourConnections.csv","testFourIG.txt",5,3)
        gainmatrix = test.openloopgainmatrix.transpose()
        variables = test.variablecorrection
        

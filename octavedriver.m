@@ -40,7 +40,7 @@ u = [0;%     IDV(1,1)   A/C Feed Ratio, B Composition Constant (Stream 4)       
 	53.98; %         XMV(1,2)     E Feed Flow (stream 3)            (Corrected Order)
 	24.644; %       XMV(1,3)     A Feed Flow (stream 1)            (Corrected Order)
 	61.302; %      XMV(1,4)     A and C Feed Flow (stream 4)
-	22.21; %     XMV(1,5)     Compressor Recycle Valve (stream 8)
+	22.21; %     XMV(1,5)     Compressor Recycle Valve
 	40.046; %       XMV(1,6)     Purge Valve (stream 9)
 	38.1; %      XMV(1,7)     Separator Pot Liquid Flow (stream 10)
 	46.534; %      XMV(1,8)     Stripper Liquid Product Flow (stream 11)
@@ -51,8 +51,10 @@ u = [0;%     IDV(1,1)   A/C Feed Ratio, B Composition Constant (Stream 4)       
 	
 %now change u according to method parameters
 %in retrospect your method is much better... 
-u(20+inputchangeid) = 100;
-	
+if (inputchangeid < 13)
+u(20+inputchangeid) = 5;
+end
+
 outu = u;
 
 %          

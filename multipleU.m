@@ -3,17 +3,11 @@
 array = []; %empty array
 
 for i=1:1:13
+[out, in] = octavedriver(i,5);
 
-[temp, temp2] = octavedriver(i,25);
-array(1:1:5,i) = temp(1:1:5,1);
-array(6,i) = temp2(9+20,1);
-array(7,i) = temp2(10+20,1);
-array(8,i) = temp2(11+20,1);
-array(9,i) = temp2(12+20,1);
-array(10:1:45,i) = temp(6:1:end,1); 
-%the 4 extra "variables" included here are inputs not measured. these are now included to calculate all the gains
-%the reason for the strange order of appending them is because of the layout of the connection csv file... 
-%this just keeps the variables consistent ito referencing
+array(1:1:12,i) = in(21:1:end,1);
+array(13:1:49,i) = out(5:1:end,1);
+
 end
  
-save -ascii inputgains25ht100.txt array
+save -ascii statesinputstep005h5.txt array

@@ -1,7 +1,7 @@
 all: temain.exe temain_mod.exe
 
 run: temain.exe
-	temain.exe
+		temain.exe
 
 %.exe: %.f tecommon.inc teprob.o
 	gfortran $< teprob.o -o $@

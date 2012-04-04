@@ -15,7 +15,7 @@ class gRanking:
     
     def __init__(self,mat,var):
         from numpy import array        
-        self.gMatrix = array(mat) #feed in a normalised gain matrix NB: no dangling nodes!!!
+        self.gMatrix = array(mat)#.transpose()# transposing this matrix makes the results so much more believable #feed in a normalised gain matrix NB: no dangling nodes!!!
         self.gVariables = var #feed in ordered variables wrt gMatrix
         self.constructRankArray()  
         self.sortRankings()
