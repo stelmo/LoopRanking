@@ -1,4 +1,4 @@
-all: temain.exe temain_mod.exe
+all: temain.exe temain_mod.exe temain_nc.exe
 
 run: temain.exe
 		temain.exe
@@ -11,5 +11,5 @@ teprob.o: teprob.f
 
 clean:
 	-del temain.exe teprob.o
-	
+
 .PHONY: clean run

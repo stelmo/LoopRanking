@@ -64,35 +64,35 @@ C
 C
 
 C Is this okay for specifying the input vector?
- 	XMV(1) = 63.053 + 0.
-	XMV(2) = 53.980 + 0.
-	XMV(3) = 24.644 + 0.    
-	XMV(4) = 61.302 + 0.
-	XMV(5) = 22.210 + 0.
-	XMV(6) = 40.064 + 0.
-	XMV(7) = 38.100 + 0.
-	XMV(8) = 46.534 + 0.
-	XMV(9) = 47.446 + 0.
-	XMV(10)= 41.106 + 0.
-	XMV(11)= 50.0 + 0.
-	
+      XMV(1) = 63.053 + 0.
+      XMV(2) = 53.980 + 0.
+      XMV(3) = 24.644 + 0.
+      XMV(4) = 61.302 + 0.
+      XMV(5) = 22.210 + 0.
+      XMV(6) = 40.064 + 0.
+      XMV(7) = 38.100 + 0.
+      XMV(8) = 46.534 + 0.
+      XMV(9) = 47.446 + 0.
+      XMV(10)= 41.106 + 0.
+      XMV(11)= 50.0 + 0.
+
 C Open the write files
 
-	OPEN(UNIT=111,FILE='output/TE_data_inc.dat',STATUS='new')
-	OPEN(UNIT=1111,FILE='output/TE_data_mv1.dat',STATUS='new')
-	OPEN(UNIT=1112,FILE='output/TE_data_mv2.dat',STATUS='new')
-	OPEN(UNIT=1113,FILE='output/TE_data_mv3.dat',STATUS='new')
-	OPEN(UNIT=2111,FILE='output/TE_data_me01.dat',STATUS='new')
-	OPEN(UNIT=2112,FILE='output/TE_data_me02.dat',STATUS='new')
-	OPEN(UNIT=2113,FILE='output/TE_data_me03.dat',STATUS='new')
-	OPEN(UNIT=2114,FILE='output/TE_data_me04.dat',STATUS='new')
-	OPEN(UNIT=2115,FILE='output/TE_data_me05.dat',STATUS='new')
-	OPEN(UNIT=2116,FILE='output/TE_data_me06.dat',STATUS='new')
-	OPEN(UNIT=2117,FILE='output/TE_data_me07.dat',STATUS='new')
-	OPEN(UNIT=2118,FILE='output/TE_data_me08.dat',STATUS='new')
-	OPEN(UNIT=2119,FILE='output/TE_data_me09.dat',STATUS='new')
-	OPEN(UNIT=2120,FILE='output/TE_data_me10.dat',STATUS='new')
-	OPEN(UNIT=2121,FILE='output/TE_data_me11.dat',STATUS='new')
+	  OPEN(UNIT=111,FILE='output/TE_data_inc.dat',STATUS='new')
+	  OPEN(UNIT=1111,FILE='output/TE_data_mv1.dat',STATUS='new')
+	  OPEN(UNIT=1112,FILE='output/TE_data_mv2.dat',STATUS='new')
+	  OPEN(UNIT=1113,FILE='output/TE_data_mv3.dat',STATUS='new')
+	  OPEN(UNIT=2111,FILE='output/TE_data_me01.dat',STATUS='new')
+	  OPEN(UNIT=2112,FILE='output/TE_data_me02.dat',STATUS='new')
+	  OPEN(UNIT=2113,FILE='output/TE_data_me03.dat',STATUS='new')
+	  OPEN(UNIT=2114,FILE='output/TE_data_me04.dat',STATUS='new')
+	  OPEN(UNIT=2115,FILE='output/TE_data_me05.dat',STATUS='new')
+	  OPEN(UNIT=2116,FILE='output/TE_data_me06.dat',STATUS='new')
+	  OPEN(UNIT=2117,FILE='output/TE_data_me07.dat',STATUS='new')
+	  OPEN(UNIT=2118,FILE='output/TE_data_me08.dat',STATUS='new')
+	  OPEN(UNIT=2119,FILE='output/TE_data_me09.dat',STATUS='new')
+	  OPEN(UNIT=2120,FILE='output/TE_data_me10.dat',STATUS='new')
+	  OPEN(UNIT=2121,FILE='output/TE_data_me11.dat',STATUS='new')
 
 C
 C  Set all Disturbance Flags to OFF
@@ -112,21 +112,21 @@ C
 C
  1000 CONTINUE
 C
- 	CLOSE(UNIT=111)
-	CLOSE(UNIT=1111)
-	CLOSE(UNIT=1112)
-	CLOSE(UNIT=1113)
-	CLOSE(UNIT=2111)
-	CLOSE(UNIT=2112)
-	CLOSE(UNIT=2113)
-	CLOSE(UNIT=2114)
-	CLOSE(UNIT=2115)
-	CLOSE(UNIT=2116)
-	CLOSE(UNIT=2117)
-	CLOSE(UNIT=2118)
-	CLOSE(UNIT=2119)
-	CLOSE(UNIT=2120)
-  	CLOSE(UNIT=2121)
+ 	  CLOSE(UNIT=111)
+	  CLOSE(UNIT=1111)
+	  CLOSE(UNIT=1112)
+	  CLOSE(UNIT=1113)
+	  CLOSE(UNIT=2111)
+	  CLOSE(UNIT=2112)
+	  CLOSE(UNIT=2113)
+	  CLOSE(UNIT=2114)
+	  CLOSE(UNIT=2115)
+	  CLOSE(UNIT=2116)
+	  CLOSE(UNIT=2117)
+	  CLOSE(UNIT=2118)
+	  CLOSE(UNIT=2119)
+	  CLOSE(UNIT=2120)
+  	  CLOSE(UNIT=2121)
 
       STOP
       END
