@@ -4,28 +4,29 @@ Created on Fri Feb 24 16:33:40 2012
 
 @author: St Elmo Wilken
 """
+
+"""Import classes and modules"""
+from numpy import array, ones, argmax, transpose
+from numpy import linalg as linCalc
+import networkx as nx
+import matplotlib.pyplot as plot
  
 class gRanking:
-    #description of the class gRanking
-    """This class has two inputs:
-        1) a normalised square local gain array 
-        2) an array containing all the variable tags written in order of the local gain array
-        
-        The class calculates the rankings of the variables using the eigenvector approach (Ax = x)"""
+    """This class should calculate the importance of variables based on their
+    first order local gains."""
     
-    def __init__(self,mat,var):
-        from numpy import array        
-        self.gMatrix = array(mat)#.transpose()# transposing this matrix makes the results so much more believable #feed in a normalised gain matrix NB: no dangling nodes!!!
-        self.gVariables = var #feed in ordered variables wrt gMatrix
+    def __init__(self,localgainmatrix, listofvariables):
+        """The constructor creates a rankings dictionary with the variables as
+        keys and the normlised rank as value."""
+        
+        self.gMatrix = localgainmatrix
+        self.gVariables = listofvariables 
         self.constructRankArray()  
         self.sortRankings()
-
-    """The constructor method creates a  """
-
     
     def constructRankArray(self):
-        from numpy import ones, argmax
-        from numpy import linalg as linCalc
+        """This method constructs the ranking dictionary using the eigenvector
+        approach i.e. Ax = x where A is the local gain matrix"""
         
         self.n = len(self.gMatrix) #length of gain matrix = number of nodes
         S = (1.0/self.n)*ones((self.n,self.n))
@@ -44,12 +45,10 @@ class gRanking:
         self.rankDict = dict(zip(self.gVariables,self.rankArray))
         #print(self.rankDict) this works. now need to rearrange the rank sizes to corrospond to the drawing...
         
-        """The method constructRankArray actually implements the eigenvector approach """
-        
     def showConnectRank(self):
-        import networkx as nx
-        import matplotlib.pyplot as plot
-
+        """this method constructs a network graph showing connections and rankings ito node size"""
+        
+        plot.figure("Gain Web")
         rG = nx.DiGraph()
         for i in range(self.n):
             for j in range(self.n):
@@ -62,32 +61,21 @@ class gRanking:
         
         nx.draw_circular(rG,node_size = self.sizeArray)
         plot.show()
-        
-        """this method constructs a network graph showing connections and rankings ito node size"""
 
     def sortRankings(self):
-        sortme = self.rankDict
-        from numpy import array
-        self.sortedRankings = []
-        for w in sorted(sortme, key=sortme.get, reverse=True):
-            self.sortedRankings.append(w)
-            self.sortedRankings.append(sortme[w])
-        self.sortedRankings = array(self.sortedRankings).reshape(-1, 2)
-        #basically this method sorts the dictionary
         """ this method creates a matrix showing the ordered rankings"""
+        
+        sortme = self.rankDict
+        self.sortedRankingsKey = []
+        self.sortedRankingsValue = []
+        for w in sorted(sortme, key=sortme.get, reverse=True):
+            self.sortedRankingsKey.append(w)
+            self.sortedRankingsValue.append(sortme[w])
+                #basically this method sorts the dictionary
+                
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+       
+        
+        

@@ -63,19 +63,6 @@ C
       CALL TEINIT(NN,TIME,YY,YP)
 C
 
-C Is this okay for specifying the input vector?
- 	XMV(1) = 63.053 + 0.
-	XMV(2) = 53.980 + 0.
-	XMV(3) = 24.644 + 0.    
-	XMV(4) = 61.302 + 0.
-	XMV(5) = 22.210 + 0.
-	XMV(6) = 40.064 + 0.
-	XMV(7) = 38.100 + 0.
-	XMV(8) = 46.534 + 0.
-	XMV(9) = 47.446 + 0.
-	XMV(10)= 41.106 + 0.
-	XMV(11)= 50.0 + 0.
-	
 C Open the write files
 
 	OPEN(UNIT=111,FILE='output/TE_data_inc.dat',STATUS='new')
@@ -101,7 +88,7 @@ C
           IDV(I) = 0
  100  CONTINUE
 C
-C  Simulation Loop: what is that 1000 doing there?
+C  Simulation Loop:
 C
       DO 1000 I = 1, NPTS
 C
