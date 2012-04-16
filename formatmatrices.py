@@ -9,6 +9,7 @@ Created on Sun Apr 15 13:04:23 2012
 from localGainCalculator import localgains
 import numpy as np
 from numpy import array, transpose
+import networkx as nx
 
 
 class formatmatrix:
@@ -17,7 +18,10 @@ class formatmatrix:
     For self made test systems you will have numberofdummyvariables not equal to 0;
     this is especially true if you have recycle streams.
     Additionally, you might want to run formatDiffMatrixForRGA if you have more runs
-    than inputs otherwise RGABristol will not work properly. """
+    than inputs otherwise RGABristol will not work properly.
+    
+    This class will also use gainRank to calculate the actual node importances
+    (as opposed to the not scaled importances). """
     
     def __init__(self, locationofconnections, locationofstates, numberofruns, numberofdummyvariables):
         """This class will assume you input a connection matrix (ordered according 
@@ -26,6 +30,9 @@ class formatmatrix:
         
         self.initialiseSystem(locationofconnections, locationofstates, numberofruns)
         self.removeDummyVariables(numberofdummyvariables) #can be zero!
+        
+        self.addforwardScale()
+        self.addbackwardScale()
         
     
     def initialiseSystem(self, locationofconnections, locationofstates, numberofruns):
@@ -78,12 +85,79 @@ class formatmatrix:
         self.nodummyRGAformatDiff = transpose(array(self.nodummyRGAformatDiff).reshape(numberofinputs,-1))
         #this works
         
+    def addforwardScale(self):
+        """This method should add a unit gain node to all nodes with an out-degree
+        of 1; now all of these nodes should have an out-degree of 2. Therefore
+        all nodes with pointers should have 2 or more edges pointing away from 
+        them.
         
+        It uses the no dummy variables to construct these gain, connection
+        and variable name matrices. """
 
+        M = nx.DiGraph()
+        #construct the graph with connections
+        for u in range(self.nodummyN):
+            for v in range(self.nodummyN):
+                if (self.nodummyconnection[u, v] != 0):
+                    M.add_edge(self.nodummyvariablelist[v], self.nodummyvariablelist[u], weight = self.nodummygain[u,v])
         
         
-    
-    
+        #now add connections where out degree == 1
+        counter = 1
+        
+        for node in M.nodes():
+            if M.out_degree(node) == 1:
+                nameofscale = 'DV'+str(counter)
+                M.add_edge(node, nameofscale, weight = 1.0)
+                counter = counter + 1
+                
+                
+
+        self.scaledforwardconnection = transpose(nx.to_numpy_matrix(M, weight = None))
+        self.scaledforwardgain = transpose(nx.to_numpy_matrix(M, weight = 'weight'))
+        self.scaledforwardvariablelist = M.nodes() #i sincerely hope this works!... After some testing, I think it does!!!
+        
+        
+    def addbackwardScale(self):
+        """This method should add a unit gain node to all nodes with an out-degree
+        of 1; now all of these nodes should have an out-degree of 2. Therefore
+        all nodes with pointers should have 2 or more edges pointing away from 
+        them.
+        
+        It uses the no dummy variables to construct these gain, connection
+        and variable name matrices. 
+        
+        Additionally, this method transposes the original no dummy variables to
+        generate the reverse option. """
+
+        M = nx.DiGraph()
+        transposedconnection = transpose(self.nodummyconnection)
+        transposedgain = transpose(self.nodummygain)
+        
+        #construct the graph with connections
+        for u in range(self.nodummyN):
+            for v in range(self.nodummyN):
+                if (transposedconnection[u, v] != 0):
+                    M.add_edge(self.nodummyvariablelist[v], self.nodummyvariablelist[u], weight = transposedgain[u,v])
+        
+        
+        #now add connections where out degree == 1
+        counter = 1
+        
+        for node in M.nodes():
+            if M.out_degree(node) == 1:
+                nameofscale = 'DV'+str(counter)
+                M.add_edge(node, nameofscale, weight = 1.0)
+                counter = counter + 1
+                
+                
+
+        self.scaledbackwardconnection = transpose(nx.to_numpy_matrix(M, weight = None))
+        self.scaledbackwardgain = transpose(nx.to_numpy_matrix(M, weight = 'weight'))
+        self.scaledbackwardvariablelist = M.nodes() #i sincerely hope this works!... After some testing, I think it does!!!    
+
+
+
     
     
     

@@ -20,11 +20,24 @@ class visualiseOpenLoopSystem:
         2) Visualise the results of the RGA method
         3)  Visualise the results of the eigen-vector approach method"""
     
-    def __init__(self, variables, localdiff, numberofinputs):
+    def __init__(self, variables, localdiff, numberofinputs, fgainmatrix, fconnectionmatrix, fvariablenames, bgainmatrix, bconnectionmatrix, bvariablenames, normalgains, normalconnections, normalvariablenames):
         """This constructor will create an RGABristol object so that you simply
-        have to call the display method to see which pairings should be made. """
+        have to call the display method to see which pairings should be made.
         
-        #self.bristol = RGA(variables, localdiff, numberofinputs)
+        It will also create 6 different ranking systems. Note that variablenames
+        is not the same as variables!! There is a formatting difference. """
+        
+        self.bristol = RGA(variables, localdiff, numberofinputs)
+        
+        self.forwardgain = gRanking(self.normaliseMatrix(fgainmatrix), fvariablenames)
+        self.gfgain = gRanking(self.normaliseMatrix(fconnectionmatrix), fvariablenames)        
+        
+        self.backwardgain = gRanking(self.normaliseMatrix(bgainmatrix), bvariablenames)
+        self.gbgain = gRanking(self.normaliseMatrix(bconnectionmatrix), bvariablenames)
+        
+        self.normalforwardgain = gRanking(self.normaliseMatrix(normalgains), normalvariablenames)
+        self.normalbackwardgain = gRanking(self.normaliseMatrix(transpose(normalgains)), normalvariablenames)
+        
     
     def displayConnectivityAndLocalGains(self, connectionmatrix, localgainmatrix, variablenames, nodepositiondictionary=None):
         """This method should display a graph indicating the connectivity of a
@@ -131,48 +144,36 @@ class visualiseOpenLoopSystem:
         plt.show()
         
 
-    def displayEigenWeights(self, connectionmatrix, gainmatrix, variablenames, localn, posdict=None):
-        """This method displays the system connectivity and the calculated edge
-        weights using the eigenvector approach.
+    def displayEigenRankBlend(self, nodummyvariablelist, alpha, nodepos=None):
+        """This method displays the blended weightings of nodes i.e. it takes
+        both forward and backward rankings into account.
         
-        localn = length or height of connection or gain matrix
-        posdict = position dictionary of nodes, defaults to a spectral layout
-        of web. """
+        Note that this is purely ranking i.e. the standard google rankings do
+        not come into play yet."""
         
-        forwardgain = gRanking(self.normaliseMatrix(gainmatrix), variablenames)
-        gfgain = gRanking(self.normaliseMatrix(connectionmatrix), variablenames)        
-        
-        backwardgain = gRanking(self.normaliseMatrix(transpose(gainmatrix)), variablenames)
-        gbgain = gRanking(self.normaliseMatrix(transpose(connectionmatrix)), variablenames)
-        
-        
-        frankdict = forwardgain.rankDict
-        brankdict = backwardgain.rankDict
-        gfdict = gfgain.rankDict
-        gbdict = gbgain.rankDict
-        
-        print(frankdict)
-        print(gfdict)       
-        
-        
-        plt.figure("Eigen-Vector Approach: Edge Weightings")
-        H = nx.DiGraph()        
-        weighting = dict()
-        for u in range(localn):
-            for v in range(localn):
-                if connectionmatrix[u,v] == 1:
-                    H.add_edge(variablenames[v],variablenames[u])
-                    weighting[(variablenames[v],variablenames[u])] = 1# a miracle occurs
-
-        
-        if posdict == None:
-            posdict = nx.spectral_layout(H)
+        self.blendedranking = dict()
+        for variable in nodummyvariablelist:
+            self.blendedranking[variable] = (1-alpha)*self.forwardgain.rankDict[variable] + (alpha)*self.backwardgain.rankDict[variable]
             
-        nx.draw_networkx(H,pos=posdict)
-        nx.draw_networkx_edge_labels(H, pos=posdict,edge_labels=weighting, style='solid',alpha=0.5, width = 0.5, label_pos= 0.3)
-        nx.draw_networkx_nodes(H,pos=posdict, node_color='y',node_size=900)
-        plt.axis("off")
         
+        rG = nx.DiGraph()
+        for i in range(self.normalforwardgain.n):
+            for j in range(self.normalforwardgain.n):
+                if (self.normalforwardgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
+         
+         
+        plt.figure("Blended Node Rankings")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.blendedranking[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.blendedranking[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)        
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off")         
         
         
     def normaliseMatrix(self,inputmatrix):
@@ -196,17 +197,177 @@ class visualiseOpenLoopSystem:
         normalisedmatrix = transpose(array(normalisedmatrix).reshape(r,c))
         return normalisedmatrix       
     
+    def displayEigenRankLGf(self, nodepos=None):
+        """This method constructs a network graph showing connections and rankings
+        in terms of node size going FORWARD and using the local gains. 
+        
+        It has an optional parameter nodepos which sets the positions of the nodes,
+        if left out the node layout defaults to spectral. """
         
         
+        rG = nx.DiGraph()
+        for i in range(self.forwardgain.n):
+            for j in range(self.forwardgain.n):
+                if (self.forwardgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.forwardgain.gVariables[j], self.forwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
+         
+         
+        plt.figure("Node Rankings: Local Gain Forward: Scaled")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.forwardgain.rankDict[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.forwardgain.rankDict[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)        
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off")
+        #print(nx.adjacency_matrix(rG))
+
+ 
+    def displayEigenRankGGf(self, nodepos=None):
+        """This method constructs a network graph showing connections and rankings
+        in terms of node size going FORWARD and using unity gains between all node
+        i.e. the google rank. 
+        
+        It has an optional parameter nodepos which sets the positions of the nodes,
+        if left out the node layout defaults to spectral. """
         
         
+        rG = nx.DiGraph()
+        for i in range(self.gfgain.n):
+            for j in range(self.gfgain.n):
+                if (self.gfgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.gfgain.gVariables[j], self.gfgain.gVariables[i])
+         
+         
+        plt.figure("Node Rankings: Google Gain Forward: Scaled")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.gfgain.rankDict[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.gfgain.rankDict[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)           
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off")
+        #print(nx.adjacency_matrix(rG))
+        
+
+    def displayEigenRankGGb(self, nodepos=None):
+        """This method constructs a network graph showing connections and rankings
+        in terms of node size going BACKWARD and using unity gains between all node
+        i.e. the google rank. 
+        
+        It has an optional parameter nodepos which sets the positions of the nodes,
+        if left out the node layout defaults to spectral. """
         
         
+        rG = nx.DiGraph()
+        for i in range(self.gbgain.n):
+            for j in range(self.gbgain.n):
+                if (self.gbgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.gbgain.gVariables[j], self.gbgain.gVariables[i])
+         
+         
+        plt.figure("Node Rankings: Google Gain Backward: Scaled")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.gbgain.rankDict[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.gbgain.rankDict[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)           
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off")
+
+    def displayEigenRankLGb(self, nodepos=None):
+        """This method constructs a network graph showing connections and rankings
+        in terms of node size going BACKWARD and using the local gains. 
+        
+        It has an optional parameter nodepos which sets the positions of the nodes,
+        if left out the node layout defaults to spectral. """
         
         
+        rG = nx.DiGraph()
+        for i in range(self.backwardgain.n):
+            for j in range(self.backwardgain.n):
+                if (self.backwardgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.backwardgain.gVariables[j], self.backwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
+         
+         
+        plt.figure("Node Rankings: Local Gain Backward: Scaled")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.backwardgain.rankDict[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.backwardgain.rankDict[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)        
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off")
         
         
+    def displayEigenRankNormalForward(self, nodepos=None):
+        """This method constructs a network graph showing connections and rankings
+        in terms of node size going FORWARD and using the local gains. (it is not
+        scaled) 
         
+        It has an optional parameter nodepos which sets the positions of the nodes,
+        if left out the node layout defaults to spectral. """
+        
+        
+        rG = nx.DiGraph()
+        for i in range(self.normalforwardgain.n):
+            for j in range(self.normalforwardgain.n):
+                if (self.normalforwardgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
+         
+         
+        plt.figure("Node Rankings: Local Gain Forward: Normal")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.normalforwardgain.rankDict[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.normalforwardgain.rankDict[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)        
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off")        
+        
+        
+    def displayEigenRankNormalBackward(self, nodepos=None):
+        """This method constructs a network graph showing connections and rankings
+        in terms of node size going BACKWARD and using the local gains. (it is not
+        scaled) 
+        
+        It has an optional parameter nodepos which sets the positions of the nodes,
+        if left out the node layout defaults to spectral. """
+        
+        
+        rG = nx.DiGraph()
+        for i in range(self.normalbackwardgain.n):
+            for j in range(self.normalbackwardgain.n):
+                if (self.normalbackwardgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.normalbackwardgain.gVariables[j], self.normalbackwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
+         
+         
+        plt.figure("Node Rankings: Local Gain Backward: Normal")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.normalbackwardgain.rankDict[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.normalbackwardgain.rankDict[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)        
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off")         
         
         
         

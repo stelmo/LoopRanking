@@ -22,7 +22,6 @@ class gRanking:
         self.gMatrix = localgainmatrix
         self.gVariables = listofvariables 
         self.constructRankArray()  
-        self.sortRankings()
     
     def constructRankArray(self):
         """This method constructs the ranking dictionary using the eigenvector
@@ -45,33 +44,7 @@ class gRanking:
         self.rankDict = dict(zip(self.gVariables,self.rankArray))
         #print(self.rankDict) this works. now need to rearrange the rank sizes to corrospond to the drawing...
         
-    def showConnectRank(self):
-        """this method constructs a network graph showing connections and rankings ito node size"""
-        
-        plot.figure("Gain Web")
-        rG = nx.DiGraph()
-        for i in range(self.n):
-            for j in range(self.n):
-                if (self.gMatrix[i,j] != 0):
-                    rG.add_edge(self.gVariables[j],self.gVariables[i]) #draws the connectivity graph to visualise rankArray
 
-
-        self.rearrange = rG.nodes()
-        self.sizeArray = [self.rankDict[var]*10000 for var in self.rearrange]
-        
-        nx.draw_circular(rG,node_size = self.sizeArray)
-        plot.show()
-
-    def sortRankings(self):
-        """ this method creates a matrix showing the ordered rankings"""
-        
-        sortme = self.rankDict
-        self.sortedRankingsKey = []
-        self.sortedRankingsValue = []
-        for w in sorted(sortme, key=sortme.get, reverse=True):
-            self.sortedRankingsKey.append(w)
-            self.sortedRankingsValue.append(sortme[w])
-                #basically this method sorts the dictionary
                 
 
 

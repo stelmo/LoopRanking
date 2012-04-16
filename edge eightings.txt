@@ -1,0 +1,26 @@
+        frankdict = forwardgain.rankDict
+        brankdict = backwardgain.rankDict
+        gfdict = gfgain.rankDict
+        gbdict = gbgain.rankDict   
+        
+        ngam = self.normaliseMatrix(gainmatrix)
+        nggm = self.normaliseMatrix(connectionmatrix)
+        
+        
+        plt.figure("Eigen-Vector Approach: Edge Weightings")
+        H = nx.DiGraph()        
+        weighting = dict()
+        for u in range(localn):
+            for v in range(localn):
+                if connectionmatrix[u,v] == 1:
+                    H.add_edge(variablenames[v],variablenames[u])
+                    weighting[(variablenames[v],variablenames[u])] = ngam[u,v]*frankdict[variablenames[u]]-nggm[u,v]*gfdict[variablenames[u]] #pointee or pointer is referenced? 
+
+        
+        if posdict == None:
+            posdict = nx.spectral_layout(H)
+            
+        nx.draw_networkx(H,pos=posdict)
+        nx.draw_networkx_edge_labels(H, pos=posdict,edge_labels=weighting, style='solid',alpha=0.5, width = 0.5, label_pos= 0.3)
+        nx.draw_networkx_nodes(H,pos=posdict, node_color='y',node_size=900)
+        plt.axis("off")
