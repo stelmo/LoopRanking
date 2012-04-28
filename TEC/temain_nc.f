@@ -63,6 +63,7 @@ C
       CALL TEINIT(NN,TIME,YY,YP)
 C
 
+<<<<<<< HEAD
 C Is this okay for specifying the input vector?
       XMV(1) = 63.053 + 0.
       XMV(2) = 53.980 + 0.
@@ -101,7 +102,7 @@ C
           IDV(I) = 0
  100  CONTINUE
 C
-C  Simulation Loop: what is that 1000 doing there?
+C  Simulation Loop:
 C
       DO 1000 I = 1, NPTS
 C

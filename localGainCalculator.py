@@ -5,65 +5,74 @@ Created on Mon Mar 26 23:12:10 2012
 @author: St Elmo Wilken
 """
 
-class localgains:
-    
-    """This class calculates:
-        1) imports a connection matrix scheme and implictly the ordered variable collection
-        2) imports the Steady state values of all of the variables for (states) many experiments
-        3) creates difference matrix where experiment value - base case value are the elements
-        4) creates a local gain matrix by assuming all gains are linear combinations of the connected (locally) variables
-        """
-    
-    def __init__(self, nameofconn, nameofgains, states):
-        self.createConnectionMatrix(nameofconn)
-        self.createLocalChangeMatrix(nameofgains,states)
-        self.createLocalDiffmatrix(states)
-        self.createLinearLocalGainMatrix(states)  
-        
-    """ it is important to run the constructor in this sequence """
-        
-    def normaliseGainMatrix(self,matrix):
-        from numpy import array, transpose
-        n = int(matrix.size**0.5) #assume square
+"""Import classes and module"""
+from numpy import array, transpose, zeros, hstack
+import csv
+import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
 
+class localgains:
+    """This class:
+        1) Imports the connection matrix from file
+        2) Imports the state matrix from file
+        3) Constructs the linear local gain matrix"""
+    
+    def __init__(self, locationofconnections, locationofstates, numberofruns):
+        """This constructor creates matrices in memory of the connection, 
+        local gain and local diff (from steady state) inputs"""
+        
+        self.createConnectionMatrix(locationofconnections)
+        self.createLocalChangeMatrix(locationofstates)
+        self.createLocalDiffmatrix(numberofruns)
+        self.createLinearLocalGainMatrix(numberofruns)  
+        
+    def normaliseGainMatrix(self,inputmatrix):
+        """This method normalises the absolute value of the input matrix
+        in the columns i.e. all columns will sum to 1"""
+            
+        [r, c] = inputmatrix.shape
+        inputmatrix = abs(inputmatrix) #doesnt affect eigen
         normalisedmatrix = []
         
-        for col in range(n):
-            colsum = sum(matrix[:,col])
-            for row in range(n):
+        for col in range(c):
+            colsum = float(sum(inputmatrix[:,col]))
+            for row in range(r):
                 if (colsum!=0):
-                    normalisedmatrix.append(matrix[row,col]/colsum)
+                    normalisedmatrix.append(inputmatrix[row,col]/colsum) #this was broken! fixed now...
                 else:
-                    normalisedmatrix.append(0)
+                    normalisedmatrix.append(0.0)
                         
-        normalisedmatrix = transpose(array(normalisedmatrix).reshape(n,n))
+        normalisedmatrix = transpose(array(normalisedmatrix).reshape(r,c))
         return normalisedmatrix
         
-        """ this method should normalise all columns such that the sum of all elements in a column is 1.
-            this is necessary as the ranking algorithm requires an input of a normalised matrix to ensure
-            stochasticity. """
                 
-    def createLocalDiffmatrix(self, states):
-        from numpy import array
+    def createLocalDiffmatrix(self, numberofruns):
+        """This method calculates the deviation of each run from the steady state
+        value of that variable. It is assumed that the steady state system is the
+        last column of values in the constructor input location of states."""
+        
         self.localdiffmatrix = []        
         for row in range(self.n):
-            for col in range(states-1):
-                temp = self.localchangematrix[row,col] - self.localchangematrix[row,states-1]
+            for col in range(numberofruns-1):
+                temp = self.localchangematrix[row,col] - self.localchangematrix[row, numberofruns-1]
                 self.localdiffmatrix.append(temp)
         
         self.localdiffmatrix = array(self.localdiffmatrix).reshape(self.n,-1)
-        """this method calculates the changes of the inputs and measured variables from the base case
-        its output is a matrix of shape total number of variables x number of experiments run
-        the number of experiments run is one less than the number of columns in the data matrix"""
+        
     
-    def createLinearLocalGainMatrix(self, states):
-        from numpy import array, zeros, hstack
+    def createLinearLocalGainMatrix(self, numberofruns):
+        """This method creates a local gain matrix using the following method:
+           output_change|exp1 = gain1*input_change1|exp1 + gain2*input_change2|exp1 + etc...
+           output_change|exp2 = gain1*input_change1|exp2 + gain2*input_change2|exp2 + etc...
+           A least squares routine is used to determine the gains which result in the smallest error.
+           The connectivity is determined by the connection matrix"""
         
         self.linlocalgainmatrix = array(zeros((self.n, self.n)))  #initialise the linear local gain matrix
         for row in range(self.n):
            index = self.connectionmatrix[row,:].reshape(1,self.n)
            if (max(max(index)) > 0): #crude but it works...    
-               compoundvec = self.localdiffmatrix[row,:].reshape(states-1, 1)
+               compoundvec = self.localdiffmatrix[row,:].reshape(numberofruns-1, 1)
                #now you need to get uvec so that you may calculate the aprox gains
                #note: rows == number of experiments       
                for position in range(self.n):
@@ -73,8 +82,7 @@ class localgains:
                    else:
                        pass #do nothing as the index will sort out the order of gain association
                yvec = compoundvec[:,0].reshape(-1,1)
-               uvec = compoundvec[:,1:]
-               import numpy as np #is the good?        
+               uvec = compoundvec[:,1:]       
                localgains =  np.linalg.lstsq(uvec,yvec)[0].reshape(1,-1)
                tempindex = 0        
                for position in range(self.n):
@@ -85,33 +93,39 @@ class localgains:
                    pass #do nothing as the index will sort out the order of gain association
            else:
                pass #everything works
-        self.linlocalgainmatrix = abs(self.linlocalgainmatrix) #some gains are negative but this has no effect on the eigenvector approach but it does pose some difficulties for the normalisation routine
-        """this method creates a local gain matrix using the following method:
-           output_change|exp1 = gain1*input_change1|exp1 + gain2*input_change2|exp1 + etc...
-           output_change|exp2 = gain1*input_change1|exp2 + gain2*input_change2|exp2 + etc...
-           a least squares routine is used to determine the gains which result in the smallest error.
-           the connectivity is determined by the connection matrix
-           
-           the result is absoluted as the negative values can interfere with the normalisation routine"""
+        
     
-    def createLocalChangeMatrix(self, nameofgains, states):
-        import csv
-        fromfile = csv.reader(open(nameofgains),delimiter=' ')
+    def createLocalChangeMatrix(self, locationofstates):
+        """This method imports the states of the variables during the different 
+        test runs (it is assumed steady state is the final column) octave inserts 
+        an empty space in front of every row so this program will assume this pattern for 
+        all inputs this program will assume the base case is the last column of data"""
+        
+
+        fromfile = csv.reader(open(locationofstates),delimiter=' ')
         self.localchangematrix = []
         for line in fromfile:
             linefixed = line[1:] #to get rid of a white space preceeding every line
             for element in linefixed:
                 self.localchangematrix.append(float(element))
-        from numpy import array
         self.localchangematrix = array(self.localchangematrix).reshape(len(self.variables), -1)
-        """this method imports the states of the variables during the different test runs (at the end time which is assumed at SS)
-        octave inserts an empty space in front of every row so this program will assume this pattern for all inputs
-        this program will assume the base case is the last column of data
-        """
+        
     
     def createConnectionMatrix(self, nameofconn):
-        import csv
-        from numpy import array
+        """This method imports the connection scheme for the data. 
+        The format should be: 
+        empty space, var1, var2, etc... (first row)
+        var1, value, value, value, etc... (second row)
+        var2, value, value, value, etc... (third row)
+        etc...
+        
+        Value is 1 if column variable points to row variable (causal relationship)
+        Value is 0 otherwise
+        
+        This method also stores the names of all the variables in the connection matrix.
+        It is important that the order of the variables in the connection matrix match
+        those in the data matrix"""
+        
         fromfile = csv.reader(open(nameofconn))
         self.variables = fromfile.next()[1:] #gets rid of that first space. Now the variables are all stored
         self.connectionmatrix = []
@@ -126,21 +140,4 @@ class localgains:
         self.n = len(self.variables)
         self.connectionmatrix = array(self.connectionmatrix).reshape(self.n,self.n)
 
-    """this method imports the connection scheme for the data. the format should be:
-        empty space, var1, var2, etc... (first row)
-        var1, 1 if connected 0 if not for var 1, 1 if connected 0 if not for var 2, etc...
-        var2, dito, dito
-        
-        this method also stores the names of all the variables in the connection matrix
-        it is important that the order of the variables in the connection matrix match
-        those in the data matrix"""
-                
-                        
-        
-        
-        
-
-    
-        
-
-
+   

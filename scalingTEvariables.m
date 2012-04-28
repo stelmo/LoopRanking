@@ -1,7 +1,7 @@
 %scaling implementation
 
 %load file
-fromfile = load("inputgains25hto100.txt");
+fromfile = load("controlstates.txt");
 
 [r, c] = size(fromfile);
 
@@ -13,13 +13,13 @@ for row = 1:1:r
 	
 end
 
-for i=1:1:13
+for i=1:1:c
 
 	outfile(:,i) = fromfile(:,i)./scales;
 	
 end
 
-save -ascii inputgains25hto100Scaled.txt outfile
+save -ascii scaledcontrol.txt outfile
 	
 			
 			
