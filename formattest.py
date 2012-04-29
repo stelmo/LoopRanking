@@ -12,9 +12,10 @@ from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
 testcase = 'b'
-dispRGA = True
+dispRGA = False
 dispEigenForwardAndBackward = False
-dispEigenBlendAndNormal = False
+dispEigenBlend = True
+dispEdgeWeight = True
 
 if testcase == 'a':
 
@@ -41,10 +42,15 @@ if testcase == 'a':
         test2.displayEigenRankLGf(nodepos)
         test2.displayEigenRankGGb(nodepos)
         test2.displayEigenRankLGb(nodepos)
-        
-    if dispEigenBlendAndNormal:    
-        test2.displayEigenRankBlend(test.nodummyvariablelist, 0.15, nodepos)
         test2.displayEigenRankNormalForward(nodepos)
+        test2.displayEigenRankNormalBackward(nodepos)
+        
+    if dispEigenBlend:    
+        test2.displayEigenRankBlend(test.nodummyvariablelist, 0.15, nodepos)
+        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.15, nodepos)
+        
+    if dispEdgeWeight & dispEigenBlend:
+        test2.displayEdgeWeights(nodepos)
     
     test2.showAll()
 
@@ -74,11 +80,16 @@ if testcase == 'b':
         test2.displayEigenRankLGf(nodeposf)
         test2.displayEigenRankGGb(nodeposb)
         test2.displayEigenRankLGb(nodeposb)
-    
-    if dispEigenBlendAndNormal:    
         test2.displayEigenRankNormalForward(nodepos)
         test2.displayEigenRankNormalBackward(nodepos)
-        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1 ,nodepos)
+    
+    if dispEigenBlend:    
+        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.1, nodepos)
+        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1, nodepos)
+    
+    
+    if dispEdgeWeight & dispEigenBlend:
+        test2.displayEdgeWeights(nodepos)
     
     test2.showAll()
     
