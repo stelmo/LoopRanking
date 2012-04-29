@@ -16,12 +16,12 @@ class RGA:
         """This constructor creates the recommended input-output pairings
         of the RGA method. There are optional display methods. """
         
-        self.getOpenLoopGainArray(localdiffs, numberofinputs, positioncontrol)
+        self.getOpenLoopGainArray(localdiffs, numberofinputs, variables, positioncontrol)
         self.calculateBristolmatrix()
-        self.calculateBristolpairingsMax(variables, numberofinputs)
-        self.calculateBristolpairingsHalf(variables, numberofinputs)
+        self.calculateBristolpairingsMax(self.vars, numberofinputs)
+        self.calculateBristolpairingsHalf(self.vars, numberofinputs)
     
-    def getOpenLoopGainArray(self, localdiffs, numberofinputs, controlposition = None):
+    def getOpenLoopGainArray(self, localdiffs, numberofinputs, variables ,controlposition = None):
         """This method calculates the open loop gain matrix as used by the 
         RGA method. This assumes that columns are inputs and rows are outputs.
         
@@ -56,13 +56,17 @@ class RGA:
         #now split the resulting matrix into the portions you will actually use
         [r, c] = self.openloopmatrix.shape
         tempmatrix = []
+
         if controlposition != None:
-            
+            self.vars = variables[:numberofinputs]    
             for row in range(r):
                 if row+numberofinputs in controlposition:
                     tempmatrix.append(self.openloopmatrix[row, :])
-        
+                    self.vars.append(variables[row+numberofinputs])
             self.openloopmatrix = array(tempmatrix).reshape(-1, numberofinputs)
+        else:
+            self.vars = variables
+
                     
     
     def calculateBristolmatrix(self):
