@@ -12,16 +12,16 @@ import numpy as np
 class RGA:
     """This class implements the RGA method"""
     
-    def __init__(self, variables, localdiffs, numberofinputs):
+    def __init__(self, variables, localdiffs, numberofinputs, positioncontrol):
         """This constructor creates the recommended input-output pairings
         of the RGA method. There are optional display methods. """
         
-        self.getOpenLoopGainArray(localdiffs, numberofinputs)
+        self.getOpenLoopGainArray(localdiffs, numberofinputs, positioncontrol)
         self.calculateBristolmatrix()
         self.calculateBristolpairingsMax(variables, numberofinputs)
         self.calculateBristolpairingsHalf(variables, numberofinputs)
     
-    def getOpenLoopGainArray(self, localdiffs, numberofinputs):
+    def getOpenLoopGainArray(self, localdiffs, numberofinputs, controlposition = None):
         """This method calculates the open loop gain matrix as used by the 
         RGA method. This assumes that columns are inputs and rows are outputs.
         
@@ -35,7 +35,12 @@ class RGA:
         
         The result of this method is an open loop gain matrix with dimensions:
         number of rows = number of outputs
-        number of columns = number of inputs"""
+        number of columns = number of inputs
+        
+        Finally, this method takes as a parameter positioncontrol (which is a list.) 
+        This parameter tells the method which variables are to be controlled i.e.
+        it cuts the other variables out of the open loop gain matrix. The parameter
+        has a default setting equal to None i.e. no rows are deleted. """
                
         [r, c] = localdiffs.shape
         outputs = localdiffs[numberofinputs:r, :]
@@ -48,7 +53,17 @@ class RGA:
         self.openloopmatrix = array(self.openloopmatrix).reshape(numberofinputs,-1)
         self.openloopmatrix = transpose(self.openloopmatrix)
         
+        #now split the resulting matrix into the portions you will actually use
+        [r, c] = self.openloopmatrix.shape
+        tempmatrix = []
+        if controlposition != None:
+            
+            for row in range(r):
+                if row+numberofinputs in controlposition:
+                    tempmatrix.append(self.openloopmatrix[row, :])
         
+            self.openloopmatrix = array(tempmatrix).reshape(-1, numberofinputs)
+                    
     
     def calculateBristolmatrix(self):
         """This method actually calculates the relative gain array.
@@ -79,15 +94,15 @@ class RGA:
         It assumed that each input WILL be paired and as such, it looks for the
         biggest value in each column and pairs accordingly."""
         
-        inputvars = vararrs[:numofinputs]        
-        outputvars = vararrs[numofinputs:]
+        self.inputvars = vararrs[:numofinputs]        
+        self.outputvars = vararrs[numofinputs:]
         [r, c] = self.bristolmatrix.shape
         pairedvariables = []
         count = 0        
         for col in transpose(self.bristolmatrix):
             pos = argmax(array(col))
-            pairedvariables.append(outputvars[pos])
-            pairedvariables.append(inputvars[count])
+            pairedvariables.append(self.outputvars[pos])
+            pairedvariables.append(self.inputvars[count])
             count = count+1
         self.pairedvariablesMax = array(pairedvariables).reshape(-1,2)
 
@@ -95,16 +110,16 @@ class RGA:
         """This method determines the best pairings of the RGA. It 
         pairs only variables which are sufficiently decoupled ( >= 0.5 in RGA)"""
         
-        inputvars = vararrs[:numofinputs]        
-        outputvars = vararrs[numofinputs:]
+        self.inputvars = vararrs[:numofinputs]        
+        self.outputvars = vararrs[numofinputs:]
         [r, c] = self.bristolmatrix.shape
         pairedvariables = []
         count = 0
         for col in transpose(self.bristolmatrix):
             pos = argmax(array(col))
             if col[pos] >= 0.5:
-                pairedvariables.append(outputvars[pos])
-                pairedvariables.append(inputvars[count])
+                pairedvariables.append(self.outputvars[pos])
+                pairedvariables.append(self.inputvars[count])
             count = count+1
         self.pairedvariablesHalf = array(pairedvariables).reshape(-1,2)     
         
