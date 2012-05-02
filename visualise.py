@@ -435,8 +435,8 @@ class visualiseOpenLoopSystem:
                 if (self.normalforwardgain.gMatrix[i,j] != 0):
                     temp = self.normalforwardgain.gMatrix[i,j]*self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]]*self.normalforwardgoogle.gMatrix[i,j]
                     
-                    self.edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = -1*round(temp,3)
-                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight = -1*temp)
+                    self.edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = round(2**(-1*temp)*1000,3)
+                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight = 2**(-1*temp) )
          
         plt.figure("Edge Weight Graph")
         if nodepos==None:
@@ -475,79 +475,83 @@ class visualiseOpenLoopSystem:
         Needs dispEigenBlend and calculateEdgeWeights. 
         
         ASSUME: you will always have more than one variable to control!!! (The 
-        the code won't work properly otherwise... """
+        the code won't work properly otherwise... 
         
-        self.calculateAllEdgeWeights() 
+        For large systems a much more memory efficient system needs to be designed"""
         
+        self.calculateAllEdgeWeights()        
         
-#        if variablestocontrol == None:
-#            controlme = self.listofoutputs
-#        else:
-#            controlme = variablestocontrol
-#        #calculate all control permutations
-#        
-#        controllers = self.listofinputs
-#        r = len(controllers)
-#        sequence = permutations(controlme, r)
-#        listofpossiblecontrolpairings = []        
-#        for x in sequence:
-#            temp = []
-#            for y in izip(controllers, x):
-#                temp.append(y)
-#            listofpossiblecontrolpairings.append(temp)
-#            
-#        #the form here is (source, target)
-#        
-#        #remove pairings which have a NaN
-#        reducedlistofcontrolpairings = []
-#        for row in listofpossiblecontrolpairings:
-#            flag = True            
-#            for element in row:
-#                if isnan(self.pathlengthsdict[element]):
-#                    flag = False
-#            if flag:
-#                reducedlistofcontrolpairings.append(row)
-#                
-#        rowsum = []
-#        for x in reducedlistofcontrolpairings:
-#            tempsum = 0
-#            for element in x:
-#                tempsum = tempsum + self.pathlengthsdict[element]
-#            rowsum.append(tempsum)
-#        
-#        indexofminimum = argmin(rowsum)
-#        bestpairs = reducedlistofcontrolpairings[indexofminimum]
-#        
-#        #now plot the best control pairs as in the RGA
-#        P1 = None
-#        P1 = nx.DiGraph()
-#        P1 = self.G.copy() #remember G is the basis graph
-#        
-#        pairlist = []
-#        for element in bestpairs:
-#            pairlist.append((element[1],element[0]))
-#            P1.add_edge(element[1],element[0])
-#        
-#        edgecolorlist = []
-#        for element in P1.edges():
-#            found = 0
-#            for pair in pairlist:
-#                if element==pair:
-#                    found = 1
-#            if found==1:                
-#                edgecolorlist.append("r")
-#            else:
-#                edgecolorlist.append("k")
-#        
-#                
-#        if nodepositions == None:
-#            nodepositions = nx.circular_layout(self.G)
-#        
-#        plt.figure("Best Controller Pairs: Eigenvector Approach")            
-#        nx.draw_networkx(P1, pos=nodepositions)
-#        nx.draw_networkx_edges(P1,pos=nodepositions,width=5.0,edge_color=edgecolorlist, style='solid',alpha=0.5)
-#        nx.draw_networkx_nodes(P1,pos=nodepositions, node_color='y',node_size=900)
-#        plt.axis('off')
+        if variablestocontrol == None:
+            controlme = self.listofoutputs
+        else:
+            controlme = variablestocontrol
+            
+        #calculate all control permutations
+        controllers = self.listofinputs
+        r = len(controllers)
+        sequence = permutations(controlme, r)
+        listofpossiblecontrolpairings = []  
+        for x in sequence:
+            temp = []
+            for y in izip(controllers, x):
+                temp.append(y)
+                
+            listofpossiblecontrolpairings.append(temp)
+            
+        #the form here is (source, target)
+
+        #remove pairings which have a NaN
+        reducedlistofcontrolpairings = []
+        for row in listofpossiblecontrolpairings:
+            flag = True            
+            for element in row:
+                if isnan(self.pathlengthsdict[element]):
+                    flag = False
+            if flag:
+                reducedlistofcontrolpairings.append(row)
+
+        rowsum = []
+        for x in reducedlistofcontrolpairings:
+            tempsum = 0
+            for element in x:
+                tempsum = tempsum + self.pathlengthsdict[element]
+            rowsum.append(tempsum)
+        
+        indexofminimum = argmin(rowsum)
+        bestpairs = reducedlistofcontrolpairings[indexofminimum]
+        
+
+        #not memory intensive
+        #now plot the best control pairs as in the RGA
+        P1 = None
+        P1 = nx.DiGraph()
+        P1 = self.G.copy() #remember G is the basis graph
+        
+        pairlist = []
+        for element in bestpairs:
+            pairlist.append((element[1],element[0]))
+            P1.add_edge(element[1],element[0])
+        
+        edgecolorlist = []
+        for element in P1.edges():
+            found = 0
+            for pair in pairlist:
+                if element==pair:
+                    found = 1
+            if found==1:                
+                edgecolorlist.append("r")
+            else:
+                edgecolorlist.append("k")
+        
+                
+        if nodepositions == None:
+            nodepositions = nx.circular_layout(self.G)
+        
+        plt.figure("Best Controller Pairs: Eigenvector Approach")            
+        nx.draw_networkx(P1, pos=nodepositions)
+        nx.draw_networkx_edges(P1,pos=nodepositions,width=5.0,edge_color=edgecolorlist, style='solid',alpha=0.5)
+        nx.draw_networkx_nodes(P1,pos=nodepositions, node_color='y',node_size=900)
+        plt.axis('off')
         
         
     
