@@ -11,7 +11,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from RGABristol import RGA
 from gainRank import gRanking
-#from operator import itemgetter
+from operator import itemgetter
 from itertools import permutations, izip
 from math import isnan
 
@@ -55,7 +55,7 @@ class visualiseOpenLoopSystem:
     def displayConnectivityAndLocalGains(self, connectionmatrix, localgainmatrix, variablenames, nodepositiondictionary=None):
         """This method should display a graph indicating the connectivity of a
         system as well as the local gains calculated by this class. The default
-        layout is spectral.
+        layout is circular.
         
         It specifically requires an input connection and local gain matrix
         so that you made format them before display. Becareful to make sure
@@ -69,20 +69,22 @@ class visualiseOpenLoopSystem:
         [n, n] = localgainmatrix.shape        
         self.G = nx.DiGraph() #this is convenient
         localgaindict = dict()
+        localgaindictformat = dict()
         for u in range(n):
             for v in range(n):
                 if (connectionmatrix[u,v]==1):
                     self.G.add_edge(variablenames[v], variablenames[u])
                     localgaindict[(variablenames[v],variablenames[u])] = localgainmatrix[u,v]
-    
+                    localgaindictformat[(variablenames[v],variablenames[u])] = round(localgainmatrix[u,v],3)
+                    
         posdict = nodepositiondictionary 
         
         if posdict == None:
-            posdict = nx.spectral_layout(self.G)
+            posdict = nx.circular_layout(self.G)
     
         plt.figure("Web of connectivity and local gains")
         nx.draw_networkx(self.G, pos=posdict)
-        nx.draw_networkx_edge_labels(self.G,pos=posdict,edge_labels=localgaindict,label_pos=0.7)
+        nx.draw_networkx_edge_labels(self.G,pos=posdict,edge_labels=localgaindictformat,label_pos=0.7)
         nx.draw_networkx_edges(self.G,pos=posdict,width=5.0,edge_color='k', style='solid',alpha=0.5)
         nx.draw_networkx_nodes(self.G,pos=posdict, node_color='y',node_size=900)
         plt.axis("off") 
@@ -99,7 +101,7 @@ class visualiseOpenLoopSystem:
             value in each column as a pair.
             
         It has an optional parameter to set node positions. If left out
-        the default node positions will be spectral. """
+        the default node positions will be circular. """
         G1 = None
         G1 = nx.DiGraph()
         G1 = self.G.copy()
@@ -113,7 +115,8 @@ class visualiseOpenLoopSystem:
         else:
             pairingpattern =  self.bristol.pairedvariablesMax
             message = "Maximum RGA Pairings"
-              
+            
+        print(pairingpattern)    
         for row in pairingpattern:
             pairlist.append((row[0],row[1]))
             G1.add_edge(row[0],row[1])
@@ -131,7 +134,7 @@ class visualiseOpenLoopSystem:
         
                 
         if nodepositions == None:
-            nodepositions = nx.spectral_layout(self.G)
+            nodepositions = nx.circular_layout(self.G)
         
         plt.figure(message)            
         nx.draw_networkx(G1, pos=nodepositions)
@@ -184,7 +187,7 @@ class visualiseOpenLoopSystem:
         in terms of node size going FORWARD and using the local gains. 
         
         It has an optional parameter nodepos which sets the positions of the nodes,
-        if left out the node layout defaults to spectral. """
+        if left out the node layout defaults to circular. """
         
         
         rG = nx.DiGraph()
@@ -200,7 +203,7 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.forwardgain.rankDict[var]*10000 for var in rearrange]
         
         if nodepos==None:
-            nodepos = nx.spectral_layout(rG)        
+            nodepos = nx.circular_layout(rG)        
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
@@ -214,7 +217,7 @@ class visualiseOpenLoopSystem:
         i.e. the google rank. 
         
         It has an optional parameter nodepos which sets the positions of the nodes,
-        if left out the node layout defaults to spectral. """
+        if left out the node layout defaults to circular. """
         
         
         rG = nx.DiGraph()
@@ -230,7 +233,7 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.gfgain.rankDict[var]*10000 for var in rearrange]
         
         if nodepos==None:
-            nodepos = nx.spectral_layout(rG)           
+            nodepos = nx.circular_layout(rG)           
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
@@ -244,7 +247,7 @@ class visualiseOpenLoopSystem:
         i.e. the google rank. 
         
         It has an optional parameter nodepos which sets the positions of the nodes,
-        if left out the node layout defaults to spectral. """
+        if left out the node layout defaults to circular. """
         
         
         rG = nx.DiGraph()
@@ -260,7 +263,7 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.gbgain.rankDict[var]*10000 for var in rearrange]
         
         if nodepos==None:
-            nodepos = nx.spectral_layout(rG)           
+            nodepos = nx.circular_layout(rG)           
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
@@ -271,7 +274,7 @@ class visualiseOpenLoopSystem:
         in terms of node size going BACKWARD and using the local gains. 
         
         It has an optional parameter nodepos which sets the positions of the nodes,
-        if left out the node layout defaults to spectral. """
+        if left out the node layout defaults to circular. """
         
         
         rG = nx.DiGraph()
@@ -287,7 +290,7 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.backwardgain.rankDict[var]*10000 for var in rearrange]
         
         if nodepos==None:
-            nodepos = nx.spectral_layout(rG)        
+            nodepos = nx.circular_layout(rG)        
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
@@ -300,7 +303,7 @@ class visualiseOpenLoopSystem:
         scaled) 
         
         It has an optional parameter nodepos which sets the positions of the nodes,
-        if left out the node layout defaults to spectral. """
+        if left out the node layout defaults to circular. """
         
         
         rG = nx.DiGraph()
@@ -316,7 +319,7 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.normalforwardgain.rankDict[var]*10000 for var in rearrange]
         
         if nodepos==None:
-            nodepos = nx.spectral_layout(rG)        
+            nodepos = nx.circular_layout(rG)        
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
@@ -329,7 +332,7 @@ class visualiseOpenLoopSystem:
         scaled) 
         
         It has an optional parameter nodepos which sets the positions of the nodes,
-        if left out the node layout defaults to spectral. """
+        if left out the node layout defaults to circular. """
         
         
         rG = nx.DiGraph()
@@ -345,7 +348,7 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.normalbackwardgain.rankDict[var]*10000 for var in rearrange]
         
         if nodepos==None:
-            nodepos = nx.spectral_layout(rG)        
+            nodepos = nx.circular_layout(rG)        
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
@@ -376,11 +379,16 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.blendedranking[var]*10000 for var in rearrange]
         
         if nodepos==None:
-            nodepos = nx.spectral_layout(rG)        
+            nodepos = nx.circular_layout(rG)        
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
-        plt.axis("off")         
+        plt.axis("off")    
+        #some code for convenience
+#        sortedvariables = sorted(self.blendedranking.iteritems(), key=itemgetter(1), reverse=True)
+#        for line in sortedvariables:
+#            print(line)
+        
 
     def displayEigenRankBlendGoogle(self, nodummyvariablelist, alpha, nodepos=None):
         """This method displays the blended weightings of nodes i.e. it takes
@@ -407,7 +415,7 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.blendedrankingGoogle[var]*10000 for var in rearrange]
         
         if nodepos==None:
-            nodepos = nx.spectral_layout(rG)        
+            nodepos = nx.circular_layout(rG)        
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
@@ -432,7 +440,7 @@ class visualiseOpenLoopSystem:
          
         plt.figure("Edge Weight Graph")
         if nodepos==None:
-            nodepos = nx.spectral_layout(self.P)        
+            nodepos = nx.circular_layout(self.P)        
         
         nx.draw_networkx(self.P, pos=nodepos)
         nx.draw_networkx_edge_labels(self.P,pos=nodepos,edge_labels=self.edgelabels,label_pos=0.3)
@@ -444,10 +452,12 @@ class visualiseOpenLoopSystem:
         """This method should calculate all the edge weights from all variables
         to all inputs.
         
-        This method requires dispEigenWeightsBlend etc..."""
+        This method requires dispEigenWeightsBlend etc...
+        
+        ISSUE: Negative Edge Cycles exist sometimes and this screws everything up...
+        Use Bellman-Ford..."""
         
         self.pathlengthsdict = dict()
-        
         for inlist in self.listofinputs:
             for outlist in self.listofoutputs:
                 if nx.has_path(self.P, inlist, outlist):
@@ -464,78 +474,80 @@ class visualiseOpenLoopSystem:
         the ranking algorithm.
         Needs dispEigenBlend and calculateEdgeWeights. 
         
-        ISSUE: coupling: the default assumes you want to control all variables.
+        ASSUME: you will always have more than one variable to control!!! (The 
+        the code won't work properly otherwise... """
         
-        ASSUME: you will always have more than one variable to control!!!"""
+        self.calculateAllEdgeWeights() 
         
-        if variablestocontrol == None:
-            controlme = self.listofoutputs
-        else:
-            controlme = variablestocontrol
-        #calculate all control permutations
         
-        controllers = self.listofinputs
-        r = len(controllers)
-        sequence = permutations(controlme, r)
-        listofpossiblecontrolpairings = []        
-        for x in sequence:
-            temp = []
-            for y in izip(controllers, x):
-                temp.append(y)
-            listofpossiblecontrolpairings.append(temp)
-            
-        #the form here is (source, target)
-        
-        #remove pairings which have a NaN
-        reducedlistofcontrolpairings = []
-        for row in listofpossiblecontrolpairings:
-            flag = True            
-            for element in row:
-                if isnan(self.pathlengthsdict[element]):
-                    flag = False
-            if flag:
-                reducedlistofcontrolpairings.append(row)
-                
-        rowsum = []
-        for x in reducedlistofcontrolpairings:
-            tempsum = 0
-            for element in x:
-                tempsum = tempsum + self.pathlengthsdict[element]
-            rowsum.append(tempsum)
-        
-        indexofminimum = argmin(rowsum)
-        bestpairs = reducedlistofcontrolpairings[indexofminimum]
-        
-        #now plot the best control pairs as in the RGA
-        P1 = None
-        P1 = nx.DiGraph()
-        P1 = self.G.copy() #remember G is the basis graph
-        
-        pairlist = []
-        for element in bestpairs:
-            pairlist.append((element[1],element[0]))
-            P1.add_edge(element[1],element[0])
-        
-        edgecolorlist = []
-        for element in P1.edges():
-            found = 0
-            for pair in pairlist:
-                if element==pair:
-                    found = 1
-            if found==1:                
-                edgecolorlist.append("r")
-            else:
-                edgecolorlist.append("k")
-        
-                
-        if nodepositions == None:
-            nodepositions = nx.spectral_layout(self.G)
-        
-        plt.figure("Best Controller Pairs: Eigenvector Approach")            
-        nx.draw_networkx(P1, pos=nodepositions)
-        nx.draw_networkx_edges(P1,pos=nodepositions,width=5.0,edge_color=edgecolorlist, style='solid',alpha=0.5)
-        nx.draw_networkx_nodes(P1,pos=nodepositions, node_color='y',node_size=900)
-        plt.axis('off')
+#        if variablestocontrol == None:
+#            controlme = self.listofoutputs
+#        else:
+#            controlme = variablestocontrol
+#        #calculate all control permutations
+#        
+#        controllers = self.listofinputs
+#        r = len(controllers)
+#        sequence = permutations(controlme, r)
+#        listofpossiblecontrolpairings = []        
+#        for x in sequence:
+#            temp = []
+#            for y in izip(controllers, x):
+#                temp.append(y)
+#            listofpossiblecontrolpairings.append(temp)
+#            
+#        #the form here is (source, target)
+#        
+#        #remove pairings which have a NaN
+#        reducedlistofcontrolpairings = []
+#        for row in listofpossiblecontrolpairings:
+#            flag = True            
+#            for element in row:
+#                if isnan(self.pathlengthsdict[element]):
+#                    flag = False
+#            if flag:
+#                reducedlistofcontrolpairings.append(row)
+#                
+#        rowsum = []
+#        for x in reducedlistofcontrolpairings:
+#            tempsum = 0
+#            for element in x:
+#                tempsum = tempsum + self.pathlengthsdict[element]
+#            rowsum.append(tempsum)
+#        
+#        indexofminimum = argmin(rowsum)
+#        bestpairs = reducedlistofcontrolpairings[indexofminimum]
+#        
+#        #now plot the best control pairs as in the RGA
+#        P1 = None
+#        P1 = nx.DiGraph()
+#        P1 = self.G.copy() #remember G is the basis graph
+#        
+#        pairlist = []
+#        for element in bestpairs:
+#            pairlist.append((element[1],element[0]))
+#            P1.add_edge(element[1],element[0])
+#        
+#        edgecolorlist = []
+#        for element in P1.edges():
+#            found = 0
+#            for pair in pairlist:
+#                if element==pair:
+#                    found = 1
+#            if found==1:                
+#                edgecolorlist.append("r")
+#            else:
+#                edgecolorlist.append("k")
+#        
+#                
+#        if nodepositions == None:
+#            nodepositions = nx.circular_layout(self.G)
+#        
+#        plt.figure("Best Controller Pairs: Eigenvector Approach")            
+#        nx.draw_networkx(P1, pos=nodepositions)
+#        nx.draw_networkx_edges(P1,pos=nodepositions,width=5.0,edge_color=edgecolorlist, style='solid',alpha=0.5)
+#        nx.draw_networkx_nodes(P1,pos=nodepositions, node_color='y',node_size=900)
+#        plt.axis('off')
         
         
     
