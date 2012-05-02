@@ -11,20 +11,21 @@ from localGainCalculator import localgains
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 'b'
+testcase = 'a'
 dispRGA = False
 dispEigenForwardAndBackward = False
 dispEigenBlend = True
 dispEdgeWeight = True
+dispBestControl = True
 
 if testcase == 'a':
 
 
-    """This is btest1 and its variations (to be added later)"""
+    """This is btest1"""
     
     test = formatmatrix("btest1.csv", "btest1ObviousConnections.txt", 3,0)
     
-    test2 = visualiseOpenLoopSystem(test.nodummyvariablelist, test.nodummydiff, 2,test.scaledforwardgain, test.scaledforwardconnection, test.scaledforwardvariablelist, test.scaledbackwardgain, test.scaledbackwardconnection, test.scaledbackwardvariablelist, test.nodummygain, test.nodummyconnection, test.nodummyvariablelist, [2, 3])
+    test2 = visualiseOpenLoopSystem(test.nodummyvariablelist, test.nodummydiff, 2,test.scaledforwardgain, test.scaledforwardconnection, test.scaledforwardvariablelist, test.scaledbackwardgain, test.scaledbackwardconnection, test.scaledbackwardvariablelist, test.nodummygain, test.nodummyconnection, ['v3', 'v4'])
     
     
     nodepos = {test.nodummyvariablelist[0]: array([1,1]), test.nodummyvariablelist[1]: array([1,2]), test.nodummyvariablelist[2]: array([4,1]), test.nodummyvariablelist[3]: array([4,2])}
@@ -51,6 +52,11 @@ if testcase == 'a':
         
     if dispEdgeWeight & dispEigenBlend:
         test2.displayEdgeWeights(nodepos)
+        test2.calculateAllEdgeWeights()
+    
+    if dispBestControl:
+        test2.calculateAndDisplayBestControl(2,nodepositions=nodepos)        
+        
     
     test2.showAll()
 
@@ -60,7 +66,7 @@ if testcase == 'b':
     
     test = formatmatrix("btest2.csv", "btest2GreedyConnections.txt", 3,0)
     
-    test2 = visualiseOpenLoopSystem(test.nodummyvariablelist, test.nodummydiff, 2,test.scaledforwardgain, test.scaledforwardconnection, test.scaledforwardvariablelist, test.scaledbackwardgain, test.scaledbackwardconnection, test.scaledbackwardvariablelist, test.nodummygain, test.nodummyconnection, test.nodummyvariablelist, [3, 4]) 
+    test2 = visualiseOpenLoopSystem(test.nodummyvariablelist, test.nodummydiff, 2,test.scaledforwardgain, test.scaledforwardconnection, test.scaledforwardvariablelist, test.scaledbackwardgain, test.scaledbackwardconnection, test.scaledbackwardvariablelist, test.nodummygain, test.nodummyconnection, ['v4','v5']) 
     
     nodepos = {'v1': array([0.5,2]), 'v2': array([0.5,1]), 'v3' : array([7,2]), 'v4': array([7,1]), 'v5' : array([10,1.5])}
     
@@ -90,7 +96,11 @@ if testcase == 'b':
     
     if dispEdgeWeight & dispEigenBlend:
         test2.displayEdgeWeights(nodepos)
-    
+        test2.calculateAllEdgeWeights()
+
+    if dispBestControl:
+        test2.calculateAndDisplayBestControl(2, nodepositions = nodepos)
+        
     test2.showAll()
     
     
