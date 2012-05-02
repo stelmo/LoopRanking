@@ -6,28 +6,34 @@ Created on Sun Apr 15 14:52:25 2012
 """
 
 """Import classes"""
-from numpy import array, transpose, zeros, hstack
-import numpy as np
+from numpy import array, transpose
 import networkx as nx
 import matplotlib.pyplot as plt
 from RGABristol import RGA
 from gainRank import gRanking
+from operator import itemgetter
+from itertools import permutations
 
 
 class visualiseOpenLoopSystem:
-    """This class will:
+    """The class name is not strictly speaking accurate as some calculations are 
+    also done herein.
+    This class will:
         1) Visualise the connectivity and local gain information
         2) Visualise the results of the RGA method
-        3)  Visualise the results of the eigen-vector approach method"""
+        3) Visualise the results of the eigen-vector approach method
+        4) Calculate the edge-weights based on the algorithm
+        5) Calculate and display the best pairing scheme according to the
+            eigen-method"""
     
-    def __init__(self, variables, localdiff, numberofinputs, fgainmatrix, fconnectionmatrix, fvariablenames, bgainmatrix, bconnectionmatrix, bvariablenames, normalgains, normalconnections, normalvariablenames, controlpositions = None):
+    def __init__(self, variables, localdiff, numberofinputs, fgainmatrix, fconnectionmatrix, fvariablenames, bgainmatrix, bconnectionmatrix, bvariablenames, normalgains, normalconnections, controlvarsforRGA = None):
         """This constructor will create an RGABristol object so that you simply
         have to call the display method to see which pairings should be made.
         
         It will also create 6 different ranking systems. Note that variablenames
         is not the same as variables!! There is a formatting difference. """
         
-        self.bristol = RGA(variables, localdiff, numberofinputs, controlpositions)
+        self.bristol = RGA(variables, localdiff, numberofinputs, controlvarsforRGA)
         
         self.forwardgain = gRanking(self.normaliseMatrix(fgainmatrix), fvariablenames)
         self.gfgain = gRanking(self.normaliseMatrix(fconnectionmatrix), fvariablenames)        
@@ -35,9 +41,12 @@ class visualiseOpenLoopSystem:
         self.backwardgain = gRanking(self.normaliseMatrix(bgainmatrix), bvariablenames)
         self.gbgain = gRanking(self.normaliseMatrix(bconnectionmatrix), bvariablenames)
         
-        self.normalforwardgain = gRanking(self.normaliseMatrix(normalgains), normalvariablenames)
-        self.normalbackwardgain = gRanking(self.normaliseMatrix(transpose(normalgains)), normalvariablenames)
-        self.normalforwardgoogle = gRanking(self.normaliseMatrix(normalconnections), normalvariablenames)
+        self.normalforwardgain = gRanking(self.normaliseMatrix(normalgains), variables)
+        self.normalbackwardgain = gRanking(self.normaliseMatrix(transpose(normalgains)), variables)
+        self.normalforwardgoogle = gRanking(self.normaliseMatrix(normalconnections), variables)
+        
+        self.listofinputs = variables[:numberofinputs]
+        self.listofoutputs = variables[numberofinputs:]
         
     
     def displayConnectivityAndLocalGains(self, connectionmatrix, localgainmatrix, variablenames, nodepositiondictionary=None):
@@ -74,7 +83,6 @@ class visualiseOpenLoopSystem:
         nx.draw_networkx_edges(self.G,pos=posdict,width=5.0,edge_color='k', style='solid',alpha=0.5)
         nx.draw_networkx_nodes(self.G,pos=posdict, node_color='y',node_size=900)
         plt.axis("off") 
-        print(localgaindict)
         
     def displayRGA(self,pairingoption = 1, nodepositions = None):
         """This method will display the RGA pairings.
@@ -146,104 +154,12 @@ class visualiseOpenLoopSystem:
         
         plt.show()
         
-
-    def displayEigenRankBlend(self, nodummyvariablelist, alpha, nodepos=None):
-        """This method displays the blended weightings of nodes i.e. it takes
-        both forward and backward rankings into account.
-        
-        Note that this is purely ranking i.e. the standard google rankings do
-        not come into play yet."""
-        
-        self.blendedranking = dict()
-        for variable in nodummyvariablelist:
-            self.blendedranking[variable] = (1-alpha)*self.forwardgain.rankDict[variable] + (alpha)*self.backwardgain.rankDict[variable]
-            
-        
-        rG = nx.DiGraph()
-        for i in range(self.normalforwardgain.n):
-            for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i,j] != 0):
-                    rG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
-         
-         
-        plt.figure("Blended Node Rankings")
-        rearrange = rG.nodes()
-        nodelabels = dict((n, [n, round(self.blendedranking[n], 3)]) for n in rG.nodes())
-        sizeArray = [self.blendedranking[var]*10000 for var in rearrange]
-        
-        if nodepos==None:
-            nodepos = nx.spectral_layout(rG)        
-        
-        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
-        nx.draw_networkx_edges(rG, pos=nodepos)
-        plt.axis("off")         
-
-    def displayEigenRankBlendGoogle(self, nodummyvariablelist, alpha, nodepos=None):
-        """This method displays the blended weightings of nodes i.e. it takes
-        both forward and backward rankings into account.
-        
-        Note that this is purely ranking i.e. the standard google rankings do
-        not come into play yet."""
-        
-        self.blendedrankingGoogle = dict()
-        for variable in nodummyvariablelist:
-            self.blendedrankingGoogle[variable] = (1-alpha)*self.gfgain.rankDict[variable] + (alpha)*self.gbgain.rankDict[variable]
-            
-        
-        rG = nx.DiGraph()
-        for i in range(self.normalforwardgain.n):
-            for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i,j] != 0):
-                    rG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
-         
-         
-        plt.figure("Blended Node Rankings: Google")
-        rearrange = rG.nodes()
-        nodelabels = dict((n, [n, round(self.blendedrankingGoogle[n], 3)]) for n in rG.nodes())
-        sizeArray = [self.blendedrankingGoogle[var]*10000 for var in rearrange]
-        
-        if nodepos==None:
-            nodepos = nx.spectral_layout(rG)        
-        
-        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
-        nx.draw_networkx_edges(rG, pos=nodepos)
-        plt.axis("off")         
-        
-    def displayEdgeWeights(self, nodepos=None):
-        """This method will compute and store the edge weights of the ranking web.
-        
-        It *NEEDS* the methods displayEigenBlend and displayEigenBlendGoogle to have
-        been run!"""      
-                
-        self.P = nx.DiGraph()
-        edgelabels = dict()
-        
-        for i in range(self.normalforwardgain.n):
-            for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i,j] != 0):
-                    temp = self.normalforwardgain.gMatrix[i,j]*self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]]*self.normalforwardgoogle.gMatrix[i,j]
-                    
-                    edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = temp
-                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight = temp)
-         
-        plt.figure("Edge Weight Graph")
-        print(edgelabels)
-        if nodepos==None:
-            nodepos = nx.spectral_layout(self.P)        
-        
-        nx.draw_networkx(self.P, pos=nodepos)
-        nx.draw_networkx_edge_labels(self.P,pos=nodepos,edge_labels=edgelabels,label_pos=0.5)
-        nx.draw_networkx_edges(self.P,pos=nodepos,width=5.0,edge_color='k', style='solid',alpha=0.5)
-        nx.draw_networkx_nodes(self.P,pos=nodepos, node_color='y',node_size=900)        
-        plt.axis("off") 
-        
-    
-    
     def normaliseMatrix(self,inputmatrix):
         """This method normalises the absolute value of the input matrix
         in the columns i.e. all columns will sum to 1
         
-        It also appears in localGainCalculator but not for long! Unless I forget about it..."""
+        It also appears in localGainCalculator but not for long! Unless I forget
+        about it..."""
         
         [r, c] = inputmatrix.shape
         inputmatrix = abs(inputmatrix) #doesnt affect eigen
@@ -430,7 +346,143 @@ class visualiseOpenLoopSystem:
         
         nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
         nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off") 
+        
+    def displayEigenRankBlend(self, nodummyvariablelist, alpha, nodepos=None):
+        """This method displays the blended weightings of nodes i.e. it takes
+        both forward and backward rankings into account.
+        
+        Note that this is purely ranking i.e. the standard google rankings do
+        not come into play yet."""
+        
+        self.blendedranking = dict()
+        for variable in nodummyvariablelist:
+            self.blendedranking[variable] = (1-alpha)*self.forwardgain.rankDict[variable] + (alpha)*self.backwardgain.rankDict[variable]
+            
+        
+        rG = nx.DiGraph()
+        for i in range(self.normalforwardgain.n):
+            for j in range(self.normalforwardgain.n):
+                if (self.normalforwardgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
+         
+         
+        plt.figure("Blended Node Rankings")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.blendedranking[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.blendedranking[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)        
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
         plt.axis("off")         
+
+    def displayEigenRankBlendGoogle(self, nodummyvariablelist, alpha, nodepos=None):
+        """This method displays the blended weightings of nodes i.e. it takes
+        both forward and backward rankings into account.
+        
+        Note that this is purely ranking i.e. the standard google rankings do
+        not come into play yet."""
+        
+        self.blendedrankingGoogle = dict()
+        for variable in nodummyvariablelist:
+            self.blendedrankingGoogle[variable] = (1-alpha)*self.gfgain.rankDict[variable] + (alpha)*self.gbgain.rankDict[variable]
+            
+        
+        rG = nx.DiGraph()
+        for i in range(self.normalforwardgain.n):
+            for j in range(self.normalforwardgain.n):
+                if (self.normalforwardgain.gMatrix[i,j] != 0):
+                    rG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
+         
+         
+        plt.figure("Blended Node Rankings: Google")
+        rearrange = rG.nodes()
+        nodelabels = dict((n, [n, round(self.blendedrankingGoogle[n], 3)]) for n in rG.nodes())
+        sizeArray = [self.blendedrankingGoogle[var]*10000 for var in rearrange]
+        
+        if nodepos==None:
+            nodepos = nx.spectral_layout(rG)        
+        
+        nx.draw_networkx(rG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx_edges(rG, pos=nodepos)
+        plt.axis("off")         
+        
+    def displayEdgeWeights(self, nodepos=None):
+        """This method will compute and store the edge weights of the ranking web.
+        
+        It *NEEDS* the methods displayEigenBlend and displayEigenBlendGoogle to have
+        been run!"""      
+                
+        self.P = nx.DiGraph()
+        self.edgelabels = dict()
+        
+        for i in range(self.normalforwardgain.n):
+            for j in range(self.normalforwardgain.n):
+                if (self.normalforwardgain.gMatrix[i,j] != 0):
+                    temp = self.normalforwardgain.gMatrix[i,j]*self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]]*self.normalforwardgoogle.gMatrix[i,j]
+                    
+                    self.edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = -1*round(temp,3)
+                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight = -1*temp)
+         
+        plt.figure("Edge Weight Graph")
+        if nodepos==None:
+            nodepos = nx.spectral_layout(self.P)        
+        
+        nx.draw_networkx(self.P, pos=nodepos)
+        nx.draw_networkx_edge_labels(self.P,pos=nodepos,edge_labels=self.edgelabels,label_pos=0.5)
+        nx.draw_networkx_edges(self.P,pos=nodepos,width=5.0,edge_color='k', style='solid',alpha=0.5)
+        nx.draw_networkx_nodes(self.P,pos=nodepos, node_color='y',node_size=900)        
+        plt.axis("off") 
+        
+    def calculateAllEdgeWeights(self):
+        """This method should calculate all the edge weights from all variables
+        to all inputs.
+        
+        This method requires dispEigenWeightsBlend etc..."""
+        
+        self.pathlengthsdict = dict()
+        
+        for inlist in self.listofinputs:
+            for outlist in self.listofoutputs:
+                if nx.has_path(self.P, inlist, outlist):
+                    plen = nx.shortest_path_length(self.P, inlist, outlist, weight='weight')
+                    self.pathlengthsdict[(inlist, outlist)] = plen
+                else:
+                    self.pathlengthsdict[(inlist, outlist)] = float('nan')
+        print(self.pathlengthsdict)           
+
+    def calculateBestControl(self,  numberofinputs, variablestocontrol=None):
+        """This method should calculate the best possible control settings i.e.
+        which variables to pair with which other variables.
+        The default tries to control the most important variables according to
+        the ranking algorithm.
+        Needs dispEigenBlend and calculateEdgeWeights. 
+        
+        ISSUE: coupling: the default assumes you want to control all variables"""
+        
+        if variablestocontrol == None:
+            #get ordered variable rankings
+            orderedvariablerankings = sorted(self.blendedranking.items(), key=itemgetter(1), reverse=True)
+            controlme = []
+            for index in range(numberofinputs):
+                controlme.append(orderedvariablerankings[index][0]) #strip tuple such that only variable remains
+        else:
+            controlme = variablestocontrol
+        #calculate all control permutations
+        
+        controllers = self.listofinputs
+        r = len(controllers)
+        sequence = permutations(controlme, r)
+        print(controlme)
+        print(controllers)
+         
+        
+        
+    
+        
         
         
         
