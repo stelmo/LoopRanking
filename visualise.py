@@ -6,13 +6,14 @@ Created on Sun Apr 15 14:52:25 2012
 """
 
 """Import classes"""
-from numpy import array, transpose
+from numpy import array, transpose, argmin
 import networkx as nx
 import matplotlib.pyplot as plt
 from RGABristol import RGA
 from gainRank import gRanking
-from operator import itemgetter
-from itertools import permutations
+#from operator import itemgetter
+from itertools import permutations, izip
+from math import isnan
 
 
 class visualiseOpenLoopSystem:
@@ -31,7 +32,9 @@ class visualiseOpenLoopSystem:
         have to call the display method to see which pairings should be made.
         
         It will also create 6 different ranking systems. Note that variablenames
-        is not the same as variables!! There is a formatting difference. """
+        is not the same as variables!! There is a formatting difference. 
+        
+        ASSUME: the first rows are the inputs up to numberofinputs"""
         
         self.bristol = RGA(variables, localdiff, numberofinputs, controlvarsforRGA)
         
@@ -432,7 +435,7 @@ class visualiseOpenLoopSystem:
             nodepos = nx.spectral_layout(self.P)        
         
         nx.draw_networkx(self.P, pos=nodepos)
-        nx.draw_networkx_edge_labels(self.P,pos=nodepos,edge_labels=self.edgelabels,label_pos=0.5)
+        nx.draw_networkx_edge_labels(self.P,pos=nodepos,edge_labels=self.edgelabels,label_pos=0.3)
         nx.draw_networkx_edges(self.P,pos=nodepos,width=5.0,edge_color='k', style='solid',alpha=0.5)
         nx.draw_networkx_nodes(self.P,pos=nodepos, node_color='y',node_size=900)        
         plt.axis("off") 
@@ -452,23 +455,21 @@ class visualiseOpenLoopSystem:
                     self.pathlengthsdict[(inlist, outlist)] = plen
                 else:
                     self.pathlengthsdict[(inlist, outlist)] = float('nan')
-        print(self.pathlengthsdict)           
+        #print(self.pathlengthsdict)           
 
-    def calculateBestControl(self,  numberofinputs, variablestocontrol=None):
+    def calculateAndDisplayBestControl(self,  numberofinputs, variablestocontrol=None, nodepositions=None):
         """This method should calculate the best possible control settings i.e.
         which variables to pair with which other variables.
         The default tries to control the most important variables according to
         the ranking algorithm.
         Needs dispEigenBlend and calculateEdgeWeights. 
         
-        ISSUE: coupling: the default assumes you want to control all variables"""
+        ISSUE: coupling: the default assumes you want to control all variables.
+        
+        ASSUME: you will always have more than one variable to control!!!"""
         
         if variablestocontrol == None:
-            #get ordered variable rankings
-            orderedvariablerankings = sorted(self.blendedranking.items(), key=itemgetter(1), reverse=True)
-            controlme = []
-            for index in range(numberofinputs):
-                controlme.append(orderedvariablerankings[index][0]) #strip tuple such that only variable remains
+            controlme = self.listofoutputs
         else:
             controlme = variablestocontrol
         #calculate all control permutations
@@ -476,9 +477,65 @@ class visualiseOpenLoopSystem:
         controllers = self.listofinputs
         r = len(controllers)
         sequence = permutations(controlme, r)
-        print(controlme)
-        print(controllers)
-         
+        listofpossiblecontrolpairings = []        
+        for x in sequence:
+            temp = []
+            for y in izip(controllers, x):
+                temp.append(y)
+            listofpossiblecontrolpairings.append(temp)
+            
+        #the form here is (source, target)
+        
+        #remove pairings which have a NaN
+        reducedlistofcontrolpairings = []
+        for row in listofpossiblecontrolpairings:
+            flag = True            
+            for element in row:
+                if isnan(self.pathlengthsdict[element]):
+                    flag = False
+            if flag:
+                reducedlistofcontrolpairings.append(row)
+                
+        rowsum = []
+        for x in reducedlistofcontrolpairings:
+            tempsum = 0
+            for element in x:
+                tempsum = tempsum + self.pathlengthsdict[element]
+            rowsum.append(tempsum)
+        
+        indexofminimum = argmin(rowsum)
+        bestpairs = reducedlistofcontrolpairings[indexofminimum]
+        
+        #now plot the best control pairs as in the RGA
+        P1 = None
+        P1 = nx.DiGraph()
+        P1 = self.G.copy() #remember G is the basis graph
+        
+        pairlist = []
+        for element in bestpairs:
+            pairlist.append((element[1],element[0]))
+            P1.add_edge(element[1],element[0])
+        
+        edgecolorlist = []
+        for element in P1.edges():
+            found = 0
+            for pair in pairlist:
+                if element==pair:
+                    found = 1
+            if found==1:                
+                edgecolorlist.append("r")
+            else:
+                edgecolorlist.append("k")
+        
+                
+        if nodepositions == None:
+            nodepositions = nx.spectral_layout(self.G)
+        
+        plt.figure("Best Controller Pairs: Eigenvector Approach")            
+        nx.draw_networkx(P1, pos=nodepositions)
+        nx.draw_networkx_edges(P1,pos=nodepositions,width=5.0,edge_color=edgecolorlist, style='solid',alpha=0.5)
+        nx.draw_networkx_nodes(P1,pos=nodepositions, node_color='y',node_size=900)
+        plt.axis('off')
         
         
     
