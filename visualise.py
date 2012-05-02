@@ -435,8 +435,8 @@ class visualiseOpenLoopSystem:
                 if (self.normalforwardgain.gMatrix[i,j] != 0):
                     temp = self.normalforwardgain.gMatrix[i,j]*self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]]*self.normalforwardgoogle.gMatrix[i,j]
                     
-                    self.edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = round(2**(-1*temp)*1000,3)
-                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight = 2**(-1*temp) )
+                    self.edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = -1*temp
+                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight = -1*temp )
          
         plt.figure("Edge Weight Graph")
         if nodepos==None:
@@ -490,45 +490,33 @@ class visualiseOpenLoopSystem:
         controllers = self.listofinputs
         r = len(controllers)
         sequence = permutations(controlme, r)
-        listofpossiblecontrolpairings = []  
+        prevbestconfig = []
+        prevrowsum = 10000000000000000000        
         for x in sequence:
-            temp = []
+            possiblepairing = []
             for y in izip(controllers, x):
-                temp.append(y)
-                
-            listofpossiblecontrolpairings.append(temp)
-            
-        #the form here is (source, target)
-
-        #remove pairings which have a NaN
-        reducedlistofcontrolpairings = []
-        for row in listofpossiblecontrolpairings:
-            flag = True            
-            for element in row:
+                possiblepairing.append(y)
+            #now you have a possible pairing config   
+            flag = True #initialise flag variable to remove NaN          
+            for element in possiblepairing:
                 if isnan(self.pathlengthsdict[element]):
-                    flag = False
-            if flag:
-                reducedlistofcontrolpairings.append(row)
-
-        rowsum = []
-        for x in reducedlistofcontrolpairings:
-            tempsum = 0
-            for element in x:
-                tempsum = tempsum + self.pathlengthsdict[element]
-            rowsum.append(tempsum)
+                    flag = False #check to see if control config is possible
+            if flag: #if control config is possible
+                rowsum = 0
+                for element in possiblepairing:
+                    rowsum = rowsum + self.pathlengthsdict[element]
+            if rowsum < prevrowsum:
+                prevbestconfig = possiblepairing
+                prevrowsum = rowsum
+           
         
-        indexofminimum = argmin(rowsum)
-        bestpairs = reducedlistofcontrolpairings[indexofminimum]
-        
-
-        #not memory intensive
         #now plot the best control pairs as in the RGA
         P1 = None
         P1 = nx.DiGraph()
         P1 = self.G.copy() #remember G is the basis graph
         
         pairlist = []
-        for element in bestpairs:
+        for element in prevbestconfig:
             pairlist.append((element[1],element[0]))
             P1.add_edge(element[1],element[0])
         
