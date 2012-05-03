@@ -85,8 +85,8 @@ class visualiseOpenLoopSystem:
         plt.figure("Web of connectivity and local gains")
         nx.draw_networkx(self.G, pos=posdict)
         nx.draw_networkx_edge_labels(self.G,pos=posdict,edge_labels=localgaindictformat,label_pos=0.7)
-        nx.draw_networkx_edges(self.G,pos=posdict,width=5.0,edge_color='k', style='solid',alpha=0.5)
-        nx.draw_networkx_nodes(self.G,pos=posdict, node_color='y',node_size=900)
+        nx.draw_networkx_edges(self.G,pos=posdict,width=2.5,edge_color='k', style='solid',alpha=0.15)
+        nx.draw_networkx_nodes(self.G,pos=posdict, node_color='y',node_size=450)
         plt.axis("off") 
         
     def displayRGA(self,pairingoption = 1, nodepositions = None):
@@ -138,8 +138,8 @@ class visualiseOpenLoopSystem:
         
         plt.figure(message)            
         nx.draw_networkx(G1, pos=nodepositions)
-        nx.draw_networkx_edges(G1,pos=nodepositions,width=5.0,edge_color=edgecolorlist, style='solid',alpha=0.5)
-        nx.draw_networkx_nodes(G1,pos=nodepositions, node_color='y',node_size=900)
+        nx.draw_networkx_edges(G1,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.15)
+        nx.draw_networkx_nodes(G1,pos=nodepositions, node_color='y',node_size=450)
         plt.axis('off')
         
     def displayRGAmatrix(self):
@@ -444,8 +444,8 @@ class visualiseOpenLoopSystem:
         
         nx.draw_networkx(self.P, pos=nodepos)
         nx.draw_networkx_edge_labels(self.P,pos=nodepos,edge_labels=self.edgelabels,label_pos=0.3)
-        nx.draw_networkx_edges(self.P,pos=nodepos,width=5.0,edge_color='k', style='solid',alpha=0.5)
-        nx.draw_networkx_nodes(self.P,pos=nodepos, node_color='y',node_size=900)        
+        nx.draw_networkx_edges(self.P,pos=nodepos,width=2.5,edge_color='k', style='solid',alpha=0.15)
+        nx.draw_networkx_nodes(self.P,pos=nodepos, node_color='y',node_size=450)        
         plt.axis("off") 
         
     def createPairingDict(self, variablestocontrol=None):
@@ -572,7 +572,7 @@ class visualiseOpenLoopSystem:
             
             
         for x in prevbestconfig:
-            print(x)      
+            print(x)
         
         #now plot the best control pairs as in the RGA
         P1 = None
@@ -601,6 +601,6 @@ class visualiseOpenLoopSystem:
         
         plt.figure("Best Controller Pairs: Eigenvector Approach")            
         nx.draw_networkx(P1, pos=nodepositions)
-        nx.draw_networkx_edges(P1,pos=nodepositions,width=5.0,edge_color=edgecolorlist, style='solid',alpha=0.5)
-        nx.draw_networkx_nodes(P1,pos=nodepositions, node_color='y',node_size=900)
+        nx.draw_networkx_edges(P1,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.15)
+        nx.draw_networkx_nodes(P1,pos=nodepositions, node_color='y',node_size=450)
         plt.axis('off')
