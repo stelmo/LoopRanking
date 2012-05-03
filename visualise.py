@@ -6,14 +6,14 @@ Created on Sun Apr 15 14:52:25 2012
 """
 
 """Import classes"""
-from numpy import array, transpose, argmin
+from numpy import array, transpose
 import networkx as nx
 import matplotlib.pyplot as plt
 from RGABristol import RGA
 from gainRank import gRanking
 from operator import itemgetter
-from itertools import permutations, izip
-from math import isnan
+#from itertools import permutations, izip
+#from math import isnan
 
 
 class visualiseOpenLoopSystem:
@@ -435,7 +435,7 @@ class visualiseOpenLoopSystem:
                 if (self.normalforwardgain.gMatrix[i,j] != 0):
                     temp = self.normalforwardgain.gMatrix[i,j]*self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]]*self.normalforwardgoogle.gMatrix[i,j]
                     
-                    self.edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = -1*temp
+                    self.edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = round(-1*temp,4)
                     self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight = -1*temp )
          
         plt.figure("Edge Weight Graph")
@@ -448,26 +448,52 @@ class visualiseOpenLoopSystem:
         nx.draw_networkx_nodes(self.P,pos=nodepos, node_color='y',node_size=900)        
         plt.axis("off") 
         
-    def calculateAllEdgeWeights(self):
-        """This method should calculate all the edge weights from all variables
-        to all inputs.
+    def createPairingDict(self, variablestocontrol=None):
+        """This method should create a dictionary with every pairing as a distinct key
+        and the min path edge weight sum the value.
         
-        This method requires dispEigenWeightsBlend etc...
+        This method requires dispEigenWeightsBlend etc..."""
+        #recursive method to return all the possible paths by traveling to a node
+        #only once
+        def getAllTours(graph, startnode, endnode, path=[]):
+            path = path + [startnode]
+            if startnode == endnode:
+                return [path]
+            if startnode not in nx.nodes(graph):
+                return []
+            paths = []
+            for node in nx.neighbors(graph, startnode):
+                if node not in path:
+                    newpaths = getAllTours(graph, node, endnode, path)
+                    for newpath in newpaths:
+                        paths.append(newpath)
+                        
+            return paths
         
-        ISSUE: Negative Edge Cycles exist sometimes and this screws everything up...
-        Use Bellman-Ford..."""
-        
-        self.pathlengthsdict = dict()
-        for inlist in self.listofinputs:
-            for outlist in self.listofoutputs:
-                if nx.has_path(self.P, inlist, outlist):
-                    plen = nx.shortest_path_length(self.P, inlist, outlist, weight='weight')
-                    self.pathlengthsdict[(inlist, outlist)] = plen
-                else:
-                    self.pathlengthsdict[(inlist, outlist)] = float('nan')
-        #print(self.pathlengthsdict)           
+        #this sub-method will calculate the minimum path length between 2 nodes
+        def calculateMinTour(graph, inputnode, outputnode):
+            listofpossibletours = getAllTours(graph, inputnode, outputnode)
+            minweight = float('inf')    
+            for possibility in listofpossibletours:
+                pathweight = 0
+                for node in range(len(possibility)-1):
+                    pathweight = pathweight + graph[possibility[node]][possibility[node+1]]['weight']
+                if pathweight < minweight:
+                    minweight = pathweight
+            return minweight   
+   
+        if variablestocontrol == None:
+            controlme = self.listofoutputs
+        else:
+            controlme = variablestocontrol
 
-    def calculateAndDisplayBestControl(self,  numberofinputs, variablestocontrol=None, nodepositions=None):
+        self.pathlengthsdict = dict()
+        for x in self.listofinputs:
+            for y in controlme:
+                self.pathlengthsdict[(x,y)] = calculateMinTour(self.P, x, y)
+
+
+    def calculateAndDisplayBestControl(self, variablestocontrol=None, nodepositions=None):
         """This method should calculate the best possible control settings i.e.
         which variables to pair with which other variables.
         The default tries to control the most important variables according to
@@ -479,36 +505,74 @@ class visualiseOpenLoopSystem:
         
         For large systems a much more memory efficient system needs to be designed"""
         
-        self.calculateAllEdgeWeights()        
+        self.createPairingDict(variablestocontrol)          
+        print("Pair Dictionary Created")        
         
         if variablestocontrol == None:
             controlme = self.listofoutputs
         else:
             controlme = variablestocontrol
             
+        """Unfortunately, this method is not suitable for large systems. """            
         #calculate all control permutations
-        controllers = self.listofinputs
-        r = len(controllers)
-        sequence = permutations(controlme, r)
+#        controllers = self.listofinputs
+#        r = len(controllers)
+#        sequence = permutations(controlme, r)
+#        prevbestconfig = []
+#        prevrowsum = float('inf')  
+#        rowsum = 0
+#        print("start itertions")
+#        for x in sequence:
+#            possiblepairing = []
+#            for y in izip(controllers, x):
+#                possiblepairing.append(y)
+#                rowsum = rowsum + self.pathlengthsdict[y]
+#                if (rowsum == float('inf')):
+#                    break
+#            if rowsum < prevrowsum:
+#                print(rowsum)
+#                prevbestconfig = possiblepairing
+#                prevrowsum = rowsum
+#            rowsum = 0
+#        print(prevbestconfig)
+        
+        """A more and less reasonable method to determine best pairs"""
         prevbestconfig = []
-        prevrowsum = 10000000000000000000        
-        for x in sequence:
-            possiblepairing = []
-            for y in izip(controllers, x):
-                possiblepairing.append(y)
-            #now you have a possible pairing config   
-            flag = True #initialise flag variable to remove NaN          
-            for element in possiblepairing:
-                if isnan(self.pathlengthsdict[element]):
-                    flag = False #check to see if control config is possible
-            if flag: #if control config is possible
-                rowsum = 0
-                for element in possiblepairing:
-                    rowsum = rowsum + self.pathlengthsdict[element]
-            if rowsum < prevrowsum:
-                prevbestconfig = possiblepairing
-                prevrowsum = rowsum
-           
+        rankingsdesc = [x[0] for x in sorted(self.blendedranking.iteritems(), key=itemgetter(1),reverse=True)]
+        controldesc = [y for y in rankingsdesc if y in controlme]
+        flag = 1
+        #some housekeeping above
+
+        
+        for x in controldesc:
+            minpath = float('inf')
+            contr = []            
+            flag2 = False
+            
+            for y in self.pathlengthsdict.keys():
+
+                if x in y and minpath > self.pathlengthsdict[y]:
+                    minpath = self.pathlengthsdict[y]
+                    contr = y
+                    flag2 = True
+                    
+            if flag2:        
+                prevbestconfig.append(contr)
+                inputdelete = contr
+                
+                for z in self.pathlengthsdict.keys(): #this deletes all occurences of the manipulated variable you are using
+                    if inputdelete[0] in z or inputdelete[1] in z:
+                        del self.pathlengthsdict[z]
+                    
+            
+                flag +=1
+                if (flag > len(self.listofinputs)):
+                    break          
+            
+            
+            
+        for x in prevbestconfig:
+            print(x)      
         
         #now plot the best control pairs as in the RGA
         P1 = None
@@ -540,10 +604,3 @@ class visualiseOpenLoopSystem:
         nx.draw_networkx_edges(P1,pos=nodepositions,width=5.0,edge_color=edgecolorlist, style='solid',alpha=0.5)
         nx.draw_networkx_nodes(P1,pos=nodepositions, node_color='y',node_size=900)
         plt.axis('off')
-        
-        
-    
-        
-        
-        
-        
