@@ -7,12 +7,11 @@ Created on Sun Apr 15 13:34:20 2012
 
 from formatmatrices import formatmatrix
 from numpy import array
-from localGainCalculator import localgains
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 'a'
-dispRGA = False
+testcase = 't'
+dispRGA = True
 dispEigenForwardAndBackward = False
 dispEigenBlend = True
 dispEdgeWeight = True
@@ -52,10 +51,9 @@ if testcase == 'a':
         
     if dispEdgeWeight & dispEigenBlend:
         test2.displayEdgeWeights(nodepos)
-        test2.calculateAllEdgeWeights()
     
-    if dispBestControl:
-        test2.calculateAndDisplayBestControl(2,nodepositions=nodepos)        
+    if dispBestControl & dispEdgeWeight & dispEigenBlend:
+        test2.calculateAndDisplayBestControl(nodepositions=nodepos)        
         
     
     test2.showAll()
@@ -96,12 +94,54 @@ if testcase == 'b':
     
     if dispEdgeWeight & dispEigenBlend:
         test2.displayEdgeWeights(nodepos)
-        test2.calculateAllEdgeWeights()
 
-    if dispBestControl:
-        test2.calculateAndDisplayBestControl(2, nodepositions = nodepos)
+    if dispBestControl & dispEdgeWeight & dispEigenBlend :
+        test2.calculateAndDisplayBestControl(nodepositions = nodepos)
         
     test2.showAll()
+    
+if testcase == 't':
+    
+    test = formatmatrix("connectionsTE.csv", "scaledinputs100h5.txt", 13 ,0)
+    
+    controlme = ['Reactor Pressure', 'Reactor Temperature','S11 F', 'S11 E ', 'S9 D', 'S6 F', 'Reactor Level','Product Sep Temp', 'Stripper Temp', 'Stream 6',  'Stream 10','S9 F' ]    
+    
+    test2 = visualiseOpenLoopSystem(test.nodummyvariablelist, test.nodummydiff, 12,test.scaledforwardgain, test.scaledforwardconnection, test.scaledforwardvariablelist, test.scaledbackwardgain, test.scaledbackwardconnection, test.scaledbackwardvariablelist, test.nodummygain, test.nodummyconnection, controlme) 
+    
+    nodepos = None
+    nodeposf = None
+    nodeposb = None
+    
+
+    
+    test2.displayConnectivityAndLocalGains(test.nodummyconnection, test.nodummygain, test.nodummyvariablelist, nodepos)
+    
+    if dispRGA:
+        test2.displayRGA(1, nodepos)
+        test2.displayRGA(2, nodepos)
+        test2.displayRGAmatrix()
+    
+    if dispEigenForwardAndBackward:
+        test2.displayEigenRankGGf(nodeposf)
+        test2.displayEigenRankLGf(nodeposf)
+        test2.displayEigenRankGGb(nodeposb)
+        test2.displayEigenRankLGb(nodeposb)
+        test2.displayEigenRankNormalForward(nodepos)
+        test2.displayEigenRankNormalBackward(nodepos)
+    
+    if dispEigenBlend:    
+        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.1, nodepos)
+        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1, nodepos)
+    
+    
+    if dispEdgeWeight & dispEigenBlend:
+        test2.displayEdgeWeights(nodepos)
+
+    if dispBestControl & dispEdgeWeight & dispEigenBlend :
+        test2.calculateAndDisplayBestControl(variablestocontrol = None, nodepositions = nodepos)
+        
+    test2.showAll()
+    
     
     
 
