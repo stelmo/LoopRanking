@@ -108,10 +108,13 @@ if testcase == 't':
     
     test2 = visualiseOpenLoopSystem(test.nodummyvariablelist, test.nodummydiff, 12,test.scaledforwardgain, test.scaledforwardconnection, test.scaledforwardvariablelist, test.scaledbackwardgain, test.scaledbackwardconnection, test.scaledbackwardvariablelist, test.nodummygain, test.nodummyconnection, controlme) 
     
-    nodepos = None
+    nodepos = {'Stream 2': array([0,80]), 'Stream 3': array([0,70]), 'Stream 1': array([0,90]), 'Stream 4': array([0,0]), 'Compressor Recycle Valve': array([100,75]), 'Purge Valve': array([92,95]),'Product Separator (stream 10)': array([75,50]),'Stripper underflow (stream 11)': array([80,0]),'Stripper Steam Valve': array([77,5]),'Reactor Cooling Water Flow': array([45,50]), 'Condensor Cooling Water Flow': array([47,85]),'Agitator Speed': array([20,80]),'Stream 8': array([62,96]),'Stream 6': array([10,25]),'Reactor Pressure': array([30, 75]), 'Reactor Level': array([15,72]),'Reactor Temperature': array([20, 17]),'Stream 9': array([87, 95]),'Product Sep Temp': array([77, 78]),'Product Sep Level': array([77, 85]),'Prod Sep Press': array([85,87]),'Stream 10': array([80,50]),'Stripper Level': array([55,10]),'Stripper Press': array([55,50]),'Stream 11': array([85,0]), 'Stripper Temp': array([65,25]),'Stripper Steam Flow': array([85,10]),'Compressor Work': array([65,87]),'Reactor Cooling Water out temp': array([40,20]),'Condensor Cooling water out temp': array([45,85]),'S6 A': array([0,30]),'S6 B': array([0,25]),'S6 C': array([0,20]),'S6 D': array([0,15]),'S6 F': array([0,5]), 'S6 E': array([0,10]),'S9 A': array([100,95]),'S9 B': array([100,90]),'S9 C': array([100,85]),'S9 D': array([100,80]),'S9 E': array([100,75]),'S9 F': array([100,70]),'S9 G': array([100,65]),'S9 H': array([100,60]),'S11 D': array([100,30]),'S11 E ': array([100,25]),'S11 F': array([100,20]),'S11 G': array([100,15]),'S11 H': array([100,10])}
+             
     nodeposf = None
     nodeposb = None
     
+    for values in nodepos.keys():
+        nodepos[values] = nodepos[values]*100
 
     
     test2.displayConnectivityAndLocalGains(test.nodummyconnection, test.nodummygain, test.nodummyvariablelist, nodepos)
