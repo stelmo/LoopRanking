@@ -10,9 +10,9 @@ from numpy import array
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 't'
+testcase = 'b'
 dispRGA = True
-dispEigenForwardAndBackward = False
+dispEigenForwardAndBackward = True
 dispEigenBlend = True
 dispEdgeWeight = True
 dispBestControl = True
@@ -57,6 +57,7 @@ if testcase == 'a':
         
     
     test2.showAll()
+    test2.exportToGML()
 
 if testcase == 'b':
     
@@ -96,9 +97,10 @@ if testcase == 'b':
         test2.displayEdgeWeights(nodepos)
 
     if dispBestControl & dispEdgeWeight & dispEigenBlend :
-        test2.calculateAndDisplayBestControl(nodepositions = nodepos)
+        test2.calculateAndDisplayBestControl(nodepositions = nodepos, permute = True)
         
     test2.showAll()
+    test2.exportToGML()
     
 if testcase == 't':
     
@@ -144,6 +146,7 @@ if testcase == 't':
         test2.calculateAndDisplayBestControl(variablestocontrol = None, nodepositions = nodepos)
         
     test2.showAll()
+    test2.exportToGML()
     
     
     

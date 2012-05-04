@@ -58,9 +58,9 @@ class RGA:
         tempmatrix = []
 
         if controlposition != None:
-            self.vars = variables[:numberofinputs]    
+            self.vars = variables[:numberofinputs] #all the inputs
             for row in range(r):
-                if row+numberofinputs in controlposition:
+                if variables[row+numberofinputs] in controlposition:
                     tempmatrix.append(self.openloopmatrix[row, :])
                     self.vars.append(variables[row+numberofinputs])
             self.openloopmatrix = array(tempmatrix).reshape(-1, numberofinputs)

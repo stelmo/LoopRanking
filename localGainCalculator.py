@@ -11,6 +11,7 @@ import csv
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+from scipy.stats.stats import pearsonr
 
 class localgains:
     """This class:
@@ -70,29 +71,29 @@ class localgains:
         
         self.linlocalgainmatrix = array(zeros((self.n, self.n)))  #initialise the linear local gain matrix
         for row in range(self.n):
-           index = self.connectionmatrix[row,:].reshape(1,self.n)
-           if (max(max(index)) > 0): #crude but it works...    
-               compoundvec = self.localdiffmatrix[row,:].reshape(numberofruns-1, 1)
-               #now you need to get uvec so that you may calculate the aprox gains
-               #note: rows == number of experiments       
-               for position in range(self.n):
-                   if index[0, position] == 1:
-                       temp = self.localdiffmatrix[position,:].reshape(-1,1) # dummy variable
-                       compoundvec = hstack((compoundvec,temp))
-                   else:
-                       pass #do nothing as the index will sort out the order of gain association
-               yvec = compoundvec[:,0].reshape(-1,1)
-               uvec = compoundvec[:,1:]       
-               localgains =  np.linalg.lstsq(uvec,yvec)[0].reshape(1,-1)
-               tempindex = 0        
-               for position in range(self.n):
-                   if index[0, position] == 1:
-                       self.linlocalgainmatrix[row,position] = localgains[0,tempindex]
-                       tempindex = tempindex + 1
-               else:
-                   pass #do nothing as the index will sort out the order of gain association
-           else:
-               pass #everything works
+            index = self.connectionmatrix[row,:].reshape(1,self.n)
+            if (max(max(index)) > 0): #crude but it works...    
+                compoundvec = self.localdiffmatrix[row,:].reshape(numberofruns-1, 1)
+                #now you need to get uvec so that you may calculate the aprox gains
+                #note: rows == number of experiments       
+                for position in range(self.n):
+                    if index[0, position] == 1:
+                        temp = self.localdiffmatrix[position,:].reshape(-1,1) # dummy variable
+                        compoundvec = hstack((compoundvec,temp))
+                    else:
+                        pass #do nothing as the index will sort out the order of gain association
+                yvec = compoundvec[:,0].reshape(-1,1)
+                uvec = compoundvec[:,1:]       
+                localgains =  np.linalg.lstsq(uvec,yvec)[0].reshape(1,-1)
+                tempindex = 0        
+                for position in range(self.n):
+                    if index[0, position] == 1:
+                        self.linlocalgainmatrix[row,position] = localgains[0,tempindex]
+                        tempindex = tempindex + 1
+                    else:
+                        pass #do nothing as the index will sort out the order of gain association
+            else:
+                pass #everything works
         
     
     def createLocalChangeMatrix(self, locationofstates):
@@ -140,4 +141,11 @@ class localgains:
         self.n = len(self.variables)
         self.connectionmatrix = array(self.connectionmatrix).reshape(self.n,self.n)
 
-   
+
+
+    def createCorrelationGainMatrix(self, numberofruns):
+        """This method strives to calculate the local gains in terms of the correlation
+        between the variables. It uses the partial correlation method (Pearson's 
+        correlation)."""
+        pass
+    

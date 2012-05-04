@@ -6,10 +6,8 @@ Created on Fri Feb 24 16:33:40 2012
 """
 
 """Import classes and modules"""
-from numpy import array, ones, argmax, transpose
+from numpy import ones, argmax
 from numpy import linalg as linCalc
-import networkx as nx
-import matplotlib.pyplot as plot
  
 class gRanking:
     """This class should calculate the importance of variables based on their

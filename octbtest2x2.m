@@ -5,10 +5,10 @@ function [out] = octbtest2x2(var1, var2)
 v1 = var1;
 v2 = var2;
 %the actual local gains [what will be investigated]
-g13 = 12;
-g14 = 1;
+g13 = 1.2;
+g14 = 12;
 g23 = 1.5;
-g24 = 11;
+g24 = 1.1;
 
 A = [g13, g23;g14, g24];
 b = [v1;v2];
