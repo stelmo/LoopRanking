@@ -147,7 +147,7 @@ C  MEASUREMENT AND VALVE COMMON BLOCK
 C
       DOUBLE PRECISION XMEAS, XMV
       COMMON/PV/ XMEAS(41), XMV(12)
-C
+
 C   DISTURBANCE VECTOR COMMON BLOCK
 C
       INTEGER IDV
@@ -224,7 +224,6 @@ C  Set the number of pints to simulate in steady state operation 3 hours of stea
 C
 
       SSPTS = 3600 * 3
-
 
 C
 C  Integrator Step Size:  1 Second Converted to Hours
@@ -311,7 +310,7 @@ CC      ERROLD = 0.0
       GAIN20=-16.3	 / 5.	   
       TAUI20=12408./3600.  
       ERROLD20=0.0
-      SETPT(12)=2633.7*1.25
+      SETPT(12)=2633.7
       GAIN22=-1.0	  * 5.	   
       TAUI22=1000./3600.  
       ERROLD22=0.0
@@ -1354,7 +1353,7 @@ C
       	WRITE(2119,*) XMEAS(33), XMEAS(34), XMEAS(35), XMEAS(36)
       	WRITE(2120,*) XMEAS(37), XMEAS(38), XMEAS(39), XMEAS(40)
       	WRITE(2121,*) XMEAS(41)
- 100  FORMAT(1X,E13.5,2X,E13.5,2X,E13.5,2X,E13.5)
+ 100  FORMAT(1X,E13.5, 2X,E13.5, 2X,E13.5, 2X,E13.5)
  200  FORMAT(1X,E13.5,2X,E13.5,2X,E13.5)
  300  FORMAT(1X,E13.5)
 C
