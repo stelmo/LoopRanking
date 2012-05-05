@@ -45,7 +45,7 @@ class visualiseOpenLoopSystem:
     F = A graph showing the recommended control pairings with edge attribute 'edgecolour' to indicate a 
         control pair. """
     
-    def __init__(self, variables, localdiff, numberofinputs, fgainmatrix, fconnectionmatrix, fvariablenames, bgainmatrix, bconnectionmatrix, bvariablenames, normalgains, normalconnections, controlvarsforRGA = None):
+    def __init__(self, variables, localdiff, numberofinputs, fgainmatrix, fconnectionmatrix, fvariablenames, bgainmatrix, bconnectionmatrix, bvariablenames, normalgains, normalconnections, controlvarsforRGA=None):
         """This constructor will create an RGABristol object so that you simply
         have to call the display method to see which pairings should be made.
         
@@ -91,10 +91,10 @@ class visualiseOpenLoopSystem:
         localgaindictformat = dict()
         for u in range(n):
             for v in range(n):
-                if (connectionmatrix[u,v]==1):
-                    self.G.add_edge(variablenames[v], variablenames[u], localgain = round(localgainmatrix[u,v]))
-                    localgaindict[(variablenames[v],variablenames[u])] = localgainmatrix[u,v]
-                    localgaindictformat[(variablenames[v],variablenames[u])] = round(localgainmatrix[u,v],3)
+                if (connectionmatrix[u, v] == 1):
+                    self.G.add_edge(variablenames[v], variablenames[u], localgain=round(localgainmatrix[u, v]))
+                    localgaindict[(variablenames[v], variablenames[u])] = localgainmatrix[u, v]
+                    localgaindictformat[(variablenames[v], variablenames[u])] = round(localgainmatrix[u, v], 3)
                     
         posdict = nodepositiondictionary 
         
@@ -103,12 +103,12 @@ class visualiseOpenLoopSystem:
     
         plt.figure("Web of connectivity and local gains")
         nx.draw_networkx(self.G, pos=posdict)
-        nx.draw_networkx_edge_labels(self.G,pos=posdict,edge_labels=localgaindictformat,label_pos=0.7)
-        nx.draw_networkx_edges(self.G,pos=posdict,width=2.5,edge_color='k', style='solid',alpha=0.15)
-        nx.draw_networkx_nodes(self.G,pos=posdict, node_color='y',node_size=450)
+        nx.draw_networkx_edge_labels(self.G, pos=posdict, edge_labels=localgaindictformat, label_pos=0.7)
+        nx.draw_networkx_edges(self.G, pos=posdict, width=2.5, edge_color='k', style='solid', alpha=0.15)
+        nx.draw_networkx_nodes(self.G, pos=posdict, node_color='y', node_size=450)
         plt.axis("off") 
         
-    def displayRGA(self,pairingoption = 1, nodepositions = None):
+    def displayRGA(self, pairingoption=1, nodepositions=None):
         """This method will display the RGA pairings.
         
         It has 2 options of pairings:
@@ -123,15 +123,15 @@ class visualiseOpenLoopSystem:
         the default node positions will be circular. """
 
         if pairingoption == 1:
-            pairingpattern =  self.bristol.pairedvariablesHalf
+            pairingpattern = self.bristol.pairedvariablesHalf
             message = "Standard RGA Pairings"
             self.G1 = nx.DiGraph()
             self.G1 = self.G.copy()
             print(pairingpattern)
-            self.G1.add_edges_from(self.G1.edges(), edgecolour = 'k')
-            self.G1.add_edges_from(pairingpattern, edgecolour = 'r')
+            self.G1.add_edges_from(self.G1.edges(), edgecolour='k')
+            self.G1.add_edges_from(pairingpattern, edgecolour='r')
             #correct up to here
-            pairingtuplelist = [(row[0],row[1]) for row in pairingpattern] #what a mission to find this error
+            pairingtuplelist = [(row[0], row[1]) for row in pairingpattern] #what a mission to find this error
             edgecolorlist = ["r" if edge in pairingtuplelist else "k" for edge in self.G1.edges()]
         
                 
@@ -140,19 +140,19 @@ class visualiseOpenLoopSystem:
             
             plt.figure(message)            
             nx.draw_networkx(self.G1, pos=nodepositions)
-            nx.draw_networkx_edges(self.G1,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.5)
-            nx.draw_networkx_nodes(self.G1,pos=nodepositions, node_color='y',node_size=450)
+            nx.draw_networkx_edges(self.G1, pos=nodepositions, width=2.5, edge_color=edgecolorlist, style='solid', alpha=0.5)
+            nx.draw_networkx_nodes(self.G1, pos=nodepositions, node_color='y', node_size=450)
             plt.axis('off')
         else:
-            pairingpattern =  self.bristol.pairedvariablesMax
+            pairingpattern = self.bristol.pairedvariablesMax
             message = "Maximum RGA Pairings"
             self.G2 = nx.DiGraph()
             self.G2 = self.G.copy()
             print(pairingpattern)
-            self.G2.add_edges_from(self.G2.edges(), edgecolour = 'k')
-            self.G2.add_edges_from(pairingpattern, edgecolour = 'r')
+            self.G2.add_edges_from(self.G2.edges(), edgecolour='k')
+            self.G2.add_edges_from(pairingpattern, edgecolour='r')
         #correct up to here
-            pairingtuplelist = [(row[0],row[1]) for row in pairingpattern] #what a mission to find this error
+            pairingtuplelist = [(row[0], row[1]) for row in pairingpattern] #what a mission to find this error
             edgecolorlist = ["r" if edge in pairingtuplelist else "k" for edge in self.G2.edges()]
         
                 
@@ -161,8 +161,8 @@ class visualiseOpenLoopSystem:
             
             plt.figure(message)            
             nx.draw_networkx(self.G2, pos=nodepositions)
-            nx.draw_networkx_edges(self.G2,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.5)
-            nx.draw_networkx_nodes(self.G2,pos=nodepositions, node_color='y',node_size=450)
+            nx.draw_networkx_edges(self.G2, pos=nodepositions, width=2.5, edge_color=edgecolorlist, style='solid', alpha=0.5)
+            nx.draw_networkx_nodes(self.G2, pos=nodepositions, node_color='y', node_size=450)
             plt.axis('off')
                 
     def displayRGAmatrix(self):
@@ -170,30 +170,30 @@ class visualiseOpenLoopSystem:
         
         plt.figure("Relative Gain Array")
         [r, c] = self.bristol.bristolmatrix.shape
-        plt.imshow(self.bristol.bristolmatrix,cmap = plt.cm.gray_r, interpolation='nearest', extent = [0, 1, 0, 1])
+        plt.imshow(self.bristol.bristolmatrix, cmap=plt.cm.gray_r, interpolation='nearest', extent=[0, 1, 0, 1])
         lenofinputs = len(self.listofinputs)
         outputs = self.bristol.vars[lenofinputs:]
-        rstart = 1.0/(2.0*r)
-        cstart = 1.0/(2.0*c)
-        rincr = 1.0/r
-        cincr = 1.0/c
+        rstart = 1.0 / (2.0 * r)
+        cstart = 1.0 / (2.0 * c)
+        rincr = 1.0 / r
+        cincr = 1.0 / c
         revinputs = []
         revinputs.extend(self.listofinputs)
         revinputs.reverse()
-        plt.yticks(arange(rstart,1,rincr), revinputs, fontsize = 10)
-        plt.xticks(arange(cstart,1,cincr), outputs, rotation = -45, fontsize = 10)
+        plt.yticks(arange(rstart, 1, rincr), revinputs, fontsize=10)
+        plt.xticks(arange(cstart, 1, cincr), outputs, rotation= -45, fontsize=10)
         
-        rowstart = (r-1)*rincr + rstart
+        rowstart = (r - 1) * rincr + rstart
         for i in range(r):
-            ypos = rowstart-i*rincr
+            ypos = rowstart - i * rincr
             for j in range(c):
-                xpos = cstart+cincr*j-0.15*cincr
-                val = round(self.bristol.bristolmatrix[i,j],3)
+                xpos = cstart + cincr * j - 0.15 * cincr
+                val = round(self.bristol.bristolmatrix[i, j], 3)
                 if val <= 0.5:
                     colour = 'k'
                 else:
                     colour = 'w'
-                plt.text(xpos, ypos, val, color= colour, fontsize = 10 )
+                plt.text(xpos, ypos, val, color=colour, fontsize=10)
    
     def showAll(self):
         """This method is called at the end of the visualisation routine so that
@@ -202,7 +202,7 @@ class visualiseOpenLoopSystem:
         
         plt.show()
         
-    def normaliseMatrix(self,inputmatrix):
+    def normaliseMatrix(self, inputmatrix):
         """This method normalises the absolute value of the input matrix
         in the columns i.e. all columns will sum to 1
         
@@ -214,14 +214,14 @@ class visualiseOpenLoopSystem:
         normalisedmatrix = []
         
         for col in range(c):
-            colsum = float(sum(inputmatrix[:,col]))
+            colsum = float(sum(inputmatrix[:, col]))
             for row in range(r):
-                if (colsum!=0):
-                    normalisedmatrix.append(inputmatrix[row,col]/colsum) #this was broken! fixed now...
+                if (colsum != 0):
+                    normalisedmatrix.append(inputmatrix[row, col] / colsum) #this was broken! fixed now...
                 else:
                     normalisedmatrix.append(0.0)
                         
-        normalisedmatrix = transpose(array(normalisedmatrix).reshape(r,c))
+        normalisedmatrix = transpose(array(normalisedmatrix).reshape(r, c))
         return normalisedmatrix       
     
     def displayEigenRankLGf(self, nodepos=None):
@@ -235,7 +235,7 @@ class visualiseOpenLoopSystem:
         self.LGF = nx.DiGraph()
         for i in range(self.forwardgain.n):
             for j in range(self.forwardgain.n):
-                if (self.forwardgain.gMatrix[i,j] != 0):
+                if (self.forwardgain.gMatrix[i, j] != 0):
                     self.LGF.add_edge(self.forwardgain.gVariables[j], self.forwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
          
          
@@ -243,15 +243,15 @@ class visualiseOpenLoopSystem:
         rearrange = self.LGF.nodes()
 
         for node in self.LGF.nodes():
-            self.LGF.add_node(node, importance = self.forwardgain.rankDict[node])
+            self.LGF.add_node(node, importance=self.forwardgain.rankDict[node])
         
         nodelabels = dict((n, [n, round(self.forwardgain.rankDict[n], 3)]) for n in self.LGF.nodes())
-        sizeArray = [self.forwardgain.rankDict[var]*10000 for var in rearrange]
+        sizeArray = [self.forwardgain.rankDict[var] * 10000 for var in rearrange]
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.LGF)        
         
-        nx.draw_networkx(self.LGF, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx(self.LGF, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.LGF, pos=nodepos)
         plt.axis("off")
 
@@ -266,7 +266,7 @@ class visualiseOpenLoopSystem:
         self.GGF = nx.DiGraph()
         for i in range(self.gfgain.n):
             for j in range(self.gfgain.n):
-                if (self.gfgain.gMatrix[i,j] != 0):
+                if (self.gfgain.gMatrix[i, j] != 0):
                     self.GGF.add_edge(self.gfgain.gVariables[j], self.gfgain.gVariables[i])
          
          
@@ -274,15 +274,15 @@ class visualiseOpenLoopSystem:
         rearrange = self.GGF.nodes()
         
         for node in self.GGF.nodes():
-            self.GGF.add_node(node, importance = self.gfgain.rankDict[node])
+            self.GGF.add_node(node, importance=self.gfgain.rankDict[node])
         
         nodelabels = dict((n, [n, round(self.gfgain.rankDict[n], 3)]) for n in self.GGF.nodes())
-        sizeArray = [self.gfgain.rankDict[var]*10000 for var in rearrange]
+        sizeArray = [self.gfgain.rankDict[var] * 10000 for var in rearrange]
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.GGF)           
         
-        nx.draw_networkx(self.GGF, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx(self.GGF, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.GGF, pos=nodepos)
         plt.axis("off")
         
@@ -298,7 +298,7 @@ class visualiseOpenLoopSystem:
         self.GGB = nx.DiGraph()
         for i in range(self.gbgain.n):
             for j in range(self.gbgain.n):
-                if (self.gbgain.gMatrix[i,j] != 0):
+                if (self.gbgain.gMatrix[i, j] != 0):
                     self.GGB.add_edge(self.gbgain.gVariables[j], self.gbgain.gVariables[i])
          
          
@@ -306,15 +306,15 @@ class visualiseOpenLoopSystem:
         rearrange = self.GGB.nodes()
     
         for node in self.GGB.nodes():
-            self.GGB.add_node(node, importance = self.gbgain.rankDict[node])
+            self.GGB.add_node(node, importance=self.gbgain.rankDict[node])
             
         nodelabels = dict((n, [n, round(self.gbgain.rankDict[n], 3)]) for n in self.GGB.nodes())
-        sizeArray = [self.gbgain.rankDict[var]*10000 for var in rearrange]
+        sizeArray = [self.gbgain.rankDict[var] * 10000 for var in rearrange]
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.GGB)           
         
-        nx.draw_networkx(self.GGB, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx(self.GGB, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.GGB, pos=nodepos)
         plt.axis("off")
 
@@ -329,7 +329,7 @@ class visualiseOpenLoopSystem:
         self.LGB = nx.DiGraph()
         for i in range(self.backwardgain.n):
             for j in range(self.backwardgain.n):
-                if (self.backwardgain.gMatrix[i,j] != 0):
+                if (self.backwardgain.gMatrix[i, j] != 0):
                     self.LGB.add_edge(self.backwardgain.gVariables[j], self.backwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
          
          
@@ -337,15 +337,15 @@ class visualiseOpenLoopSystem:
         rearrange = self.LGB.nodes()
         
         for node in self.LGB.nodes():
-            self.LGB.add_node(node, importance = self.backwardgain.rankDict[node])
+            self.LGB.add_node(node, importance=self.backwardgain.rankDict[node])
         
         nodelabels = dict((n, [n, round(self.backwardgain.rankDict[n], 3)]) for n in self.LGB.nodes())
-        sizeArray = [self.backwardgain.rankDict[var]*10000 for var in rearrange]
+        sizeArray = [self.backwardgain.rankDict[var] * 10000 for var in rearrange]
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.LGB)        
         
-        nx.draw_networkx(self.LGB, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx(self.LGB, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.LGB, pos=nodepos)
         plt.axis("off")
         
@@ -361,7 +361,7 @@ class visualiseOpenLoopSystem:
         self.NFG = nx.DiGraph()
         for i in range(self.normalforwardgain.n):
             for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i,j] != 0):
+                if (self.normalforwardgain.gMatrix[i, j] != 0):
                     self.NFG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
          
          
@@ -369,15 +369,15 @@ class visualiseOpenLoopSystem:
         rearrange = self.NFG.nodes()
         
         for node in self.NFG.nodes():
-            self.NFG.add_node(node, importance = self.normalforwardgain.rankDict[node])
+            self.NFG.add_node(node, importance=self.normalforwardgain.rankDict[node])
         
         nodelabels = dict((n, [n, round(self.normalforwardgain.rankDict[n], 3)]) for n in self.NFG.nodes())
-        sizeArray = [self.normalforwardgain.rankDict[var]*10000 for var in rearrange]
+        sizeArray = [self.normalforwardgain.rankDict[var] * 10000 for var in rearrange]
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.NFG)        
         
-        nx.draw_networkx(self.NFG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx(self.NFG, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.NFG, pos=nodepos)
         plt.axis("off")        
         
@@ -393,7 +393,7 @@ class visualiseOpenLoopSystem:
         self.NBG = nx.DiGraph()
         for i in range(self.normalbackwardgain.n):
             for j in range(self.normalbackwardgain.n):
-                if (self.normalbackwardgain.gMatrix[i,j] != 0):
+                if (self.normalbackwardgain.gMatrix[i, j] != 0):
                     self.NBG.add_edge(self.normalbackwardgain.gVariables[j], self.normalbackwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
          
          
@@ -401,15 +401,15 @@ class visualiseOpenLoopSystem:
         rearrange = self.NBG.nodes()
         
         for node in self.NBG.nodes():
-            self.NBG.add_node(node, importance = self.normalbackwardgain.rankDict[node])
+            self.NBG.add_node(node, importance=self.normalbackwardgain.rankDict[node])
         
         nodelabels = dict((n, [n, round(self.normalbackwardgain.rankDict[n], 3)]) for n in self.NBG.nodes())
-        sizeArray = [self.normalbackwardgain.rankDict[var]*10000 for var in rearrange]
+        sizeArray = [self.normalbackwardgain.rankDict[var] * 10000 for var in rearrange]
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.NBG)        
         
-        nx.draw_networkx(self.NBG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx(self.NBG, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.NBG, pos=nodepos)
         plt.axis("off") 
         
@@ -422,13 +422,13 @@ class visualiseOpenLoopSystem:
         
         self.blendedranking = dict()
         for variable in nodummyvariablelist:
-            self.blendedranking[variable] = (1-alpha)*self.forwardgain.rankDict[variable] + (alpha)*self.backwardgain.rankDict[variable]
+            self.blendedranking[variable] = (1 - alpha) * self.forwardgain.rankDict[variable] + (alpha) * self.backwardgain.rankDict[variable]
             
         
         self.EBG = nx.DiGraph()
         for i in range(self.normalforwardgain.n):
             for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i,j] != 0):
+                if (self.normalforwardgain.gMatrix[i, j] != 0):
                     self.EBG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
          
          
@@ -436,15 +436,15 @@ class visualiseOpenLoopSystem:
         rearrange = self.EBG.nodes()
         
         for node in self.EBG.nodes():
-            self.EBG.add_node(node, importance = self.blendedranking[node])
+            self.EBG.add_node(node, importance=self.blendedranking[node])
         
         nodelabels = dict((n, [n, round(self.blendedranking[n], 3)]) for n in self.EBG.nodes())
-        sizeArray = [self.blendedranking[var]*10000 for var in rearrange]
+        sizeArray = [self.blendedranking[var] * 10000 for var in rearrange]
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.EBG)        
         
-        nx.draw_networkx(self.EBG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx(self.EBG, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.EBG, pos=nodepos)
         plt.axis("off")
         
@@ -457,13 +457,13 @@ class visualiseOpenLoopSystem:
         
         self.blendedrankingGoogle = dict()
         for variable in nodummyvariablelist:
-            self.blendedrankingGoogle[variable] = (1-alpha)*self.gfgain.rankDict[variable] + (alpha)*self.gbgain.rankDict[variable]
+            self.blendedrankingGoogle[variable] = (1 - alpha) * self.gfgain.rankDict[variable] + (alpha) * self.gbgain.rankDict[variable]
             
         
         self.EBGG = nx.DiGraph()
         for i in range(self.normalforwardgain.n):
             for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i,j] != 0):
+                if (self.normalforwardgain.gMatrix[i, j] != 0):
                     self.EBGG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
          
          
@@ -471,15 +471,15 @@ class visualiseOpenLoopSystem:
         rearrange = self.EBGG.nodes()
         
         for node in self.EBGG.nodes():
-            self.EBGG.add_node(node, importance = self.blendedrankingGoogle[node])
+            self.EBGG.add_node(node, importance=self.blendedrankingGoogle[node])
         
         nodelabels = dict((n, [n, round(self.blendedrankingGoogle[n], 3)]) for n in self.EBGG.nodes())
-        sizeArray = [self.blendedrankingGoogle[var]*10000 for var in rearrange]
+        sizeArray = [self.blendedrankingGoogle[var] * 10000 for var in rearrange]
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.EBGG)        
         
-        nx.draw_networkx(self.EBGG, pos = nodepos , labels=nodelabels, node_size = sizeArray, node_color='y')
+        nx.draw_networkx(self.EBGG, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.EBGG, pos=nodepos)
         plt.axis("off")         
         
@@ -494,25 +494,25 @@ class visualiseOpenLoopSystem:
         
         for i in range(self.normalforwardgain.n):
             for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i,j] != 0):
-                    temp = self.normalforwardgain.gMatrix[i,j]*self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]]*self.normalforwardgoogle.gMatrix[i,j]
+                if (self.normalforwardgain.gMatrix[i, j] != 0):
+                    temp = self.normalforwardgain.gMatrix[i, j] * self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]] * self.normalforwardgoogle.gMatrix[i, j]
                     
-                    self.edgelabels[(self.normalforwardgain.gVariables[j],self.normalforwardgain.gVariables[i])] = round(-1*temp,4)
-                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight = -1*temp )
+                    self.edgelabels[(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i])] = round(-1 * temp, 4)
+                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight= -1 * temp)
          
         plt.figure("Edge Weight Graph")
         
         for node in self.P.nodes():
-            self.P.add_node(node, importanceNormal = self.blendedranking[node])
-            self.P.add_node(node, importanceGoogle = self.blendedrankingGoogle[node])
+            self.P.add_node(node, importanceNormal=self.blendedranking[node])
+            self.P.add_node(node, importanceGoogle=self.blendedrankingGoogle[node])
         
-        if nodepos==None:
+        if nodepos == None:
             nodepos = nx.circular_layout(self.P)        
         
         nx.draw_networkx(self.P, pos=nodepos)
-        nx.draw_networkx_edge_labels(self.P,pos=nodepos,edge_labels=self.edgelabels,label_pos=0.3)
-        nx.draw_networkx_edges(self.P,pos=nodepos,width=2.5,edge_color='k', style='solid',alpha=0.15)
-        nx.draw_networkx_nodes(self.P,pos=nodepos, node_color='y',node_size=450)        
+        nx.draw_networkx_edge_labels(self.P, pos=nodepos, edge_labels=self.edgelabels, label_pos=0.3)
+        nx.draw_networkx_edges(self.P, pos=nodepos, width=2.5, edge_color='k', style='solid', alpha=0.15)
+        nx.draw_networkx_nodes(self.P, pos=nodepos, node_color='y', node_size=450)        
         plt.axis("off") 
         
     def createPairingDict(self, variablestocontrol=None):
@@ -544,8 +544,8 @@ class visualiseOpenLoopSystem:
             minweight = float('inf')    
             for possibility in listofpossibletours:
                 pathweight = 0
-                for node in range(len(possibility)-1):
-                    pathweight = pathweight + graph[possibility[node]][possibility[node+1]]['weight']
+                for node in range(len(possibility) - 1):
+                    pathweight = pathweight + graph[possibility[node]][possibility[node + 1]]['weight']
                 if pathweight < minweight:
                     minweight = pathweight
             return minweight   
@@ -558,7 +558,7 @@ class visualiseOpenLoopSystem:
         self.pathlengthsdict = dict()
         for x in self.listofinputs:
             for y in controlme:
-                self.pathlengthsdict[(x,y)] = calculateMinTour(self.P, x, y)
+                self.pathlengthsdict[(x, y)] = calculateMinTour(self.P, x, y)
 
     def calculateAndDisplayBestControl(self, variablestocontrol=None, nodepositions=None, permute=False):
         """This method should calculate the best possible control settings i.e.
@@ -576,7 +576,6 @@ class visualiseOpenLoopSystem:
         takes about 2 min in the Tennessee Eastman problem. """
         
         self.createPairingDict(variablestocontrol)   
-               
         print("Pair Dictionary Created")        
         
         if variablestocontrol == None:
@@ -593,7 +592,7 @@ class visualiseOpenLoopSystem:
             prevbestconfig = []
             prevrowsum = float('inf')  
             rowsum = 0
-            print("Start Itertions") #for your peace of mind
+            print("Start Itertions: All Permutations") #for your peace of mind
             for x in sequence:
                 possiblepairing = []
                 for y in izip(controllers, x):
@@ -609,33 +608,29 @@ class visualiseOpenLoopSystem:
             
             """A more and less reasonable method to determine best pairs"""
             prevbestconfig = []
-            rankingsdesc = [x[0] for x in sorted(self.blendedranking.iteritems(), key=itemgetter(1),reverse=True)]
+            rankingsdesc = [x[0] for x in sorted(self.blendedranking.iteritems(), key=itemgetter(1), reverse=True)]
             controldesc = [y for y in rankingsdesc if y in controlme]
-            counter = 1
+            print("Start Iterations: Greedy Pairing")
+            """Fixed method: will attempt to force every MV to a unique CV"""
+            usedMV = []
             
             for x in controldesc:
-                minpath = float('inf')
-                contr = []            
-                flag2 = False
-                
-                for y in self.pathlengthsdict.keys():
-    
-                    if x in y and minpath > self.pathlengthsdict[y]:
-                        minpath = self.pathlengthsdict[y]
-                        contr = y
-                        flag2 = True
-                        
-                if flag2:        
-                    prevbestconfig.append(contr)
-                    inputdelete = contr
+                MV = None
+                previter = float('inf')
+                for y in self.listofinputs:
+                    index = (y, x)
+                    if y not in usedMV:
+                        if previter > self.pathlengthsdict[index]:
+                            recpair = index
+                            MV = y
+                            previter = self.pathlengthsdict[index]
                     
-                    for z in self.pathlengthsdict.keys(): #this deletes all occurences of the manipulated variable you are using
-                        if inputdelete[0] in z or inputdelete[1] in z:
-                            del self.pathlengthsdict[z]
-                            
-                    counter +=1
-                    if (counter > len(self.listofinputs)):
-                        break          
+                    
+                usedMV.append(MV)
+                prevbestconfig.append(recpair)
+                        
+                        
+                
                 
         print("The recommended control pairs")
         for x in prevbestconfig:
@@ -643,12 +638,12 @@ class visualiseOpenLoopSystem:
         
         self.F = nx.DiGraph()
         self.F = self.G.copy() #remember G is the basis graph
-        self.F.add_edges_from(self.F.edges(), edgecolour = 'k')
+        self.F.add_edges_from(self.F.edges(), edgecolour='k')
         
         pairlist = []
         for element in prevbestconfig:
-            pairlist.append((element[1],element[0]))
-            self.F.add_edge(element[1],element[0], edgecolour = 'r')
+            pairlist.append((element[1], element[0]))
+            self.F.add_edge(element[1], element[0], edgecolour='r')
           
         edgecolorlist = ["r" if element in pairlist else "k" for element in self.F.edges()]
         
@@ -657,8 +652,8 @@ class visualiseOpenLoopSystem:
         
         plt.figure("Best Controller Pairs: Eigenvector Approach")            
         nx.draw_networkx(self.F, pos=nodepositions)
-        nx.draw_networkx_edges(self.F,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.15)
-        nx.draw_networkx_nodes(self.F,pos=nodepositions, node_color='y',node_size=450)
+        nx.draw_networkx_edges(self.F, pos=nodepositions, width=2.5, edge_color=edgecolorlist, style='solid', alpha=0.15)
+        nx.draw_networkx_nodes(self.F, pos=nodepositions, node_color='y', node_size=450)
         plt.axis('off')
         
     def exportToGML(self):
