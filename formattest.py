@@ -57,6 +57,7 @@ if testcase == 'a':
         
     
     test2.showAll()
+    test2.exportToGML()
 
 if testcase == 'b':
     
@@ -96,9 +97,10 @@ if testcase == 'b':
         test2.displayEdgeWeights(nodepos)
 
     if dispBestControl & dispEdgeWeight & dispEigenBlend :
-        test2.calculateAndDisplayBestControl(nodepositions = nodepos)
+        test2.calculateAndDisplayBestControl(nodepositions = nodepos, permute = False, variablestocontrol = ['v4','v5'])
         
     test2.showAll()
+    test2.exportToGML()
     
 if testcase == 't':
     
@@ -133,17 +135,18 @@ if testcase == 't':
         test2.displayEigenRankNormalBackward(nodepos)
     
     if dispEigenBlend:    
-        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.1, nodepos)
-        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1, nodepos)
+        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.35, nodepos)
+        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.35, nodepos)
     
     
     if dispEdgeWeight & dispEigenBlend:
         test2.displayEdgeWeights(nodepos)
 
     if dispBestControl & dispEdgeWeight & dispEigenBlend :
-        test2.calculateAndDisplayBestControl(variablestocontrol = None, nodepositions = nodepos)
+        test2.calculateAndDisplayBestControl(variablestocontrol = controlme, nodepositions = nodepos)
         
     test2.showAll()
+    test2.exportToGML()
     
     
     

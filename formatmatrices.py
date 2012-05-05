@@ -20,8 +20,7 @@ class formatmatrix:
     Additionally, you might want to run formatDiffMatrixForRGA if you have more runs
     than inputs otherwise RGABristol will not work properly.
     
-    This class will also use gainRank to calculate the actual node importances
-    (as opposed to the not scaled importances). """
+    This class will also use "scale" the nodes of out-vertex == 1 nodes. """
     
     def __init__(self, locationofconnections, locationofstates, numberofruns, numberofdummyvariables):
         """This class will assume you input a connection matrix (ordered according 
@@ -155,36 +154,3 @@ class formatmatrix:
         self.scaledbackwardconnection = transpose(nx.to_numpy_matrix(M, weight = None))
         self.scaledbackwardgain = transpose(nx.to_numpy_matrix(M, weight = 'weight'))
         self.scaledbackwardvariablelist = M.nodes() #i sincerely hope this works!... After some testing, I think it does!!!    
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

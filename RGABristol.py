@@ -6,7 +6,7 @@ Created on Fri Mar 30 00:45:09 2012
 """
 
 """Import classes and modules"""
-from numpy import array, transpose, argmax
+from numpy import array, transpose, argmax, copy, delete
 import numpy as np
 
 class RGA:
@@ -52,23 +52,22 @@ class RGA:
             self.openloopmatrix.append(colofgain)
         self.openloopmatrix = array(self.openloopmatrix).reshape(numberofinputs,-1)
         self.openloopmatrix = transpose(self.openloopmatrix)
-        
         #now split the resulting matrix into the portions you will actually use
         [r, c] = self.openloopmatrix.shape
         tempmatrix = []
 
         if controlposition != None:
-            self.vars = variables[:numberofinputs]    
+            self.vars = variables[:numberofinputs] #all the inputs
             for row in range(r):
-                if row+numberofinputs in controlposition:
+                if variables[row+numberofinputs] in controlposition:
                     tempmatrix.append(self.openloopmatrix[row, :])
                     self.vars.append(variables[row+numberofinputs])
             self.openloopmatrix = array(tempmatrix).reshape(-1, numberofinputs)
         else:
             self.vars = variables
-
+        self.openloopmatrix = transpose(self.openloopmatrix)
+        #up to here works perfectly. the last transpose fixes a slight definition error made earlier   
                     
-    
     def calculateBristolmatrix(self):
         """This method actually calculates the relative gain array.
         It uses the standard method for square open loop gain matrices
@@ -91,41 +90,54 @@ class RGA:
             for gij, rij in zip(self.openloopmatrix.flat, R.flat):
                 self.bristolmatrix.append(gij*rij)
             self.bristolmatrix = array(self.bristolmatrix).reshape(r,c)
-        #this all works and generates believable results  
         
     def calculateBristolpairingsMax(self,vararrs,numofinputs):
         """This method determines which variables should be paired using the RGA.
         It assumed that each input WILL be paired and as such, it looks for the
-        biggest value in each column and pairs accordingly."""
+        biggest value in each column and pairs accordingly.
+        This will allow only a single output (the best controllable case) to
+        map to a single output. """
         
         self.inputvars = vararrs[:numofinputs]        
         self.outputvars = vararrs[numofinputs:]
-        [r, c] = self.bristolmatrix.shape
+        tempoutputs = []
+        tempoutputs.extend(self.outputvars)
+        tempbristol = self.bristolmatrix.copy()
         pairedvariables = []
-        count = 0        
-        for col in transpose(self.bristolmatrix):
-            pos = argmax(array(col))
-            pairedvariables.append(self.outputvars[pos])
+        [r, c] = tempbristol.shape
+        count = 0
+        for row in range(r):
+            pos = argmax(tempbristol[row, :])
+            pairedvariables.append(tempoutputs[pos])
             pairedvariables.append(self.inputvars[count])
-            count = count+1
+            tempbristol = delete(tempbristol, pos, 1)
+            tempoutputs.pop(pos)
+            count += 1   
         self.pairedvariablesMax = array(pairedvariables).reshape(-1,2)
-
+        
     def calculateBristolpairingsHalf(self,vararrs,numofinputs):
         """This method determines the best pairings of the RGA. It 
-        pairs only variables which are sufficiently decoupled ( >= 0.5 in RGA)"""
+        pairs only variables which are sufficiently decoupled ( >= 0.5 in RGA)
+        This will allow multiple outputs to be controlled by a single input."""
         
         self.inputvars = vararrs[:numofinputs]        
         self.outputvars = vararrs[numofinputs:]
-        [r, c] = self.bristolmatrix.shape
+        tempoutputs = []
+        tempoutputs.extend(self.outputvars)
+        tempbristol = self.bristolmatrix.copy()
         pairedvariables = []
+        [r, c] = tempbristol.shape
         count = 0
-        for col in transpose(self.bristolmatrix):
-            pos = argmax(array(col))
-            if col[pos] >= 0.5:
-                pairedvariables.append(self.outputvars[pos])
+        for row in range(r):
+            pos = argmax(tempbristol[row, :])
+            if tempbristol[row, :][pos] >= 0.5:
+                pairedvariables.append(tempoutputs[pos])
                 pairedvariables.append(self.inputvars[count])
-            count = count+1
-        self.pairedvariablesHalf = array(pairedvariables).reshape(-1,2)     
+                tempbristol = delete(tempbristol, pos, 1)
+                tempoutputs.pop(pos)
+            count += 1
+        self.pairedvariablesHalf = array(pairedvariables).reshape(-1,2)
+           
         
             
         
