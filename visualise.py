@@ -164,9 +164,7 @@ class visualiseOpenLoopSystem:
             nx.draw_networkx_edges(self.G2,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.5)
             nx.draw_networkx_nodes(self.G2,pos=nodepositions, node_color='y',node_size=450)
             plt.axis('off')
-            
-        
-        
+                
     def displayRGAmatrix(self):
         """This method will display the RGA matrix in a colour block."""
         

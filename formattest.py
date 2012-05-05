@@ -13,9 +13,9 @@ from visualise import visualiseOpenLoopSystem
 testcase = 't'
 dispRGA = True
 dispEigenForwardAndBackward = False
-dispEigenBlend = False
-dispEdgeWeight = False
-dispBestControl = False
+dispEigenBlend = True
+dispEdgeWeight = True
+dispBestControl = True
 
 if testcase == 'a':
 
@@ -135,15 +135,15 @@ if testcase == 't':
         test2.displayEigenRankNormalBackward(nodepos)
     
     if dispEigenBlend:    
-        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.1, nodepos)
-        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1, nodepos)
+        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.35, nodepos)
+        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.35, nodepos)
     
     
     if dispEdgeWeight & dispEigenBlend:
         test2.displayEdgeWeights(nodepos)
 
     if dispBestControl & dispEdgeWeight & dispEigenBlend :
-        test2.calculateAndDisplayBestControl(variablestocontrol = None, nodepositions = nodepos)
+        test2.calculateAndDisplayBestControl(variablestocontrol = controlme, nodepositions = nodepos)
         
     test2.showAll()
     test2.exportToGML()
