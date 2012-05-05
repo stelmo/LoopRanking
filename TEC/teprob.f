@@ -1095,10 +1095,9 @@ C
       YY(36)=0.9218489762
       YY(37)=94.59927549
       YY(38)=77.29698353
-C	I think this is where the initialisation takes place for the MVs..
       YY(39)=63.05263039
-      YY(40)=53.97970677 
-      YY(41)=24.64355755 
+      YY(40)=53.97970677
+      YY(41)=24.64355755
       YY(42)=61.30192144
       YY(43)=22.21000000
       YY(44)=40.06374673
@@ -1192,8 +1191,7 @@ C	I think this is where the initialisation takes place for the MVs..
       DO 300 I=1,12
       VTAU(I)=VTAU(I)/3600.
  300  CONTINUE
-C      G=1431655765.D0
-		G=1
+      G=1431655765.D0
       XNS(1)=0.0012D0
       XNS(2)=18.000D0
       XNS(3)=22.000D0
@@ -1490,8 +1488,7 @@ C
       INTEGER I
       DOUBLE PRECISION G,DMOD
       COMMON/RANDSD/G
-C      G=DMOD(G*9228907.D0,4294967296.D0)
-		G=1
+      G=DMOD(G*9228907.D0,4294967296.D0)
       IF(I.GE.0)TESUB7=G/4294967296.D0
       IF(I.LT.0)TESUB7=2.D0*G/4294967296.D0-1.D0
       RETURN

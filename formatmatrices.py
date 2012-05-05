@@ -22,30 +22,30 @@ class formatmatrix:
     
     This class will also use "scale" the nodes of out-vertex == 1 nodes. """
     
-    def __init__(self, locationofconnections, locationofstates, numberofruns, numberofdummyvariables):
+    def __init__(self, locationofconnections, locationofstates, numberofruns, numberofdummyvariables, partialcorrelation=False):
         """This class will assume you input a connection matrix (ordered according 
         to the statematrix) with the numberofdummy variables the first N variables
         which are dummy variables to be stripped. """
         
-        self.initialiseSystem(locationofconnections, locationofstates, numberofruns)
+        self.initialiseSystem(locationofconnections, locationofstates, numberofruns,partialcorrelation)
         self.removeDummyVariables(numberofdummyvariables) #can be zero!
-        
         self.addforwardScale()
         self.addbackwardScale()
         
     
-    def initialiseSystem(self, locationofconnections, locationofstates, numberofruns):
+    def initialiseSystem(self, locationofconnections, locationofstates, numberofruns,partialcorrelation=False):
         """This method should create the orignal gain matrix (incl dummy gains)
         and the original connection matrix"""
-        
-        original = localgains(locationofconnections, locationofstates, numberofruns)
-        
-        self.originalgain = original.linlocalgainmatrix
-        self.originaln =original.n #number of rows or columns of gain matrix
-        self.variablelist = original.variables
-        self.originaldiff = original.localdiffmatrix
-        self.originalconnection = original.connectionmatrix
-        
+        if partialcorrelation is False:
+            original = localgains(locationofconnections, locationofstates, numberofruns)
+            self.originalgain = original.linlocalgainmatrix
+            self.originaln =original.n #number of rows or columns of gain matrix
+            self.variablelist = original.variables
+            self.originaldiff = original.localdiffmatrix
+            self.originalconnection = original.connectionmatrix
+        else:
+            pass
+            
     def removeDummyVariables(self, numberofdummyvariables):
         """This method assumed the first variables up to numberofdummyvariables
         are the dummy variables"""

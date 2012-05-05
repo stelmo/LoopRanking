@@ -147,7 +147,7 @@ C  MEASUREMENT AND VALVE COMMON BLOCK
 C
       DOUBLE PRECISION XMEAS, XMV
       COMMON/PV/ XMEAS(41), XMV(12)
-
+C
 C   DISTURBANCE VECTOR COMMON BLOCK
 C
       INTEGER IDV
@@ -215,15 +215,16 @@ C  increased by the number of additional differential equations.
 C
       NN = 50
 C
-C  Set the number of points to simulate: 48hrs of simulation
+C  Set the number of points to simulate
 C
-      NPTS = 172800 
+      NPTS = 172800
 
 C
-C  Set the number of pints to simulate in steady state operation 3 hours of steady state so that 45 hour simulation
+C  Set the number of pints to simulate in steady state operation
 C
 
-      SSPTS = 3600 * 3
+      SSPTS = 3600 * 8
+
 
 C
 C  Integrator Step Size:  1 Second Converted to Hours
@@ -242,7 +243,7 @@ CC      SETPT = XMEAS(15) + 15.0
 CC      GAIN = 2.0
 CC      TAUI = 5.0
 CC      ERROLD = 0.0
-      SETPT(1)=3664.0       
+      SETPT(1)=3664.0        
       GAIN1=1.0
       ERROLD1=0.0
       SETPT(2)=4509.3
@@ -258,10 +259,10 @@ CC      ERROLD = 0.0
       GAIN5=-0.083 	   
       TAUI5=1./3600.   
       ERROLD5=0.0
-      SETPT(6)=0.33712  
+      SETPT(6)=0.33712
       GAIN6=1.22        	       
       ERROLD6=0.0
-      SETPT(7)=50.0
+      SETPT(7)=50.0   
       GAIN7=-2.06*1.1     ! CS: Was -2.06, added 20%    
       ERROLD7=0.0
       SETPT(8)=50.0 
@@ -286,7 +287,7 @@ CC      ERROLD = 0.0
       GAIN14=8.3	  
       TAUI14=3168.0/3600.
       ERROLD14=0.0
-      SETPT(15)=18.77  		
+      SETPT(15)=18.776 	  		
       GAIN15=2.37	  	
       TAUI15=5069./3600.    
       ERROLD15=0.0
@@ -306,7 +307,7 @@ CC      ERROLD = 0.0
       GAIN19=-83.2	  / 5. /3.  
       TAUI19=6336./3600. 
       ERROLD19=0.0
-      SETPT(20)=0.83570
+      SETPT(20)=0.83570  
       GAIN20=-16.3	 / 5.	   
       TAUI20=12408./3600.  
       ERROLD20=0.0
@@ -1353,7 +1354,7 @@ C
       	WRITE(2119,*) XMEAS(33), XMEAS(34), XMEAS(35), XMEAS(36)
       	WRITE(2120,*) XMEAS(37), XMEAS(38), XMEAS(39), XMEAS(40)
       	WRITE(2121,*) XMEAS(41)
- 100  FORMAT(1X,E13.5, 2X,E13.5, 2X,E13.5, 2X,E13.5)
+ 100  FORMAT(1X,E13.5,2X,E13.5,2X,E13.5,2X,E13.5)
  200  FORMAT(1X,E13.5,2X,E13.5,2X,E13.5)
  300  FORMAT(1X,E13.5)
 C

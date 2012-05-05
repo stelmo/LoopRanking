@@ -11,11 +11,11 @@ from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
 testcase = 't'
-dispRGA = True
+dispRGA = False
 dispEigenForwardAndBackward = False
 dispEigenBlend = True
-dispEdgeWeight = True
-dispBestControl = True
+dispEdgeWeight = False
+dispBestControl = False
 
 if testcase == 'a':
 

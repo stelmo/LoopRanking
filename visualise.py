@@ -448,6 +448,10 @@ class visualiseOpenLoopSystem:
         nx.draw_networkx_edges(self.EBG, pos=nodepos)
         plt.axis("off")
         
+        tt = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
+        for ttt in tt:
+            print(ttt)
+        
     def displayEigenRankBlendGoogle(self, nodummyvariablelist, alpha, nodepos=None):
         """This method displays the blended weightings of nodes i.e. it takes
         both forward and backward rankings into account.
