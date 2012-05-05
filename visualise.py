@@ -6,14 +6,13 @@ Created on Sun Apr 15 14:52:25 2012
 """
 
 """Import classes"""
-from numpy import array, transpose
+from numpy import array, transpose, arange, empty
 import networkx as nx
 import matplotlib.pyplot as plt
 from RGABristol import RGA
 from gainRank import gRanking
 from operator import itemgetter
 from itertools import permutations, izip
-#from math import isnan
 
 class visualiseOpenLoopSystem:
     """The class name is not strictly speaking accurate as some calculations are 
@@ -30,8 +29,8 @@ class visualiseOpenLoopSystem:
     This class will create several graphs:
     
     G = the directed connection graph with edge attribute 'localgain'
-    G1 = RGA recommended pairings graph with edge attribute 'edgecolour' to indicate
-        control pair
+    G1 = RGA recommended pairings using 0.5 criteria. edgecolour attribute
+    G2 = RGA recommended pairings using max criteria. edgecolour attribute.
     GGF = Google Gain Forward (scaled) graph with node importance as node attribute 'importance' 
     LGF = Local Gain Forward (scaled) graph with node importance as node attribute 'importance'
     GGB = Google Gain Forward (scaled) graph with node importance as node attribute 'importance'
@@ -122,43 +121,82 @@ class visualiseOpenLoopSystem:
             
         It has an optional parameter to set node positions. If left out
         the default node positions will be circular. """
-        self.G1 = nx.DiGraph()
-        self.G1 = self.G.copy()
-        message = "You have erred in method selection"
-        
-        if (pairingoption == 1):
+
+        if pairingoption == 1:
             pairingpattern =  self.bristol.pairedvariablesHalf
             message = "Standard RGA Pairings"
+            self.G1 = nx.DiGraph()
+            self.G1 = self.G.copy()
+            print(pairingpattern)
+            self.G1.add_edges_from(self.G1.edges(), edgecolour = 'k')
+            self.G1.add_edges_from(pairingpattern, edgecolour = 'r')
+            #correct up to here
+            pairingtuplelist = [(row[0],row[1]) for row in pairingpattern] #what a mission to find this error
+            edgecolorlist = ["r" if edge in pairingtuplelist else "k" for edge in self.G1.edges()]
+        
+                
+            if nodepositions == None:
+                nodepositions = nx.circular_layout(self.G1)
+            
+            plt.figure(message)            
+            nx.draw_networkx(self.G1, pos=nodepositions)
+            nx.draw_networkx_edges(self.G1,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.5)
+            nx.draw_networkx_nodes(self.G1,pos=nodepositions, node_color='y',node_size=450)
+            plt.axis('off')
         else:
             pairingpattern =  self.bristol.pairedvariablesMax
             message = "Maximum RGA Pairings"
-            
-        print(pairingpattern) 
+            self.G2 = nx.DiGraph()
+            self.G2 = self.G.copy()
+            print(pairingpattern)
+            self.G2.add_edges_from(self.G2.edges(), edgecolour = 'k')
+            self.G2.add_edges_from(pairingpattern, edgecolour = 'r')
+        #correct up to here
+            pairingtuplelist = [(row[0],row[1]) for row in pairingpattern] #what a mission to find this error
+            edgecolorlist = ["r" if edge in pairingtuplelist else "k" for edge in self.G2.edges()]
         
-        self.G1.add_edges_from(self.G1.edges(), edgecolour = 'k')
-        self.G1.add_edges_from(pairingpattern, edgecolour = 'r')
-        edgecolorlist = ['r' if edge in pairingpattern else 'k' for edge in self.G1.edges()]     
                 
-        if nodepositions == None:
-            nodepositions = nx.circular_layout(self.G1)
+            if nodepositions == None:
+                nodepositions = nx.circular_layout(self.G2)
+            
+            plt.figure(message)            
+            nx.draw_networkx(self.G2, pos=nodepositions)
+            nx.draw_networkx_edges(self.G2,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.5)
+            nx.draw_networkx_nodes(self.G2,pos=nodepositions, node_color='y',node_size=450)
+            plt.axis('off')
+            
         
-        plt.figure(message)            
-        nx.draw_networkx(self.G1, pos=nodepositions)
-        nx.draw_networkx_edges(self.G1,pos=nodepositions,width=2.5,edge_color=edgecolorlist, style='solid',alpha=0.15)
-        nx.draw_networkx_nodes(self.G1,pos=nodepositions, node_color='y',node_size=450)
-        plt.axis('off')
         
     def displayRGAmatrix(self):
         """This method will display the RGA matrix in a colour block."""
         
         plt.figure("Relative Gain Array")
+        [r, c] = self.bristol.bristolmatrix.shape
+        plt.imshow(self.bristol.bristolmatrix,cmap = plt.cm.gray_r, interpolation='nearest', extent = [0, 1, 0, 1])
+        lenofinputs = len(self.listofinputs)
+        outputs = self.bristol.vars[lenofinputs:]
+        rstart = 1.0/(2.0*r)
+        cstart = 1.0/(2.0*c)
+        rincr = 1.0/r
+        cincr = 1.0/c
+        revinputs = []
+        revinputs.extend(self.listofinputs)
+        revinputs.reverse()
+        plt.yticks(arange(rstart,1,rincr), revinputs, fontsize = 10)
+        plt.xticks(arange(cstart,1,cincr), outputs, rotation = -45, fontsize = 10)
         
-        plt.imshow(self.bristol.bristolmatrix, interpolation='nearest',extent=[0,1,0,1]) #need to fix this part!!! it looks ugly
-
-        plt.axis('off')
-        plt.colorbar()
-    
-    
+        rowstart = (r-1)*rincr + rstart
+        for i in range(r):
+            ypos = rowstart-i*rincr
+            for j in range(c):
+                xpos = cstart+cincr*j-0.15*cincr
+                val = round(self.bristol.bristolmatrix[i,j],3)
+                if val <= 0.5:
+                    colour = 'k'
+                else:
+                    colour = 'w'
+                plt.text(xpos, ypos, val, color= colour, fontsize = 10 )
+   
     def showAll(self):
         """This method is called at the end of the visualisation routine so that
         the user may see the whole collection of figures for the system under
@@ -670,6 +708,13 @@ class visualiseOpenLoopSystem:
                 nx.write_gml(self.G1, "graphG1.gml")
         except:
             print("G1 does not exist")
+            
+        try:
+            if self.G2:
+                print("G2 exists")
+                nx.write_gml(self.G2, "graphG2.gml")
+        except:
+            print("G2 does not exist")    
             
         try:
             if self.GGF:
