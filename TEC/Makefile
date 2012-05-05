@@ -1,4 +1,6 @@
-all: temain.exe temain_mod.exe temain_nc.exe
+executables=$(addsuffix .exe,temain temain_mod temain_nc temain_out)
+
+all: $(executables)
 
 run: temain.exe
 		temain.exe
@@ -10,6 +12,6 @@ teprob.o: teprob.f
 	gfortran -c $<
 
 clean:
-	-del temain.exe teprob.o
+	-del $(executables) teprob.o
 
 .PHONY: clean run
