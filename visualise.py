@@ -555,6 +555,7 @@ class visualiseOpenLoopSystem:
         else:
             controlme = variablestocontrol
 
+        
         self.pathlengthsdict = dict()
         for x in self.listofinputs:
             for y in controlme:
@@ -613,7 +614,6 @@ class visualiseOpenLoopSystem:
             print("Start Iterations: Greedy Pairing")
             """Fixed method: will attempt to force every MV to a unique CV"""
             usedMV = []
-            
             for x in controldesc:
                 MV = None
                 previter = float('inf')
@@ -627,11 +627,8 @@ class visualiseOpenLoopSystem:
                     
                     
                 usedMV.append(MV)
-                prevbestconfig.append(recpair)
-                        
-                        
-                
-                
+                prevbestconfig.append(recpair)   
+               
         print("The recommended control pairs")
         for x in prevbestconfig:
             print(x)
