@@ -77,7 +77,7 @@ C
 C  Example Disturbance:
 C    Change Reactor Cooling
 C
-      XMV(10) = 38.
+C      XMV(10) = 38.
 C
 C  Set all Disturbance Flags to OFF
 C
@@ -149,7 +149,7 @@ C
       DOUBLE PRECISION XMEAS, XMV
       COMMON/PV/ XMEAS(41), XMV(12)
 C
-      WRITE(6,100) XMEAS(9), XMEAS(15), XMV(8)
+      WRITE(6,100) XMV(11), XMV(8), XMV(10)
  100  FORMAT(1X,'Reac Temp = ',F6.2,
      .       2X,'Stripper Lev = ',F6.2,
      .       2X,'Sripper Underflow = ',F6.2)

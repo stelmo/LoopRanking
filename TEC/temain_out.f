@@ -220,10 +220,10 @@ C
       NPTS = 172800 
 
 C
-C  Set the number of points to simulate in steady state operation 3 hours of steady state so that 45 hour simulation
+C  Set the number of points to simulate in steady state operation 25 hours
 C
 
-      SSPTS = 3600 * 8
+      SSPTS = 3600 * 25
 
 C
 C  Integrator Step Size:  1 Second Converted to Hours
@@ -233,7 +233,61 @@ C
 C  Initialize Process
 C  (Sets TIME to zero)
 C
-      CALL TEINIT(NN,TIME,YY,YP)
+C      CALL TEINIT(NN,TIME,YY,YP)
+
+      XMV(1) =  6.9534e+001
+      XMV(2) =  5.2200e+001
+      XMV(3) =  2.8678e+001
+      XMV(4) = 6.3233e+001
+      XMV(5) = 1.2566e+001
+      XMV(6) = 4.0946e+001
+      XMV(7) = 3.9822e+001
+      XMV(8) = 4.8293e+001
+      XMV(9) = 3.3523e+001
+      XMV(10) = 4.3912e+001 
+      XMV(11) = 1.7013e+001 
+      XMV(12) = 5.0000e+001 
+      XMEAS(1) = 2.8434e-001
+      XMEAS(2) = 3.9327e+003 
+      XMEAS(3) = 4.2286e+003
+      XMEAS(4) = 9.3422e+000 
+      XMEAS(5) = 2.6902e+001
+      XMEAS(6) = 4.2889e+001 
+      XMEAS(7) = 2.6138e+003 
+      XMEAS(8) = 7.5000e+001
+      XMEAS(9) = 1.2040e+002
+      XMEAS(10) = 3.2320e-001
+      XMEAS(11) = 8.3746e+001
+      XMEAS(12) = 5.0532e+001
+      XMEAS(13) = 2.5351e+003
+      XMEAS(14) = 2.5671e+001
+      XMEAS(15) = 5.0634e+001 
+      XMEAS(16) = 3.0525e+003 
+      XMEAS(17) = 2.2949e+001
+      XMEAS(18) = 6.5291e+001 
+      XMEAS(19) = 1.5763e+002
+      XMEAS(20) = 3.1939e+002 
+      XMEAS(21) = 9.3376e+001
+      XMEAS(22) = 8.0467e+001 
+      XMEAS(23) = 3.2188e+001
+      XMEAS(24) = 8.6897e+000 
+      XMEAS(25) = 1.9926e+001
+      XMEAS(26) = 6.8820e+000
+      XMEAS(27) = 1.8776e+001 
+      XMEAS(28) = 1.7321e+000
+      XMEAS(29) = 3.3830e+001
+      XMEAS(30) = 1.3823e+001
+      XMEAS(31) = 1.4837e+001
+      XMEAS(32) = 1.0400e+000
+      XMEAS(33) = 1.9877e+001 
+      XMEAS(34) = 2.4499e+000
+      XMEAS(35) = 5.5541e+000
+      XMEAS(36) = 2.1396e+000 
+      XMEAS(37) = -3.7876e-002 
+      XMEAS(38) = 8.3569e-001  
+      XMEAS(39) = 4.5481e-002
+      XMEAS(40) = 5.4035e+001
+      XMEAS(41) = 3.7455e+001
 C
 C  Set Controller Parameters
 C  Make a Stripper Level Set Point Change of +15%
@@ -314,34 +368,9 @@ CC      ERROLD = 0.0
       GAIN22=-1.0	  * 5.	   
       TAUI22=1000./3600.  
       ERROLD22=0.0
-C
-C    Example Disturbance:
-C    Change Reactor Cooling
-C
- 	XMV(1) = 63.053 + 0.
-	XMV(2) = 53.980 + 0.
-	XMV(3) = 24.644 + 0.    
-	XMV(4) = 61.302 + 0.
-	XMV(5) = 22.210 + 0.
-	XMV(6) = 40.064 + 0.
-	XMV(7) = 38.100 + 0.
-	XMV(8) = 46.534 + 0.
-	XMV(9) = 47.446 + 0.
-	XMV(10)= 41.106 + 0.
-	XMV(11)= 18.114 + 0.
-C
-C	SETPT(6)=SETPT(6) + 0.2
-C
-C  Set all Disturbance Flags to OFF
-C
-      DO 100 I = 1, 20
-          IDV(I) = 0
- 100  CONTINUE
-C      IDV(20)=1	
-C
-C
-C
-C
+
+      
+      
 	  OPEN(UNIT=111,FILE='singlefileoutput/timedata.dat',STATUS='new')
 	  OPEN(UNIT=1111,FILE='singlefileoutput/statechangedata.dat',
      &	  STATUS='new', ACCESS='append')
@@ -351,9 +380,12 @@ C
 C  Simulation Loop
 C
         DO 1000 I = 1, NPTS
-         IF (I.GE.SSPTS) THEN
-                 IDV(2)=0
+        
+         IF (I.GE.SSPTS) THEN      
+C			Add things here
+
           ENDIF
+          
 	  TEST=MOD(I,3)
 	  IF (TEST.EQ.0) THEN
 		CALL CONTRL1
@@ -371,6 +403,7 @@ C
 	  	CALL CONTRL17
 	  	CALL CONTRL18
 	  ENDIF
+	  
           TEST1=MOD(I,360)
 	  IF (TEST1.EQ.0) THEN
 	  	CALL CONTRL13
@@ -378,13 +411,10 @@ C
 	  	CALL CONTRL15
 	  	CALL CONTRL19
 	  ENDIF
+	  
 	  TEST1=MOD(I,900)
 	  IF (TEST1.EQ.0) CALL CONTRL20
-C	  TEST3=MOD(I,5000)
-C	  IF (TEST3.EQ.0) THEN
-C		PRINT *, 'Simulation time (in seconds) = ', I
-C	ENDIF
-C
+
  	TEST4=MOD(I,180)	
 	IF (TEST4.EQ.0) THEN
 		CALL OUTPUT
@@ -394,7 +424,7 @@ C
 C
 	  CALL INTGTR(NN,TIME,DELTAT,YY,YP)
 C
- 	  CALL CONSHAND
+C 	  CALL CONSHAND
 C
  1000 CONTINUE
 C		PRINT *, 'Simulation is done. '
