@@ -29,10 +29,9 @@ class formatmatrix:
         
         self.initialiseSystem(locationofconnections, locationofstates, numberofruns,partialcorrelation)
         self.removeDummyVariables(numberofdummyvariables,partialcorrelation) #can be zero!
-        #self.addforwardScale()
-        #self.addbackwardScale()
-        
-    
+        self.addforwardScale()
+        self.addbackwardScale()
+           
     def initialiseSystem(self, locationofconnections, locationofstates, numberofruns,partialcorrelation=False):
         """This method should create the orignal gain matrix (incl dummy gains)
         and the original connection matrix"""
@@ -45,7 +44,7 @@ class formatmatrix:
             self.originalconnection = original.connectionmatrix
         else:
             original = localgains(locationofconnections, locationofstates, numberofruns,partialcorrelation)
-            self.originalgain = original.inputdata
+            self.originalgain = original.partialcorrelationmatrix
             self.variablelist = original.variables
             self.originalconnection = original.connectionmatrix
             
@@ -133,8 +132,7 @@ class formatmatrix:
         self.scaledforwardconnection = transpose(nx.to_numpy_matrix(M, weight = None))
         self.scaledforwardgain = transpose(nx.to_numpy_matrix(M, weight = 'weight'))
         self.scaledforwardvariablelist = M.nodes() #i sincerely hope this works!... After some testing, I think it does!!!
-        
-        
+               
     def addbackwardScale(self):
         """This method should add a unit gain node to all nodes with an out-degree
         of 1; now all of these nodes should have an out-degree of 2. Therefore

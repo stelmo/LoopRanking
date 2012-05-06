@@ -13,17 +13,22 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from operator import itemgetter
 
-testcase = '1local' #use local gains to calculate importances
+testcase = 'local' #use local gains to calculate importances
 
 if testcase == 'local':
     
     datamatrix = formatmatrix("connectionsTEcontrol.csv", "scaledcontrol.txt", 21 ,0)
-    controlmatrix = loopranking(datamatrix.scaledforwardgain, datamatrix.scaledforwardvariablelist, datamatrix.scaledforwardconnection, datamatrix.scaledbackwardgain, datamatrix.scaledbackwardvariablelist, datamatrix.scaledbackwardconnection, datamatrix.nodummyvariablelist)
-    """Now you have a control matrix which has a dictionary of "ideal" blended node importances based on local gains"""
+    datamatrixNC = formatmatrix("connectionsTE.csv","scaledinputs100h5.txt",13,0 )
+    controlmatrix = loopranking(datamatrix.scaledforwardgain, datamatrix.scaledforwardvariablelist, datamatrix.scaledforwardconnection, datamatrix.scaledbackwardgain, datamatrix.scaledbackwardvariablelist, datamatrix.scaledbackwardconnection, datamatrix.nodummyvariablelist, datamatrixNC.scaledforwardgain, datamatrixNC.scaledforwardvariablelist, datamatrixNC.scaledforwardconnection, datamatrixNC.scaledbackwardgain, datamatrixNC.scaledbackwardvariablelist, datamatrixNC.scaledbackwardconnection)
     
+    controlmatrix.displayControlImportances(datamatrixNC.nodummyconnection, datamatrix.nodummyconnection)
+    
+    controlmatrix.showAll()
+    controlmatrix.exportToGML()
 else:
     
     datamatrix = formatmatrix("connectionsTEcontrol.csv","correlatedcontrol.txt",0,0,partialcorrelation=True)
+    controlmatrix = loopranking(datamatrix.scaledforwardgain, datamatrix.scaledforwardvariablelist, datamatrix.scaledforwardconnection, datamatrix.scaledbackwardgain, datamatrix.scaledbackwardvariablelist, datamatrix.scaledbackwardconnection, datamatrix.nodummyvariablelist)
     
         
     
