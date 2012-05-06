@@ -13,7 +13,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from operator import itemgetter
 
-testcase = 'local' #use local gains to calculate importances
+testcase = 'local' #use local gains to calculate importances if == local
 
 if testcase == 'local':
     
@@ -26,7 +26,7 @@ if testcase == 'local':
     controlmatrix.showAll()
     controlmatrix.exportToGML()
 else:
-    
+    #this works
     datamatrix = formatmatrix("connectionsTEcontrol.csv","correlatedcontrol.txt",0,0,partialcorrelation=True)
     controlmatrix = loopranking(datamatrix.scaledforwardgain, datamatrix.scaledforwardvariablelist, datamatrix.scaledforwardconnection, datamatrix.scaledbackwardgain, datamatrix.scaledbackwardvariablelist, datamatrix.scaledbackwardconnection, datamatrix.nodummyvariablelist)
     
