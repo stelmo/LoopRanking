@@ -28,9 +28,9 @@ class formatmatrix:
         which are dummy variables to be stripped. """
         
         self.initialiseSystem(locationofconnections, locationofstates, numberofruns,partialcorrelation)
-        self.removeDummyVariables(numberofdummyvariables) #can be zero!
-        self.addforwardScale()
-        self.addbackwardScale()
+        self.removeDummyVariables(numberofdummyvariables,partialcorrelation) #can be zero!
+        #self.addforwardScale()
+        #self.addbackwardScale()
         
     
     def initialiseSystem(self, locationofconnections, locationofstates, numberofruns,partialcorrelation=False):
@@ -44,28 +44,46 @@ class formatmatrix:
             self.originaldiff = original.localdiffmatrix
             self.originalconnection = original.connectionmatrix
         else:
-            pass
+            original = localgains(locationofconnections, locationofstates, numberofruns,partialcorrelation)
+            self.originalgain = original.inputdata
+            self.variablelist = original.variables
+            self.originalconnection = original.connectionmatrix
             
-    def removeDummyVariables(self, numberofdummyvariables):
+    def removeDummyVariables(self, numberofdummyvariables,partialcorrelation=False):
         """This method assumed the first variables up to numberofdummyvariables
         are the dummy variables"""
         
         #fix the list of variables
-        self.nodummyvariablelist = [] #necessary for a list copy
-        self.nodummyvariablelist.extend(self.variablelist)
-        self.nodummygain = self.originalgain.copy()
-        self.nodummyconnection = self.originalconnection.copy()
-        self.nodummydiff = self.originaldiff.copy()
-        for index in range(numberofdummyvariables):
-            self.nodummyvariablelist.pop(0)
-            self.nodummygain = np.delete(self.nodummygain,0,0)        
-            self.nodummygain = np.delete(self.nodummygain,0,1)
-            self.nodummydiff = np.delete(self.nodummydiff,0,0) #you don't want to delete "runs" i.e. columns from the difference matrix       
-            self.nodummyconnection = np.delete(self.nodummyconnection,0,0)        
-            self.nodummyconnection = np.delete(self.nodummyconnection,0,1)
-            
-        [r, c] = self.nodummyconnection.shape
-        self.nodummyN = r
+        if partialcorrelation is False:
+            self.nodummyvariablelist = [] #necessary for a list copy
+            self.nodummyvariablelist.extend(self.variablelist)
+            self.nodummygain = self.originalgain.copy()
+            self.nodummyconnection = self.originalconnection.copy()
+            self.nodummydiff = self.originaldiff.copy()
+            for index in range(numberofdummyvariables):
+                self.nodummyvariablelist.pop(0)
+                self.nodummygain = np.delete(self.nodummygain,0,0)        
+                self.nodummygain = np.delete(self.nodummygain,0,1)
+                self.nodummydiff = np.delete(self.nodummydiff,0,0) #you don't want to delete "runs" i.e. columns from the difference matrix       
+                self.nodummyconnection = np.delete(self.nodummyconnection,0,0)        
+                self.nodummyconnection = np.delete(self.nodummyconnection,0,1)
+                
+            [r, c] = self.nodummyconnection.shape
+            self.nodummyN = r
+        else:
+            self.nodummyvariablelist = [] #necessary for a list copy
+            self.nodummyvariablelist.extend(self.variablelist)
+            self.nodummygain = self.originalgain.copy()
+            self.nodummyconnection = self.originalconnection.copy()
+            for index in range(numberofdummyvariables):
+                self.nodummyvariablelist.pop(0)
+                self.nodummygain = np.delete(self.nodummygain,0,0)        
+                self.nodummygain = np.delete(self.nodummygain,0,1)     
+                self.nodummyconnection = np.delete(self.nodummyconnection,0,0)        
+                self.nodummyconnection = np.delete(self.nodummyconnection,0,1)
+                
+            [r, c] = self.nodummyconnection.shape
+            self.nodummyN = r            
         
     def formatDiffMatrixForRGA(self, numberofinputs):
         """This method will format the difference matrix such that the RGA method 
