@@ -236,6 +236,57 @@ C
       CALL TEINIT(NN,TIME,YY,YP)
 C       Place modifications here
 
+!        YY(1) = 0.51796
+!        YY(2) = 0.082255
+!        YY(3) = 51.854
+!        YY(4) = 45.682
+!        YY(5) = 59.262
+!        YY(6) = 53.877
+!        YY(7) = 0.10956
+!        YY(8) = 72.052
+!        YY(9) = 41.77
+!        YY(10) = 35.645
+!        YY(11) = 34.758
+!        YY(12) = 43.463
+!        YY(13) = 79.418
+!        YY(14) = 41.801
+!        YY(15) = 19.437
+!        YY(16) = 50
+!        YY(17) = 2.122e-314
+!        YY(18) = 4.5222e+228
+!        YY(19) = 524.17
+!        YY(20) = 5.4039
+!        YY(21) = 551.19
+!        YY(22) = 0.75075
+!        YY(23) = 54.926
+!        YY(24) = 9.7013
+!        YY(25) = 246.9
+!        YY(26) = 209.08
+!        YY(27) = 0.15705
+!        YY(28) = 2.2245
+!        YY(29) = 2.3415e+005
+!        YY(30) = 0.023826
+!        YY(31) = 1038.6
+!        YY(32) = 998.9
+!        YY(33) = 26.427
+!        YY(34) = 27266
+!        YY(35) = 2.1233e-314
+!        YY(36) = 1.061e-312
+!        YY(37) = 1
+!        YY(38) = 1.0731
+!        YY(39) = 1.1278
+!        YY(40) = 1.0822e-312
+!        YY(41) = 58175
+!        YY(42) = 2918.2
+!        YY(43) = 4.244e-314
+!        YY(44) = 3.6668e-309
+!        YY(45) = 0
+!        YY(46) = 1.8009e-307
+!        YY(47) = 6.9521e-308
+!        YY(48) = 6.9504e-308
+!        YY(49) = 1.061e-312
+!        YY(50) = -3.809
+
 C
 C  Set Controller Parameters
 C  Make a Stripper Level Set Point Change of +15%
@@ -334,42 +385,42 @@ C			Add things here
 
           ENDIF
           
- 	  TEST=MOD(I,3)
- 	  IF (TEST.EQ.0) THEN
- 		CALL CONTRL1
- 	  	CALL CONTRL2
- 	  	CALL CONTRL3
- 	  	CALL CONTRL4
- 	  	CALL CONTRL5
- 	  	CALL CONTRL6
- 	  	CALL CONTRL7
- 	  	CALL CONTRL8
- 	  	CALL CONTRL9
- 	  	CALL CONTRL10
- 	  	CALL CONTRL11
- 	  	CALL CONTRL16
- 	  	CALL CONTRL17
- 	  	CALL CONTRL18
- 	  ENDIF
-
-           TEST1=MOD(I,360)
- 	  IF (TEST1.EQ.0) THEN
- 	  	CALL CONTRL13
- 	  	CALL CONTRL14
- 	  	CALL CONTRL15
- 	  	CALL CONTRL19
- 	  ENDIF
-
- 	  TEST1=MOD(I,900)
- 	  IF (TEST1.EQ.0) CALL CONTRL20
-
+! 	  TEST=MOD(I,3)
+! 	  IF (TEST.EQ.0) THEN
+! 		CALL CONTRL1
+! 	  	CALL CONTRL2
+! 	  	CALL CONTRL3
+! 	  	CALL CONTRL4
+! 	  	CALL CONTRL5
+! 	  	CALL CONTRL6
+! 	  	CALL CONTRL7
+! 	  	CALL CONTRL8
+! 	  	CALL CONTRL9
+! 	  	CALL CONTRL10
+! 	  	CALL CONTRL11
+! 	  	CALL CONTRL16
+! 	  	CALL CONTRL17
+! 	  	CALL CONTRL18
+! 	  ENDIF
+!
+!           TEST1=MOD(I,360)
+! 	  IF (TEST1.EQ.0) THEN
+! 	  	CALL CONTRL13
+! 	  	CALL CONTRL14
+! 	  	CALL CONTRL15
+! 	  	CALL CONTRL19
+! 	  ENDIF
+!
+! 	  TEST1=MOD(I,900)
+! 	  IF (TEST1.EQ.0) CALL CONTRL20
+!
  	  TEST4=MOD(I,180)
 	  IF (TEST4.EQ.0) THEN
 		CALL OUTPUT
       		WRITE(111,111) I
  111  		FORMAT(1X,I6)
      	ENDIF
-C
+
 	  CALL INTGTR(NN,TIME,DELTAT,YY,YP)
 C
  	  CALL CONSHAND
@@ -1290,17 +1341,27 @@ C
 C
 C   MEASUREMENT AND VALVE COMMON BLOCK
 C
-      DOUBLE PRECISION XMEAS, XMV
+      DOUBLE PRECISION XMEAS, XMV, YY(50)
       COMMON/PV/ XMEAS(41), XMV(12)
 C
-      WRITE(1111,*) XMV(1), XMV(2), XMV(3), XMV(4), XMV(5), XMV(6),
-     1 XMV(7), XMV(8), XMV(9), XMV(10), XMV(11), XMV(12), XMEAS(5),
-     2 XMEAS(6), XMEAS(7), XMEAS(8), XMEAS(9), XMEAS(10), XMEAS(11),
-     3 XMEAS(12), XMEAS(13), XMEAS(14), XMEAS(15), XMEAS(16), XMEAS(17),
-     4 XMEAS(18), XMEAS(19), XMEAS(20), XMEAS(21), XMEAS(22), XMEAS(23),
-     5 XMEAS(24), XMEAS(25), XMEAS(26), XMEAS(27), XMEAS(28), XMEAS(29),
-     6 XMEAS(30), XMEAS(31), XMEAS(32), XMEAS(33), XMEAS(34), XMEAS(35),
-     7 XMEAS(36), XMEAS(37), XMEAS(38), XMEAS(39), XMEAS(40), XMEAS(41)
+!      WRITE(1111,*) XMV(1), XMV(2), XMV(3), XMV(4), XMV(5), XMV(6),
+!     1 XMV(7), XMV(8), XMV(9), XMV(10), XMV(11), XMV(12), XMEAS(5),
+!     2 XMEAS(6), XMEAS(7), XMEAS(8), XMEAS(9), XMEAS(10), XMEAS(11),
+!     3 XMEAS(12), XMEAS(13), XMEAS(14), XMEAS(15), XMEAS(16), XMEAS(17),
+!     4 XMEAS(18), XMEAS(19), XMEAS(20), XMEAS(21), XMEAS(22), XMEAS(23),
+!     5 XMEAS(24), XMEAS(25), XMEAS(26), XMEAS(27), XMEAS(28), XMEAS(29),
+!     6 XMEAS(30), XMEAS(31), XMEAS(32), XMEAS(33), XMEAS(34), XMEAS(35),
+!     7 XMEAS(36), XMEAS(37), XMEAS(38), XMEAS(39), XMEAS(40), XMEAS(41)
+
+        WRITE(1111,*) YY(1), YY(2), YY(3), YY(4), YY(5), YY(6),
+     1  YY(7), YY(8), YY(9), YY(10), YY(11), YY(12),
+     2  YY(13), YY(14), YY(15), YY(16), YY(17), YY(18),
+     3  YY(19), YY(20), YY(21), YY(22), YY(23), YY(24),
+     4  YY(25), YY(26), YY(27), YY(28), YY(29), YY(30),
+     5  YY(31), YY(32), YY(33), YY(34), YY(35), YY(36),
+     6  YY(37), YY(38), YY(39), YY(40), YY(41), YY(42),
+     7  YY(43), YY(44), YY(45), YY(46), YY(47), YY(48),
+     8  YY(49), YY(50)
 
  100  FORMAT(1X,E13.5, 2X,E13.5, 2X,E13.5, 2X,E13.5)
  200  FORMAT(1X,E13.5,2X,E13.5,2X,E13.5)
