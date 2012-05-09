@@ -10,12 +10,13 @@ from numpy import array
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 'a'
+testcase = 't'
+
 dispRGA = True
-dispEigenForwardAndBackward = False
-dispEigenBlend = False
-dispEdgeWeight = False
-dispBestControl = False
+dispEigenForwardAndBackward = True
+dispEigenBlend = True
+dispEdgeWeight = True
+dispBestControl = True
 
 if testcase == 'a':
 

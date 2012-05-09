@@ -55,7 +55,7 @@ C
 C
 C  Set the number of points to simulate
 C
-      NPTS = 10
+      NPTS = 100
 C
 C  Integrator Step Size:  1 Second Converted to Hours
 C
@@ -89,7 +89,7 @@ C  Simulation Loop
 C
       DO 1000 I = 1, NPTS
 C
-          CALL CONTRL
+C          CALL CONTRL
 C
           CALL OUTPUT
 C
@@ -149,7 +149,7 @@ C
       DOUBLE PRECISION XMEAS, XMV
       COMMON/PV/ XMEAS(41), XMV(12)
 C
-      WRITE(6,100) XMV(11), XMV(8), XMV(10)
+      WRITE(6,100) XMEAS(19), XMEAS(20), XMEAS(21)
  100  FORMAT(1X,'Reac Temp = ',F6.2,
      .       2X,'Stripper Lev = ',F6.2,
      .       2X,'Sripper Underflow = ',F6.2)

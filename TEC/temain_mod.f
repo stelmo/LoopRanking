@@ -319,9 +319,9 @@ C
 C    Example Disturbance:
 C    Change Reactor Cooling
 C
- 	XMV(1) = 63.053 + 0.
-	XMV(2) = 53.980 + 0.
-	XMV(3) = 24.644 + 0.    
+        XMV(1) = 63.053 + 0.
+	    XMV(2) = 53.980 + 0.
+	    XMV(3) = 24.644 + 0.
 	XMV(4) = 61.302 + 0.
 	XMV(5) = 22.210 + 0.
 	XMV(6) = 40.064 + 0.

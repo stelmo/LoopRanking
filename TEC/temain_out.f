@@ -157,10 +157,10 @@ C   CONTROLLER COMMON BLOCK
 C
 C      DOUBLE PRECISION SETPT, GAIN, TAUI, ERROLD, DELTAT
 C      COMMON/CTRL/ SETPT, GAIN, TAUI, ERROLD, DELTAT
-       DOUBLE PRECISION SETPT, DELTAT
-       COMMON/CTRLALL/ SETPT(20), DELTAT
-       INTEGER FLAG
-       COMMON/FLAG6/ FLAG
+      DOUBLE PRECISION SETPT, DELTAT
+      COMMON/CTRLALL/ SETPT(20), DELTAT
+      INTEGER FLAG
+      COMMON/FLAG6/ FLAG
 C
       DOUBLE PRECISION GAIN1, ERROLD1
       COMMON/CTRL1/ GAIN1, ERROLD1
@@ -223,7 +223,7 @@ C
 C  Set the number of points to simulate in steady state operation 25 hours
 C
 
-      SSPTS = 3600 * 25
+      SSPTS = 3600 * 3
 
 C
 C  Integrator Step Size:  1 Second Converted to Hours
@@ -234,60 +234,8 @@ C  Initialize Process
 C  (Sets TIME to zero)
 C
       CALL TEINIT(NN,TIME,YY,YP)
+C       Place modifications here
 
-      XMV(1) =  6.9534e+001
-      XMV(2) =  5.2200e+001
-      XMV(3) =  2.8678e+001
-      XMV(4) = 6.3233e+001
-      XMV(5) = 1.2566e+001
-      XMV(6) = 4.0946e+001
-      XMV(7) = 3.9822e+001
-      XMV(8) = 4.8293e+001
-      XMV(9) = 3.3523e+001
-      XMV(10) = 4.3912e+001 
-      XMV(11) = 1.7013e+001 
-      XMV(12) = 5.0000e+001 
-      XMEAS(1) = 2.8434e-001
-      XMEAS(2) = 3.9327e+003 
-      XMEAS(3) = 4.2286e+003
-      XMEAS(4) = 9.3422e+000 
-      XMEAS(5) = 2.6902e+001
-      XMEAS(6) = 4.2889e+001 
-      XMEAS(7) = 2.6138e+003 
-      XMEAS(8) = 7.5000e+001
-      XMEAS(9) = 1.2040e+002
-      XMEAS(10) = 3.2320e-001
-      XMEAS(11) = 8.3746e+001
-      XMEAS(12) = 5.0532e+001
-      XMEAS(13) = 2.5351e+003
-      XMEAS(14) = 2.5671e+001
-      XMEAS(15) = 5.0634e+001 
-      XMEAS(16) = 3.0525e+003 
-      XMEAS(17) = 2.2949e+001
-      XMEAS(18) = 6.5291e+001 
-      XMEAS(19) = 1.5763e+002
-      XMEAS(20) = 3.1939e+002 
-      XMEAS(21) = 9.3376e+001
-      XMEAS(22) = 8.0467e+001 
-      XMEAS(23) = 3.2188e+001
-      XMEAS(24) = 8.6897e+000 
-      XMEAS(25) = 1.9926e+001
-      XMEAS(26) = 6.8820e+000
-      XMEAS(27) = 1.8776e+001 
-      XMEAS(28) = 1.7321e+000
-      XMEAS(29) = 3.3830e+001
-      XMEAS(30) = 1.3823e+001
-      XMEAS(31) = 1.4837e+001
-      XMEAS(32) = 1.0400e+000
-      XMEAS(33) = 1.9877e+001 
-      XMEAS(34) = 2.4499e+000
-      XMEAS(35) = 5.5541e+000
-      XMEAS(36) = 2.1396e+000 
-      XMEAS(37) = -3.7876e-002 
-      XMEAS(38) = 8.3569e-001  
-      XMEAS(39) = 4.5481e-002
-      XMEAS(40) = 5.4035e+001
-      XMEAS(41) = 3.7455e+001
 C
 C  Set Controller Parameters
 C  Make a Stripper Level Set Point Change of +15%
@@ -296,75 +244,75 @@ CC      SETPT = XMEAS(15) + 15.0
 CC      GAIN = 2.0
 CC      TAUI = 5.0
 CC      ERROLD = 0.0
-      SETPT(1)=3664.0*0.997        
+      SETPT(1)=3664.0  
       GAIN1=1.0
       ERROLD1=0.0
-      SETPT(2)=4509.3*1.01
+      SETPT(2)=4509.3
       GAIN2=1.0
       ERROLD2=0.0
-      SETPT(3)=.25052*1.02
+      SETPT(3)=.25052
       GAIN3=1.
       ERROLD3=0.0
-      SETPT(4)=9.3477*0.99
+      SETPT(4)=9.3477
       GAIN4=1.
       ERROLD4=0.0
-      SETPT(5)=26.902*0.98
+      SETPT(5)=26.902
       GAIN5=-0.083 	   
       TAUI5=1./3600.   
       ERROLD5=0.0
-      SETPT(6)=0.33712*1.05
+      SETPT(6)=0.33712
       GAIN6=1.22        	       
       ERROLD6=0.0
-      SETPT(7)=50.0*0.98
+      SETPT(7)=50.0
       GAIN7=-2.06*1.1     ! CS: Was -2.06, added 20%    
       ERROLD7=0.0
       SETPT(8)=50.0*0.978
       GAIN8=-1.62*1.2     ! CS: Was -1.62, added 20%   
       ERROLD8=0.0
-      SETPT(9)=230.31*1.035
+      SETPT(9)=230.31
       GAIN9=0.41          
       ERROLD9=0.0	
-      SETPT(10)=94.599*1.048
+      SETPT(10)=94.599
       GAIN10= -0.156     * 10.
       TAUI10=1452./3600. 
       ERROLD10=0.0
-      SETPT(11)=22.949*0.985    
+      SETPT(11)=22.949
       GAIN11=1.09	  
       TAUI11=2600./3600.
       ERROLD11=0.0
-      SETPT(13)=32.188*0.969
+      SETPT(13)=32.188
       GAIN13=18.              
       TAUI13=3168./3600.   
       ERROLD13=0.0
-      SETPT(14)=6.8820*0.9777
+      SETPT(14)=6.8820
       GAIN14=8.3	  
       TAUI14=3168.0/3600.
       ERROLD14=0.0
-      SETPT(15)=18.776*1.0688		
+      SETPT(15)=18.776	
       GAIN15=2.37	  	
       TAUI15=5069./3600.    
       ERROLD15=0.0
-      SETPT(16)=65.731*0.9
+      SETPT(16)=65.731
       GAIN16=1.69	  / 10.
       TAUI16=236./3600.
       ERROLD16=0.0
-      SETPT(17)=75.000*1.019
+      SETPT(17)=75.000
       GAIN17=11.1	/ 10.
       TAUI17=3168./3600.  
       ERROLD17=0.0	  
-      SETPT(18)=120.40*1.059
+      SETPT(18)=120.40
       GAIN18=2.83	* 5. ! CS: Was *10
       TAUI18=982./3600.
       ERROLD18=0.0
-      SETPT(19)=13.823*1.035
+      SETPT(19)=13.823
       GAIN19=-83.2	  / 5. /3.  
       TAUI19=6336./3600. 
       ERROLD19=0.0
-      SETPT(20)=0.83570*0.9
+      SETPT(20)=0.83570
       GAIN20=-16.3	 / 5.	   
       TAUI20=12408./3600.  
       ERROLD20=0.0
-      SETPT(12)=2633.7*1.0321
+      SETPT(12)=2633.7
       GAIN22=-1.0	  * 5.	   
       TAUI22=1000./3600.  
       ERROLD22=0.0
@@ -386,37 +334,37 @@ C			Add things here
 
           ENDIF
           
-	  TEST=MOD(I,3)
-	  IF (TEST.EQ.0) THEN
-		CALL CONTRL1
-	  	CALL CONTRL2
-	  	CALL CONTRL3
-	  	CALL CONTRL4
-	  	CALL CONTRL5
-	  	CALL CONTRL6
-	  	CALL CONTRL7
-	  	CALL CONTRL8
-	  	CALL CONTRL9
-	  	CALL CONTRL10
-	  	CALL CONTRL11
-	  	CALL CONTRL16
-	  	CALL CONTRL17
-	  	CALL CONTRL18
-	  ENDIF
-	  
-          TEST1=MOD(I,360)
-	  IF (TEST1.EQ.0) THEN
-	  	CALL CONTRL13
-	  	CALL CONTRL14
-	  	CALL CONTRL15
-	  	CALL CONTRL19
-	  ENDIF
-	  
-	  TEST1=MOD(I,900)
-	  IF (TEST1.EQ.0) CALL CONTRL20
+ 	  TEST=MOD(I,3)
+ 	  IF (TEST.EQ.0) THEN
+ 		CALL CONTRL1
+ 	  	CALL CONTRL2
+ 	  	CALL CONTRL3
+ 	  	CALL CONTRL4
+ 	  	CALL CONTRL5
+ 	  	CALL CONTRL6
+ 	  	CALL CONTRL7
+ 	  	CALL CONTRL8
+ 	  	CALL CONTRL9
+ 	  	CALL CONTRL10
+ 	  	CALL CONTRL11
+ 	  	CALL CONTRL16
+ 	  	CALL CONTRL17
+ 	  	CALL CONTRL18
+ 	  ENDIF
 
- 	TEST4=MOD(I,180)	
-	IF (TEST4.EQ.0) THEN
+           TEST1=MOD(I,360)
+ 	  IF (TEST1.EQ.0) THEN
+ 	  	CALL CONTRL13
+ 	  	CALL CONTRL14
+ 	  	CALL CONTRL15
+ 	  	CALL CONTRL19
+ 	  ENDIF
+
+ 	  TEST1=MOD(I,900)
+ 	  IF (TEST1.EQ.0) CALL CONTRL20
+
+ 	  TEST4=MOD(I,180)
+	  IF (TEST4.EQ.0) THEN
 		CALL OUTPUT
       		WRITE(111,111) I
  111  		FORMAT(1X,I6)
@@ -424,14 +372,14 @@ C			Add things here
 C
 	  CALL INTGTR(NN,TIME,DELTAT,YY,YP)
 C
-C 	  CALL CONSHAND
+ 	  CALL CONSHAND
 C
  1000 CONTINUE
 C		PRINT *, 'Simulation is done. '
 
 C
- 	CLOSE(UNIT=111)
-	CLOSE(UNIT=1111)
+ 	  CLOSE(UNIT=111)
+	  CLOSE(UNIT=1111)
       STOP
 
 
@@ -711,27 +659,27 @@ C
 C
 C  Example PI Controller:
 C     Stripper Level Controller
-	IF (XMEAS(13).GE.2950.0) THEN
+	  IF (XMEAS(13).GE.2950.0) THEN
 		XMV(6)=100.0
 		FLAG=1
-	ELSEIF (FLAG.EQ.1.AND.XMEAS(13).GE.2633.7) THEN
+	  ELSEIF (FLAG.EQ.1.AND.XMEAS(13).GE.2633.7) THEN
 		XMV(6)=100.0
-	ELSEIF (FLAG.EQ.1.AND.XMEAS(13).LE.2633.7) THEN
+	  ELSEIF (FLAG.EQ.1.AND.XMEAS(13).LE.2633.7) THEN
 		XMV(6)=40.060
 		SETPT(6)=0.33712
 		ERROLD6=0.0
  		FLAG=0
-	ELSEIF (XMEAS(13).LE.2300.) THEN
+	  ELSEIF (XMEAS(13).LE.2300.) THEN
 		XMV(6)=0.0
 		FLAG=2
-	ELSEIF (FLAG.EQ.2.AND.XMEAS(13).LE.2633.7) THEN
+	  ELSEIF (FLAG.EQ.2.AND.XMEAS(13).LE.2633.7) THEN
 		XMV(6)=0.0
-	ELSEIF (FLAG.EQ.2.AND.XMEAS(13).GE.2633.7) THEN
+	  ELSEIF (FLAG.EQ.2.AND.XMEAS(13).GE.2633.7) THEN
 		XMV(6)=40.060
 		SETPT(6)=0.33712
 		ERROLD6=0.0
 		FLAG=0
-	ELSE	
+	  ELSE
 		FLAG=0
 C
 C    Calculate Error
@@ -748,7 +696,7 @@ C
 C 	PRINT *, 'GAIN6= ', GAIN6
 C	PRINT *, 'SETPT(6)= ', SETPT(6)	
 C	PRINT *, 'XMEAS(10)= ', XMEAS(10)     
-	XMV(6) = XMV(6) + DXMV
+	  XMV(6) = XMV(6) + DXMV
 C
 C 	PRINT *, 'ERROLD6= ', ERROLD6     
 C	PRINT *, 'ERR6= ', ERR6
@@ -1395,9 +1343,9 @@ C
       DOUBLE PRECISION XMEAS, XMV
       COMMON/PV/ XMEAS(41), XMV(12)
 C
-	INTEGER I
+	  INTEGER I
 C	
-	DO 100 I=1, 11
+	  DO 100 I=1, 11
 		IF (XMV(I).LE.0.0) XMV(I)=0.
  		IF (XMV(I).GE.100.0) XMV(I)=100.
  100    CONTINUE
