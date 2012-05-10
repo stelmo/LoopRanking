@@ -113,8 +113,6 @@ class loopranking:
                     else:
                         self.controlG.add_edge(self.variablelist[v], self.variablelist[u], controlloop = 1)
         
-        for edge in self.controlG.edges(data=True):
-            print(edge)
         
         for node in self.controlG.nodes():
             self.controlG.add_node(node, nocontrolimportance = self.blendedrankingNC[node] , controlimportance = self.blendedranking[node])

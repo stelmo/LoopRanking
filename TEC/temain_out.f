@@ -236,130 +236,80 @@ C
       CALL TEINIT(NN,TIME,YY,YP)
 C       Place modifications here
 
-      SETPT(1)=3664.0
+      SETPT(1)=3664.0* 0.99 !0.99 is so so
       GAIN1=1.0
       ERROLD1=0.0
-      SETPT(2)=4509.3
+      SETPT(2)=4509.3*1.0073 !is rel unstab 1.013
       GAIN2=1.0
       ERROLD2=0.0
-      SETPT(3)=.25052
+      SETPT(3)=.25052*0.998 !0.998 is fine ...
       GAIN3=1.
       ERROLD3=0.0
-      SETPT(4)=9.3477
+      SETPT(4)=9.3477*1.005 !dodgy 1.005
       GAIN4=1.
       ERROLD4=0.0
-      SETPT(5)=26.902
+      SETPT(5)=26.902 !this is going pear shaped at changes 0.005
       GAIN5=-0.083
       TAUI5=1./3600.
       ERROLD5=0.0
-      SETPT(6)=0.33712
+      SETPT(6)=0.33712*1.005 !not great at 1.005
       GAIN6=1.22
       ERROLD6=0.0
-      SETPT(7)=50.0
+      SETPT(7)=50.0*1.008 !not bad at 1.008
       GAIN7=-2.06
       ERROLD7=0.0
-      SETPT(8)=50.0
+      SETPT(8)=50.0*0.99    !0.99 stable (start here going down)
       GAIN8=-1.62
       ERROLD8=0.0
-      SETPT(9)=230.31
+      SETPT(9)=230.31*0.98 ! 0.98 so so
       GAIN9=0.41
       ERROLD9=0.0
-      SETPT(10)=94.599
+      SETPT(10)=94.599*1.01 !1.01 stable
       GAIN10= -0.156     * 10.
       TAUI10=1452./3600.
       ERROLD10=0.0
-      SETPT(11)=22.949
+      SETPT(11)=22.949 !super sensitive
       GAIN11=1.09
       TAUI11=2600./3600.
       ERROLD11=0.0
-      SETPT(13)=32.188             !Change Me
+      SETPT(13)=32.188*0.99 ! 0.99 is fine
       GAIN13=18.
       TAUI13=3168./3600.
       ERROLD13=0.0
-      SETPT(14)=6.8820             !Change Me
+      SETPT(14)=6.8820*0.995     !0.995 is fine
       GAIN14=8.3
       TAUI14=3168.0/3600.
       ERROLD14=0.0
-      SETPT(15)=18.776                  !Change Me
+      SETPT(15)=18.776*1.01 !1.01 is fine
       GAIN15=2.37
       TAUI15=5069./3600.
       ERROLD15=0.0
-      SETPT(16)=65.731                  !Change Me
+      SETPT(16)=65.731*1.03 !1.03 is fine
       GAIN16=1.69     / 10.
       TAUI16=236./3600.
       ERROLD16=0.0
-      SETPT(17)=75.000                  !Change Me
+      SETPT(17)=75.000     !drives the system to instablity upwards, downwards less so
       GAIN17=11.1   / 10.
       TAUI17=3168./3600.
       ERROLD17=0.0
-      SETPT(18)=120.40                  !Change Me
+      SETPT(18)=120.40      !very sensitive
       GAIN18=2.83   * 10.
       TAUI18=982./3600.
       ERROLD18=0.0
-      SETPT(19)=13.823                  !Change Me
+      SETPT(19)=13.823*1.01     !1.01 is fine
       GAIN19=-83.2    / 5. /3.
       TAUI19=6336./3600.
       ERROLD19=0.0
-      SETPT(20)=0.83570                 !Change Me
+      SETPT(20)=0.83570 *1.02    !1.02 is fine
       GAIN20=-16.3   / 5.
       TAUI20=12408./3600.
       ERROLD20=0.0
-      SETPT(12)=2633.7
+      SETPT(12)=2633.7*1.03 !1.03 is fine
       GAIN22=-1.0     * 5.
       TAUI22=1000./3600.
       ERROLD22=0.0
 
 
-!        YY(1) = 0.51796
-!        YY(2) = 0.082255
-!        YY(3) = 51.854
-!        YY(4) = 45.682
-!        YY(5) = 59.262
-!        YY(6) = 53.877
-!        YY(7) = 0.10956
-!        YY(8) = 72.052
-!        YY(9) = 41.77
-!        YY(10) = 35.645
-!        YY(11) = 34.758
-!        YY(12) = 43.463
-!        YY(13) = 79.418
-!        YY(14) = 41.801
-!        YY(15) = 19.437
-!        YY(16) = 50
-!        YY(17) = 0
-!        YY(18) = 999999999
-!        YY(19) = 524.17
-!        YY(20) = 5.4039
-!        YY(21) = 551.19
-!        YY(22) = 0.75075
-!        YY(23) = 54.926
-!        YY(24) = 9.7013
-!        YY(25) = 246.9
-!        YY(26) = 209.08
-!        YY(27) = 0.15705
-!        YY(28) = 2.2245
-!        YY(29) = 2.3415e+005
-!        YY(30) = 0.023826
-!        YY(31) = 1038.6
-!        YY(32) = 998.9
-!        YY(33) = 26.427
-!        YY(34) = 27266
-!        YY(35) = 0
-!        YY(36) = 0
-!        YY(37) = 1
-!        YY(38) = 1.0731
-!        YY(39) = 1.1278
-!        YY(40) = 0
-!        YY(41) = 58175
-!        YY(42) = 2918.2
-!        YY(43) = 0
-!        YY(44) = 0
-!        YY(45) = 0
-!        YY(46) = 0
-!        YY(47) = 0
-!        YY(48) = 0
-!        YY(49) = 0
-!        YY(50) = -3.809
 
         XMV(1) = 63.053 + 0.
         XMV(2) = 53.980 + 0.
@@ -372,48 +322,7 @@ C       Place modifications here
         XMV(9) = 47.446 + 0.
         XMV(10)= 41.106 + 0.
         XMV(11)= 18.114 + 0.
-
-!      XMEAS(1) = 2.8434e-001
-!      XMEAS(2) = 3.9327e+003
-!      XMEAS(3) = 4.2286e+003
-!      XMEAS(4) = 9.3422e+000
-!      XMEAS(5) = 2.6902e+001
-!      XMEAS(6) = 4.2889e+001
-!      XMEAS(7) = 2.6138e+003
-!      XMEAS(8) = 7.5000e+001
-!      XMEAS(9) = 1.2040e+002
-!      XMEAS(10) = 3.2320e-001
-!      XMEAS(11) = 8.3746e+001
-!      XMEAS(12) = 5.0532e+001
-!      XMEAS(13) = 2.5351e+003
-!      XMEAS(14) = 2.5671e+001
-!      XMEAS(15) = 5.0634e+001
-!      XMEAS(16) = 3.0525e+003
-!      XMEAS(17) = 2.2949e+001
-!      XMEAS(18) = 6.5291e+001
-!      XMEAS(19) = 1.5763e+002
-!      XMEAS(20) = 3.1939e+002
-!      XMEAS(21) = 9.3376e+001
-!      XMEAS(22) = 8.0467e+001
-!      XMEAS(23) = 3.2188e+001
-!      XMEAS(24) = 8.6897e+000
-!      XMEAS(25) = 1.9926e+001
-!      XMEAS(26) = 6.8820e+000
-!      XMEAS(27) = 1.8776e+001
-!      XMEAS(28) = 1.7321e+000
-!      XMEAS(29) = 3.3830e+001
-!      XMEAS(30) = 1.3823e+001
-!      XMEAS(31) = 1.4837e+001
-!      XMEAS(32) = 1.0400e+000
-!      XMEAS(33) = 1.9877e+001
-!      XMEAS(34) = 2.4499e+000
-!      XMEAS(35) = 5.5541e+000
-!      XMEAS(36) = 2.1396e+000
-!      XMEAS(37) = -3.7876e-002
-!      XMEAS(38) = 8.3569e-001
-!      XMEAS(39) = 4.5481e-002
-!      XMEAS(40) = 5.4035e+001
-!      XMEAS(41) = 3.7455e+001
+        XMV(12) = 50.0 + 0.
 
       
        DO 100 I = 1, 20
@@ -432,41 +341,75 @@ C
         
          IF (I.GE.SSPTS) THEN      
 C			Add things here
-
           ENDIF
+
 !
- 	  TEST=MOD(I,3)
- 	  IF (TEST.EQ.0) THEN
+C       I ADDED THE LINES BELOW SUCH THAT THE AGITATOR SPEED WILL CHANGE
+        TESTDESHIFT = MOD(I, 7200)
+        IF (TESTDESHIFT.EQ.0) THEN
+        XMV(1) = 63.053 + 10.8
+        XMV(2) = 53.980 + 17.0
+        XMV(3) = 24.644 + 33.0
+        XMV(4) = 61.302 + 5.7
+        XMV(5) = 22.210 + 41.02
+        XMV(6) = 40.064 + 13.5
+        XMV(7) = 38.100 + 22.1
+        XMV(8) = 46.534 + 13.2
+        XMV(9) = 47.446 + 19.2
+        XMV(10)= 41.106 + 20.3
+        XMV(11)= 18.114 + 55.3
+        XMV(12) = 50.0 + 7.3
+        ENDIF
 
- 		CALL CONTRL1
- 	  	CALL CONTRL2
- 	  	CALL CONTRL3
- 	  	CALL CONTRL4
- 	  	CALL CONTRL5
- 	  	CALL CONTRL6
- 	  	CALL CONTRL7
- 	  	CALL CONTRL8
- 	  	CALL CONTRL9
- 	  	CALL CONTRL10
- 	  	CALL CONTRL11
- 	  	CALL CONTRL16
- 	  	CALL CONTRL17
- 	  	CALL CONTRL18
+        TESTSHIFT = MOD(I, 7200*2)
+        IF (TESTSHIFT.EQ.0) THEN
+                XMV(1) = 63.053 + 0.
+        XMV(2) = 53.980 + 0.
+        XMV(3) = 24.644 + 0.
+        XMV(4) = 61.302 + 0.
+        XMV(5) = 22.210 + 0.
+        XMV(6) = 40.064 + 0.
+        XMV(7) = 38.100 + 0.
+        XMV(8) = 46.534 + 0.
+        XMV(9) = 47.446 + 0.
+        XMV(10)= 41.106 + 0.
+        XMV(11)= 18.114 + 0.
+        XMV(12) = 50.0 + 0.
+        ENDIF
+C       END OF MY MODIFICATIONS
 
- 	  ENDIF
-
-           TEST1=MOD(I,360)
- 	  IF (TEST1.EQ.0) THEN
-
- 	  	CALL CONTRL13
- 	  	CALL CONTRL14
- 	  	CALL CONTRL15
- 	  	CALL CONTRL19
-
- 	  ENDIF
-
- 	  TEST1=MOD(I,900)
- 	  IF (TEST1.EQ.0) CALL CONTRL20
+! 	  TEST=MOD(I,3)
+! 	  IF (TEST.EQ.0) THEN
+!
+! 		CALL CONTRL1
+! 	  	CALL CONTRL2
+! 	  	CALL CONTRL3
+! 	  	CALL CONTRL4
+! 	  	CALL CONTRL5
+! 	  	CALL CONTRL6
+! 	  	CALL CONTRL7
+! 	  	CALL CONTRL8
+! 	  	CALL CONTRL9
+! 	  	CALL CONTRL10
+! 	  	CALL CONTRL11
+! 	  	CALL CONTRL16
+! 	  	CALL CONTRL17
+! 	  	CALL CONTRL18
+!
+! 	  ENDIF
+!
+!           TEST1=MOD(I,360)
+! 	  IF (TEST1.EQ.0) THEN
+!
+! 	  	CALL CONTRL13
+! 	  	CALL CONTRL14
+! 	  	CALL CONTRL15
+! 	  	CALL CONTRL19
+!
+! 	  ENDIF
+!
+! 	  TEST1=MOD(I,900)
+! 	  IF (TEST1.EQ.0) CALL CONTRL20
 !
  	  TEST4=MOD(I,180)
 	  IF (TEST4.EQ.0) THEN

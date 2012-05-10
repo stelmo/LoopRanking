@@ -8,7 +8,7 @@ arr
 
 
 plot(rchange(:,1:12))
-pause(5)
+pause(10)
 
 delete statechangedata.dat
 delete timedata.dat

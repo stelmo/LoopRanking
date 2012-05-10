@@ -166,8 +166,9 @@ class localgains:
                 if temp is 'nan':
                     self.correlationmatrix[i,j] = temp
                 else: #this is just to guarantee that the matrix is not populated by nan elements
-                    self.correlationmatrix[i,j] = random()*0.1 
-
+                    self.correlationmatrix[i,j] = random()*0.01 #this is here just in case
+                    #self.correlationmatrix[i,j] = temp
+        
         P = np.linalg.inv(self.correlationmatrix)
         self.partialcorrelationmatrix = array(np.empty((self.n, self.n)))
         
