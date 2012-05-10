@@ -14,6 +14,8 @@ C    Presented at the AIChE 1990 Annual Meeting
 C    Industrial Challenge Problems in Process Control,Paper #24a
 C    Chicago,Illinois,November 14,1990
 C
+C  Revised 4-4-91 to correct error in documentation of manipulated variables
+C
 C  Subroutines:
 C
 C    TEFUNC - Function evaluator to be called by integrator
@@ -91,9 +93,9 @@ C
 C
 C  Manipulated Variables
 C
-C    XMV(1)     A Feed Flow (stream 1)
-C    XMV(2)     D Feed Flow (stream 2)
-C    XMV(3)     E Feed Flow (stream 3)
+C    XMV(1)     D Feed Flow (stream 2)            (Corrected Order)
+C    XMV(2)     E Feed Flow (stream 3)            (Corrected Order)
+C    XMV(3)     A Feed Flow (stream 1)            (Corrected Order)
 C    XMV(4)     A and C Feed Flow (stream 4)
 C    XMV(5)     Compressor Recycle Valve
 C    XMV(6)     Purge Valve (stream 9)
@@ -191,7 +193,6 @@ C
 C
 C=============================================================================
 C
-
       SUBROUTINE TEFUNC(NN,TIME,YY,YP)
 C
 C       Function Evaluator
@@ -206,8 +207,10 @@ C         Outputs:
 C
 C           YP   = Current derivative values
 C
-      DOUBLE PRECISION YY(NN),YP(NN)
-	include 'TEcommon.inc'
+      DOUBLE PRECISION XMEAS,XMV
+      COMMON/PV/XMEAS(41),XMV(12)
+      INTEGER IDV
+      COMMON/DVEC/IDV(20)
       DOUBLE PRECISION
      .UCLR,UCVR,UTLR,UTVR,
      .XLR,XVR,ETR,ESR,
@@ -308,10 +311,12 @@ C
      .AV(8),
      .AD(8),BD(8),CD(8),
      .XMW(8)
-      INTEGER NN,I
+      INTEGER NN,I,ISD
       DOUBLE PRECISION RG,
      .VPR,
      .FIN(8),
+     .YY(NN),
+     .YP(NN),
      .TIME,
      .FLMS,
      .DLP,
@@ -765,23 +770,11 @@ C
  9010 CONTINUE
       YP(9)=HST(7)*FTM(7)-
      .HST(8)*FTM(8)+RH+QUR
-
-c		Here is the "correct" version of the separator energy balance:
-
-c	YP(18)=HST(8)*FTM(8)-
-c    .(HST(9)*FTM(9)-cpdh)-
-c    .HST(10)*FTM(10)-
-c    .HST(11)*FTM(11)+
-c    .QUS
-
-c		Here is the original version
-
       YP(18)=HST(8)*FTM(8)-
      .HST(9)*FTM(9)-
      .HST(10)*FTM(10)-
      .HST(11)*FTM(11)+
      .QUS
-
       YP(27)=HST(4)*FTM(4)+
      .HST(11)*FTM(11)-
      .HST(5)*FTM(5)-
@@ -811,7 +804,7 @@ c		Here is the original version
       IF(VCV(I).GT.100.0)VCV(I)=100.0
       YP(I+38)=(VCV(I)-VPOS(I))/VTAU(I)
  9020 CONTINUE
-      IF(TIME.GT.0.0 .AND. ISD.NE.0)THEN
+      IF(ISD.NE.0)THEN
       DO 9030 I=1,NN
       YP(I)=0.0
  9030 CONTINUE
@@ -1191,7 +1184,80 @@ C
       DO 300 I=1,12
       VTAU(I)=VTAU(I)/3600.
  300  CONTINUE
-      G=1431655765.D0
+C      G=4651207997.D0
+
+      call init_random_seed()
+	  call random_number(G)
+	  G = G*9651207997.D0
+Crun1       G=4651207995.D0
+C	d00_tr_new: G=5687912315.D0       
+C      original: G=1431655765.D0
+C        d00_tr: G=4243534565.D0
+C        d01_tr: G=7854912354.D0
+C        d02_tr: G=3456432354.D0
+C        d03_tr: G=1731738903.D0
+C        d04_tr: G=4346024432.D0
+C        d05_tr: G=5784921734.D0
+C        d06_tr: G=6678322168.D0
+C        d07_tr: G=7984782901.D0
+C        d08_tr: G=8934302332.D0
+C        d09_tr: G=9873223412.D0
+C        d10_tr: G=1089278833.D0
+C        d11_tr: G=1940284333.D0
+C        d12_tr: G=2589274931.D0
+C        d13_tr: G=3485834345.D0
+C        d14_tr: G=4593493842.D0
+C        d15_tr: G=5683213434.D0
+C        d16_tr: G=6788343442.D0
+C        d17_tr: G=1723234455.D0
+C        d18_tr: G=8943243993.D0
+C       dd18_tr: G=1234567890.D0
+
+C        d19_tr: G=9445382439.D0
+C        d20_tr: G=9902234324.D0
+C        d21_tr: G=2144342545.D0
+C        d22_tr: G=3433249064.D0
+C        d23_tr: G=4356565463.D0
+C        d24_tr: G=8998485332.D0
+C        d25_tr: G=7654534567.D0
+C        d26_tr: G=5457789234.D0
+C
+C        d00_te: G=1254545354.D0
+C        d01_te: G=2994833239.D0
+C        d02_te: G=2891123453.D0
+C        d03_te: G=3420494299.D0
+C        d04_te: G=4598956239.D0
+C        d05_te: G=5658678765.D0
+C        d06_te: G=6598593453.D0
+C        d07_te: G=7327843434.D0
+C        d08_te: G=8943242344.D0
+C        d09_te: G=9343430004.D0
+C        d10_te: G=1039839281.D0
+C        d11_te: G=1134345551.D0
+C        d12_te: G=2232323236.D0
+C        d13_te: G=3454354353.D0
+C        d14_te: G=4545445883.D0
+C        d15_te: G=5849489384.D0
+C        d16_te: G=6284545932.D0
+C        d17_te: G=4342232344.D0
+C        d18_te: G=5635346588.D0
+C        d19_te: G=9090909232.DO
+C        d20_te: G=8322308324.D0
+C        d21_te: G=2132432423.D0
+C        d22_te: G=5454589923.D0
+C        d23_te: G=6923255678.D0
+C        d24_te: G=8493323434.D0
+C        d25_te: G=9338398429.D0
+C        d26_te: G=1997072199.D0
+
+
+
+
+
+
+
+
+
       XNS(1)=0.0012D0
       XNS(2)=18.000D0
       XNS(3)=22.000D0
@@ -1478,24 +1544,20 @@ C
       INTEGER I
       DOUBLE PRECISION STD,X,TESUB7
       X=0.D0
-	DO I=1,12
-    		X=X+TESUB7(I)
-	end do
-	X=(X-6.D0)*STD
-	RETURN
-      END
-      
-      DOUBLE PRECISION FUNCTION TESUB7(I)
-        INTEGER I
-!       DOUBLE PRECISION G,DMOD
-!       COMMON/RANDSD/G
-!       G=DMOD(G*9228907.D0,4294967296.D0)
-!       IF(I.GE.0)TESUB7=G/4294967296.D0
-!       IF(I.LT.0)TESUB7=2.D0*G/4294967296.D0-1.D0
-		TESUB7 = 1
+      DO 2 I=1,12
+    2 X=X+TESUB7(I)
+      X=(X-6.D0)*STD
       RETURN
       END
-      
+      DOUBLE PRECISION FUNCTION TESUB7(I)
+      INTEGER I
+      DOUBLE PRECISION G,DMOD
+      COMMON/RANDSD/G
+      G=DMOD(G*9228907.D0,4294967296.D0)
+      IF(I.GE.0)TESUB7=G/4294967296.D0
+      IF(I.LT.0)TESUB7=2.D0*G/4294967296.D0-1.D0
+      RETURN
+      END
       DOUBLE PRECISION FUNCTION TESUB8(I,T)
       INTEGER  I
       DOUBLE PRECISION  H,T
@@ -1530,3 +1592,19 @@ C
       RETURN
       END
 
+
+C From http://gcc.gnu.org/onlinedocs/gfortran/RANDOM_005fSEED.html
+          SUBROUTINE init_random_seed()
+            INTEGER :: i, n, clock
+            INTEGER, DIMENSION(:), ALLOCATABLE :: seed
+
+            CALL RANDOM_SEED(size = n)
+            ALLOCATE(seed(n))
+
+            CALL SYSTEM_CLOCK(COUNT=clock)
+
+            seed = clock + 37 * (/ (i - 1, i = 1, n) /)
+            CALL RANDOM_SEED(PUT = seed)
+
+            DEALLOCATE(seed)
+          END SUBROUTINE

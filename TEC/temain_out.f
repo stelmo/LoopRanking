@@ -217,7 +217,7 @@ C
 C
 C  Set the number of points to simulate: 48hrs of simulation
 C
-      NPTS = 172800*2
+      NPTS = 172800
 
 C
 C  Set the number of points to simulate in steady state operation 25 hours
@@ -256,10 +256,10 @@ C       Place modifications here
       GAIN6=1.22
       ERROLD6=0.0
       SETPT(7)=50.0
-      GAIN7=-2.06*1.1     ! CS: Was -2.06, added 20%
+      GAIN7=-2.06
       ERROLD7=0.0
       SETPT(8)=50.0
-      GAIN8=-1.62*1.2     ! CS: Was -1.62, added 20%
+      GAIN8=-1.62
       ERROLD8=0.0
       SETPT(9)=230.31
       GAIN9=0.41
@@ -293,7 +293,7 @@ C       Place modifications here
       TAUI17=3168./3600.
       ERROLD17=0.0
       SETPT(18)=120.40                  !Change Me
-      GAIN18=2.83   * 5. ! CS: Was *10
+      GAIN18=2.83   * 10.
       TAUI18=982./3600.
       ERROLD18=0.0
       SETPT(19)=13.823                  !Change Me
