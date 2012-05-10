@@ -7,7 +7,9 @@ arr(:,2) = rchange(end, :)';
 arr
 
 
-plot(rchange(:,26:29))
-pause(7)
+plot(rchange(:,1:12))
+pause(5)
 
+delete statechangedata.dat
+delete timedata.dat
 

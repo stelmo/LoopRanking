@@ -259,7 +259,7 @@ CC      ERROLD = 0.0
       GAIN5=-0.083 	   
       TAUI5=1./3600.   
       ERROLD5=0.0
-      SETPT(6)=0.33712
+      SETPT(6)=0.33712  
       GAIN6=1.22        	       
       ERROLD6=0.0
       SETPT(7)=50.0   
@@ -319,9 +319,9 @@ C
 C    Example Disturbance:
 C    Change Reactor Cooling
 C
-        XMV(1) = 63.053 + 0.
-	    XMV(2) = 53.980 + 0.
-	    XMV(3) = 24.644 + 0.
+ 	XMV(1) = 63.053 + 0.
+	XMV(2) = 53.980 + 0.
+	XMV(3) = 24.644 + 0.    
 	XMV(4) = 61.302 + 0.
 	XMV(5) = 22.210 + 0.
 	XMV(6) = 40.064 + 0.
@@ -369,33 +369,32 @@ C
 	  TEST=MOD(I,3)
 	  IF (TEST.EQ.0) THEN
 		CALL CONTRL1
-	  	CALL CONTRL2
-	  	CALL CONTRL3
-	  	CALL CONTRL4
-	  	CALL CONTRL5
-	  	CALL CONTRL6
-	  	CALL CONTRL7
-	  	CALL CONTRL8
-	  	CALL CONTRL9
-	  	CALL CONTRL10
-	  	CALL CONTRL11
-	  	CALL CONTRL16
-	  	CALL CONTRL17
-	  	CALL CONTRL18
+!	  	CALL CONTRL2
+!	  	CALL CONTRL3
+!	  	CALL CONTRL4
+!	  	CALL CONTRL5
+!	  	CALL CONTRL6
+!	  	CALL CONTRL7
+!	  	CALL CONTRL8
+!	  	CALL CONTRL9
+!	  	CALL CONTRL10
+!	  	CALL CONTRL11
+
+!	  	CALL CONTRL16
+!	  	CALL CONTRL17
+!	  	CALL CONTRL18
 	  ENDIF
           TEST1=MOD(I,360)
 	  IF (TEST1.EQ.0) THEN
-	  	CALL CONTRL13
+!	  	CALL CONTRL13
 	  	CALL CONTRL14
-	  	CALL CONTRL15
-	  	CALL CONTRL19
+!	  	CALL CONTRL15
+!	  	CALL CONTRL19
 	  ENDIF
-	  TEST1=MOD(I,900)
-	  IF (TEST1.EQ.0) CALL CONTRL20
-C	  TEST3=MOD(I,5000)
-C	  IF (TEST3.EQ.0) THEN
-C		PRINT *, 'Simulation time (in seconds) = ', I
-C	ENDIF
+!
+!	  TEST1=MOD(I,900)
+!	  IF (TEST1.EQ.0) CALL CONTRL20
+
 C
  	TEST4=MOD(I,180)	
 	IF (TEST4.EQ.0) THEN
@@ -433,44 +432,7 @@ C
       END
 C
 C=============================================================================
-C
-CC      SUBROUTINE CONTRL
-C
-C  Discrete control algorithms
-C
-C
-C   MEASUREMENT AND VALVE COMMON BLOCK
-C
-CC      DOUBLE PRECISION XMEAS, XMV
-CC      COMMON/PV/ XMEAS(41), XMV(12)
-C
-C   CONTROLLER COMMON BLOCK
-C
-CC      DOUBLE PRECISION SETPT, GAIN, TAUI, ERROLD, DELTAT
-CC      COMMON/CTRL/ SETPT, GAIN, TAUI, ERROLD, DELTAT
-C
-CC      DOUBLE PRECISION ERR, DXMV
-C
-C  Example PI Controller:
-C    Stripper Level Controller
-C
-C    Calculate Error
-C
-CC      ERR = SETPT - XMEAS(15)
-C
-C    Proportional-Integral Controller (Velocity Form)
-C         GAIN = Controller Gain
-C         TAUI = Reset Time (min)
-C
-CC      DXMV = GAIN * ( ( ERR - ERROLD ) + ERR * DELTAT * 60. / TAUI )
-C
-CC      XMV(8) = XMV(8) - DXMV
-C
-CC      ERROLD = ERR
-C
-CC      RETURN
-CC      END
-C
+
 C=============================================================================
 C
       SUBROUTINE CONTRL1
