@@ -10,7 +10,7 @@ from numpy import array
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 't'
+testcase = 'b'
 
 dispRGA = True
 dispEigenForwardAndBackward = True
@@ -105,7 +105,7 @@ if testcase == 'b':
     
 if testcase == 't':
     
-    test = formatmatrix("connectionsTE.csv", "scaledinputs100h5.txt", 13 ,0)
+    test = formatmatrix("connectionsTE.csv", "localave50statesscaled.txt", 17 ,0)
     
     controlme = ['Reactor Pressure', 'Reactor Temperature','S11 F', 'S11 E ', 'S9 D', 'S6 F', 'Reactor Level','Product Sep Temp', 'Stripper Temp', 'Stream 6',  'Stream 10','S9 F' ]    
     
