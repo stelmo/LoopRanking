@@ -1,9 +1,9 @@
 %scaling implementation
 
 %load file
-fromfile = load("controlstates.txt");
+fromfile = load("localave50statesNOCONTROL.txt");
 
-[r, c] = size(fromfile);
+[r, c] = size(fromfile)
 
 for row = 1:1:r
 
@@ -19,7 +19,7 @@ for i=1:1:c
 	
 end
 
-save -ascii scaledcontrol.txt outfile
+save -ascii localave50statesNOCONTROLscaled.txt outfile
 	
 			
 			

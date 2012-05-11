@@ -814,7 +814,7 @@ C
 C
 C=============================================================================
 C
-      SUBROUTINE TEINIT(NN,TIME,YY,YP)
+      SUBROUTINE TEINIT(NN,TIME,YY,YP, VARIABLETOMODIFY)
 C
 C       Initialization
 C
@@ -830,7 +830,7 @@ C           YP   = Current derivative values
 C
       DOUBLE PRECISION XMEAS,XMV
       COMMON/PV/XMEAS(41),XMV(12)
-      INTEGER IDV
+      INTEGER IDV, VARIABLETOMODIFY
       COMMON/DVEC/IDV(20)
       DOUBLE PRECISION G
       COMMON/RANDSD/G
@@ -1100,6 +1100,11 @@ C
       YY(48)=41.10581288
       YY(49)=18.11349055
       YY(50)=50.00000000
+      IF (VARIABLETOMODIFY.EQ.0) THEN
+C       DO nothing if VARIABLETOMODIFY is 0
+      ELSE
+      YY(38+VARIABLETOMODIFY) = YY(38+VARIABLETOMODIFY) +25.0
+      ENDIF
       DO 200 I=1,12
       XMV(I)=YY(I+38)
       VCV(I)=XMV(I)

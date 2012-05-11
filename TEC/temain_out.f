@@ -205,7 +205,7 @@ C
 C
 C  Local Variables
 C
-      INTEGER I, NN, NPTS, TEST, TEST1, TEST3, TEST4
+      INTEGER I, NN, NPTS, TEST, TEST1, TEST3, TEST4, VARIABLETOMODIFY
 C
       DOUBLE PRECISION TIME, YY(50), YP(50)
 C
@@ -220,10 +220,10 @@ C
       NPTS = 172800
 
 C
-C  Set the number of points to simulate in steady state operation 25 hours
+C  Set the number of points to simulate in steady
 C
 
-      SSPTS = 3600 * 3
+      SSPTS = 3600 * 10
 
 C
 C  Integrator Step Size:  1 Second Converted to Hours
@@ -233,8 +233,28 @@ C
 C  Initialize Process
 C  (Sets TIME to zero)
 C
-      CALL TEINIT(NN,TIME,YY,YP)
+C================================
+      VARIABLETOMODIFY = 1 !all variables get a + 25.0
+C================================
+      CALL TEINIT(NN,TIME,YY,YP, VARIABLETOMODIFY)
 C       Place modifications here
+!       I'm pretty sure TEINIT does this but rather safe than sorry...
+        XMV(1) = 63.053 + 0.
+        XMV(2) = 53.980 + 0.
+        XMV(3) = 24.644 + 0.
+        XMV(4) = 61.302 + 0.
+        XMV(5) = 22.210 + 0.
+        XMV(6) = 40.064 + 0.
+        XMV(7) = 38.100 + 0.
+        XMV(8) = 46.534 + 0.
+        XMV(9) = 47.446 + 0.
+        XMV(10)= 41.106 + 0.
+        XMV(11)= 18.114 + 0.
+        XMV(12) = 50.0 + 0.
+        IF (VARIABLETOMODIFY.EQ.0) THEN
+        ELSE
+        XMV(VARIABLETOMODIFY) = XMV(VARIABLETOMODIFY) + 25.0
+        ENDIF
 
       SETPT(1)=3664.0* 0.99 !0.99 is so so
       GAIN1=1.0
@@ -309,21 +329,6 @@ C       Place modifications here
       TAUI22=1000./3600.
       ERROLD22=0.0
 
-
-
-        XMV(1) = 63.053 + 0.
-        XMV(2) = 53.980 + 0.
-        XMV(3) = 24.644 + 0.
-        XMV(4) = 61.302 + 0.
-        XMV(5) = 22.210 + 0.
-        XMV(6) = 40.064 + 0.
-        XMV(7) = 38.100 + 0.
-        XMV(8) = 46.534 + 0.
-        XMV(9) = 47.446 + 0.
-        XMV(10)= 41.106 + 0.
-        XMV(11)= 18.114 + 0.
-        XMV(12) = 50.0 + 0.
-
       
        DO 100 I = 1, 20
           IDV(I) = 0
@@ -336,47 +341,16 @@ C       Place modifications here
 C
 C
 C  Simulation Loop
+
+
 C
         DO 1000 I = 1, NPTS
         
-         IF (I.GE.SSPTS) THEN      
-C			Add things here
+         IF (I.GE.SSPTS) THEN
+C			Add things here... Nope
+
           ENDIF
 
-!
-C       I ADDED THE LINES BELOW SUCH THAT THE AGITATOR SPEED WILL CHANGE
-        TESTDESHIFT = MOD(I, 7200)
-        IF (TESTDESHIFT.EQ.0) THEN
-        XMV(1) = 63.053 + 10.8
-        XMV(2) = 53.980 + 17.0
-        XMV(3) = 24.644 + 33.0
-        XMV(4) = 61.302 + 5.7
-        XMV(5) = 22.210 + 41.02
-        XMV(6) = 40.064 + 13.5
-        XMV(7) = 38.100 + 22.1
-        XMV(8) = 46.534 + 13.2
-        XMV(9) = 47.446 + 19.2
-        XMV(10)= 41.106 + 20.3
-        XMV(11)= 18.114 + 55.3
-        XMV(12) = 50.0 + 7.3
-        ENDIF
-
-        TESTSHIFT = MOD(I, 7200*2)
-        IF (TESTSHIFT.EQ.0) THEN
-                XMV(1) = 63.053 + 0.
-        XMV(2) = 53.980 + 0.
-        XMV(3) = 24.644 + 0.
-        XMV(4) = 61.302 + 0.
-        XMV(5) = 22.210 + 0.
-        XMV(6) = 40.064 + 0.
-        XMV(7) = 38.100 + 0.
-        XMV(8) = 46.534 + 0.
-        XMV(9) = 47.446 + 0.
-        XMV(10)= 41.106 + 0.
-        XMV(11)= 18.114 + 0.
-        XMV(12) = 50.0 + 0.
-        ENDIF
-C       END OF MY MODIFICATIONS
 
 ! 	  TEST=MOD(I,3)
 ! 	  IF (TEST.EQ.0) THEN
@@ -1373,4 +1347,11 @@ C
 C
       RETURN
       END
+C============================================================================
+
+
+
+
+
+
 
