@@ -435,6 +435,14 @@ class visualiseOpenLoopSystem:
         plt.figure("Blended Node Rankings")
         rearrange = self.EBG.nodes()
         
+        """Need to alter the blendedranking dictionary here: the initial dict contains relative imporances,
+        that needs to be altered to a more "absolute" importance"""
+#        tt = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
+#        numberofentries = float(len(self.blendedranking))
+#        self.blendedranking = dict()
+#        for i, v in enumerate(tt):
+#            self.blendedranking[v[0]] = (numberofentries-i)/numberofentries
+        
         for node in self.EBG.nodes():
             self.EBG.add_node(node, importance=self.blendedranking[node])
         
@@ -442,15 +450,15 @@ class visualiseOpenLoopSystem:
         sizeArray = [self.blendedranking[var] * 10000 for var in rearrange]
         
         if nodepos == None:
-            nodepos = nx.circular_layout(self.EBG)        
+            nodepos = nx.circular_layout(self.EBG)
+            
+        tt = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
+        for t in tt:
+            print(t)            
         
         nx.draw_networkx(self.EBG, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.EBG, pos=nodepos)
         plt.axis("off")
-        
-        tt = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
-        for ttt in tt:
-            print(ttt)
         
     def displayEigenRankBlendGoogle(self, nodummyvariablelist, alpha, nodepos=None):
         """This method displays the blended weightings of nodes i.e. it takes
@@ -474,6 +482,14 @@ class visualiseOpenLoopSystem:
         plt.figure("Blended Node Rankings: Google")
         rearrange = self.EBGG.nodes()
         
+        """Need to alter the blendedranking dictionary here: the initial dict contains relative imporances,
+        that needs to be altered to a more "absolute" importance"""
+#        tt = sorted(self.blendedrankingGoogle.iteritems(), key = itemgetter(1), reverse=True)
+#        numberofentries = float(len(self.blendedrankingGoogle))
+#        self.blendedrankingGoogle = dict()
+#        for i, v in enumerate(tt):
+#            self.blendedrankingGoogle[v[0]] = (numberofentries-i)/numberofentries
+        
         for node in self.EBGG.nodes():
             self.EBGG.add_node(node, importance=self.blendedrankingGoogle[node])
         
@@ -485,8 +501,12 @@ class visualiseOpenLoopSystem:
         
         nx.draw_networkx(self.EBGG, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.EBGG, pos=nodepos)
-        plt.axis("off")         
+        plt.axis("off")   
         
+#        tt = sorted(self.blendedrankingGoogle.iteritems(), key = itemgetter(1), reverse=True)
+#        for t in tt:
+#            print(t)      
+#        
     def displayEdgeWeights(self, nodepos=None):
         """This method will compute and store the edge weights of the ranking web.
         
@@ -500,7 +520,6 @@ class visualiseOpenLoopSystem:
             for j in range(self.normalforwardgain.n):
                 if (self.normalforwardgain.gMatrix[i, j] != 0):
                     temp = self.normalforwardgain.gMatrix[i, j] * self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]] * self.normalforwardgoogle.gMatrix[i, j]
-                    
                     self.edgelabels[(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i])] = round(-1 * temp, 4)
                     self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight= -1 * temp)
          
