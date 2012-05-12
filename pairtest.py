@@ -13,10 +13,10 @@ from visualise import visualiseOpenLoopSystem
 testcase = 't'
 
 dispRGA = True
-dispEigenForwardAndBackward = True
-dispEigenBlend = True
-dispEdgeWeight = True
-dispBestControl = True
+dispEigenForwardAndBackward = False
+dispEigenBlend = False
+dispEdgeWeight = False
+dispBestControl = False
 
 if testcase == 'a':
 
@@ -105,7 +105,7 @@ if testcase == 'b':
     
 if testcase == 't':
     
-    test = formatmatrix("connectionsTE.csv", "localave50statesscaled.txt", 17 ,0)
+    test = formatmatrix("connectionsTE.csv","localave50statesNOCONTROLscaled.txt",13,0 )
     
     controlme = ['Reactor Pressure', 'Reactor Temperature','S11 F', 'S11 E ', 'S9 D', 'S6 F', 'Reactor Level','Product Sep Temp', 'Stripper Temp', 'Stream 6',  'Stream 10','S9 F' ]    
     

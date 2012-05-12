@@ -170,9 +170,23 @@ class visualiseOpenLoopSystem:
         
         plt.figure("Relative Gain Array")
         [r, c] = self.bristol.bristolmatrix.shape
-        plt.imshow(self.bristol.bristolmatrix, cmap=plt.cm.gray_r, interpolation='nearest', extent=[0, 1, 0, 1])
+        
+        """You want to re-order the rga matrix right here... It's the easiest way
+        to make the output look better"""
+        
         lenofinputs = len(self.listofinputs)
         outputs = self.bristol.vars[lenofinputs:]
+        renamedoutputs = outputs
+        tempmat = self.bristol.bristolmatrix.copy()# array(empty((r,c)))
+#        counter = 0
+#        for x in self.bristol.pairedvariablesMax:
+#            pos = outputs.index(x[0])
+#            tempmat[:, counter] = self.bristol.bristolmatrix[:, pos]
+#            renamedoutputs.append(x[0]) 
+#            counter += 1
+#            
+        """The bristol matrix should be re-arranged now"""
+        plt.imshow(tempmat, cmap=plt.cm.gray_r, interpolation='nearest', extent=[0, 1, 0, 1])
         rstart = 1.0 / (2.0 * r)
         cstart = 1.0 / (2.0 * c)
         rincr = 1.0 / r
@@ -181,14 +195,14 @@ class visualiseOpenLoopSystem:
         revinputs.extend(self.listofinputs)
         revinputs.reverse()
         plt.yticks(arange(rstart, 1, rincr), revinputs, fontsize=10)
-        plt.xticks(arange(cstart, 1, cincr), outputs, rotation= -45, fontsize=10)
+        plt.xticks(arange(cstart, 1, cincr), renamedoutputs, rotation= -45, fontsize=10)
         
         rowstart = (r - 1) * rincr + rstart
         for i in range(r):
             ypos = rowstart - i * rincr
             for j in range(c):
                 xpos = cstart + cincr * j - 0.15 * cincr
-                val = round(self.bristol.bristolmatrix[i, j], 3)
+                val = round(tempmat[i, j], 3)
                 if val <= 0.5:
                     colour = 'k'
                 else:

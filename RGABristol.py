@@ -96,7 +96,8 @@ class RGA:
         It assumed that each input WILL be paired and as such, it looks for the
         biggest value in each column and pairs accordingly.
         This will allow only a single output (the best controllable case) to
-        map to a single output. """
+        map to a single output.
+        It uses a greedy approach... Trying to fix that  """
         
         self.inputvars = vararrs[:numofinputs]        
         self.outputvars = vararrs[numofinputs:]
