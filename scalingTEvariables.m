@@ -1,7 +1,7 @@
 %scaling implementation
 
 %load file
-fromfile = load("localave50states.txt");
+fromfile = load("localaveBROKEN3.txt");
 
 [r, c] = size(fromfile)
 
@@ -19,7 +19,7 @@ for i=1:1:c
 	
 end
 
-save -ascii localave50statesscaled.txt outfile
+save -ascii localaveBROKEN3scaled.txt outfile
 	
 			
 			

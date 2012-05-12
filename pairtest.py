@@ -10,7 +10,7 @@ from numpy import array
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 'b'
+testcase = 't'
 
 dispRGA = True
 dispEigenForwardAndBackward = True
