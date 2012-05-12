@@ -144,7 +144,7 @@ class loopranking:
         
         difference = dict()
         for node in self.variablelist:
-            difference[node] = diff_initial[node] - diff_now[node]
+            difference[node] = diff_now[node] - diff_initial[node]
         
         #the maximum imporance will always be 1 as we "normalise" the rankings earlier
         slist = sorted(difference.iteritems(), key = itemgetter(1), reverse=True)
