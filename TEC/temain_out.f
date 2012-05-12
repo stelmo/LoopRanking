@@ -234,7 +234,7 @@ C  Initialize Process
 C  (Sets TIME to zero)
 C
 C================================
-      VARIABLETOMODIFY = 0 !all variables get a + 25.0
+      VARIABLETOMODIFY = 12 !all variables get a + 25.0
 C================================
       CALL TEINIT(NN,TIME,YY,YP, VARIABLETOMODIFY)
 C       Place modifications here
@@ -312,7 +312,7 @@ C       Place modifications here
       GAIN17=11.1   / 10.
       TAUI17=3168./3600.
       ERROLD17=0.0
-      SETPT(18)=120.40*0.96      !very sensitive
+      SETPT(18)=120.40*0.99      !very sensitive
       GAIN18=2.83   * 10.
       TAUI18=982./3600.
       ERROLD18=0.0
@@ -351,39 +351,49 @@ C			Add things here... Nope
 
           ENDIF
 
+       agit1 = MOD(I,720)
+       if (agit1.EQ.0) THEN
+        XMV(12) = 50
+       endif
 
-! 	  TEST=MOD(I,3)
-! 	  IF (TEST.EQ.0) THEN
-!
-! 		CALL CONTRL1
-! 	  	CALL CONTRL2
-! 	  	CALL CONTRL3
-! 	  	CALL CONTRL4
-! 	  	CALL CONTRL5
-! 	  	CALL CONTRL6
-! 	  	CALL CONTRL7
-! 	  	CALL CONTRL8
-! 	  	CALL CONTRL9
-! 	  	CALL CONTRL10
-! 	  	CALL CONTRL11
-! 	  	CALL CONTRL16
-! 	  	CALL CONTRL17
-! 	  	CALL CONTRL18
-!
-! 	  ENDIF
-!
-!           TEST1=MOD(I,360)
-! 	  IF (TEST1.EQ.0) THEN
-!
-! 	  	CALL CONTRL13
-! 	  	CALL CONTRL14
-! 	  	CALL CONTRL15
-! 	  	CALL CONTRL19
-!
-! 	  ENDIF
-!
-! 	  TEST1=MOD(I,900)
-! 	  IF (TEST1.EQ.0) CALL CONTRL20
+       agit2 = mod(I,720*2)
+       if (agit2.eq.0) then
+       XMV(12) = 75.0
+       endif
+
+
+ 	  TEST=MOD(I,3)
+ 	  IF (TEST.EQ.0) THEN
+
+ 		CALL CONTRL1
+ 	  	CALL CONTRL2
+ 	  	CALL CONTRL3
+ 	  	CALL CONTRL4
+ 	  	CALL CONTRL5
+ 	  	CALL CONTRL6
+ 	  	CALL CONTRL7
+ 	  	CALL CONTRL8
+ 	  	CALL CONTRL9
+ 	  	CALL CONTRL10
+ 	  	CALL CONTRL11
+ 	  	CALL CONTRL16
+ 	  	CALL CONTRL17
+ 	  	CALL CONTRL18
+
+ 	  ENDIF
+
+           TEST1=MOD(I,360)
+ 	  IF (TEST1.EQ.0) THEN
+
+ 	  	CALL CONTRL13
+ 	  	CALL CONTRL14
+ 	  	CALL CONTRL15
+ 	  	CALL CONTRL19
+
+ 	  ENDIF
+
+ 	  TEST1=MOD(I,900)
+ 	  IF (TEST1.EQ.0) CALL CONTRL20
 !
  	  TEST4=MOD(I,180)
 	  IF (TEST4.EQ.0) THEN

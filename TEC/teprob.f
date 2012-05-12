@@ -672,7 +672,7 @@ C
       QUR=UAR*(TWR-TCR)
      .*(1.D0-0.35D0*TESUB8(10,TIME))
       UAS=0.404655*(1.0-1.0/(1.0+(FTM(8)/3528.73)**4))
-      QUS=UAS*(TWS-TST(8))
+      QUS=UAS*0.6*(TWS-TST(8))
      .*(1.D0-0.25D0*TESUB8(11,TIME))
       QUC=0.D0
       IF(TCC.LT.100.)QUC=UAC*(100.0-TCC)

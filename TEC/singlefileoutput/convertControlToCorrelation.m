@@ -2,8 +2,16 @@
 % this has been modified to give timed data
 
 inputdata = load("statechangedata.dat");
-inputdata = inputdata(80:120,:);
-save -ascii controlcorrelationBROKEN3.txt inputdata;
+
+inputdata1 = inputdata(1:25,:);
+save -ascii controlcorrelationBROKEN1.txt inputdata1;
+
+inputdata2 = inputdata(25:50,:);
+save -ascii controlcorrelationBROKEN2.txt inputdata2;
+
+inputdata3 = inputdata(50:100,:);
+save -ascii controlcorrelationBROKEN3.txt inputdata3;
+
 delete statechangedata.dat
 delete timedata.dat
 
