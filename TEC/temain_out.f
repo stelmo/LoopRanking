@@ -234,7 +234,7 @@ C  Initialize Process
 C  (Sets TIME to zero)
 C
 C================================
-      VARIABLETOMODIFY = 1 !all variables get a + 25.0
+      VARIABLETOMODIFY = 0 !all variables get a + 25.0
 C================================
       CALL TEINIT(NN,TIME,YY,YP, VARIABLETOMODIFY)
 C       Place modifications here
@@ -312,7 +312,7 @@ C       Place modifications here
       GAIN17=11.1   / 10.
       TAUI17=3168./3600.
       ERROLD17=0.0
-      SETPT(18)=120.40      !very sensitive
+      SETPT(18)=120.40*0.96      !very sensitive
       GAIN18=2.83   * 10.
       TAUI18=982./3600.
       ERROLD18=0.0
