@@ -13,7 +13,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from operator import itemgetter
 
-testcase = 'local1' #use local gains to calculate importances if == local
+testcase = 'local' #use local gains to calculate importances if == local
 
 if testcase == 'local':
     
@@ -66,7 +66,7 @@ else:
     datamatrixBroken1 = formatmatrix("connectionsTEcontrol.csv","controlcorrelationBROKEN1.txt",0,0,partialcorrelation=True)
     brokencontrol1 = loopranking(datamatrixBroken1.scaledforwardgain, datamatrixBroken1.scaledforwardvariablelist, datamatrixBroken1.scaledbackwardgain, datamatrixBroken1.scaledbackwardvariablelist, datamatrixBroken1.nodummyvariablelist)
     
-    datamatrixBroken2 = formatmatrix("connectionsTEcontrol.csv","controlcorrelationBROKEN2.txt",0,0,partialcorrelation=True)
+    datamatrixBroken2 = formatmatrix("connectionsTEcontrol.csv","controlcorrelationBROKEN3.txt",0,0,partialcorrelation=True)
     brokencontrol2 = loopranking(datamatrixBroken2.scaledforwardgain, datamatrixBroken2.scaledforwardvariablelist, datamatrixBroken2.scaledbackwardgain, datamatrixBroken2.scaledbackwardvariablelist, datamatrixBroken2.nodummyvariablelist)
     
     
