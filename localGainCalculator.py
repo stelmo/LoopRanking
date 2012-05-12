@@ -159,16 +159,19 @@ class localgains:
         self.inputdata = array(dataholder).reshape(-1, self.n)
         
         self.correlationmatrix = array(np.empty((self.n, self.n)))
-        
+        counter = 0
         for i in range(self.n):
             for j in range(self.n):    
                 temp = pearsonr(self.inputdata[:, i], self.inputdata[:, j])[0]
-                if temp is not 'nan':
+                if  not isnan(temp):
                     self.correlationmatrix[i,j] = temp
                 else: #this is just to guarantee that the matrix is not populated by nan elements
                     self.correlationmatrix[i,j] = random()*0.001 #this is here just in case: adds a small random number
                     #self.correlationmatrix[i,j] = temp
-                    print("Input data for correlation matrix creation is under-specified")
+                    counter += 1
+        
+        if counter is not 0:
+            print("The input data was incorrectly specified "+str(counter)+" many times. This may lead to some inaccurate results.")
         
         P = np.linalg.inv(self.correlationmatrix)
         self.partialcorrelationmatrix = array(np.empty((self.n, self.n)))

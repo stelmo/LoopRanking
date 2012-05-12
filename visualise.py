@@ -507,6 +507,7 @@ class visualiseOpenLoopSystem:
 #        for t in tt:
 #            print(t)      
 #        
+   
     def displayEdgeWeights(self, nodepos=None):
         """This method will compute and store the edge weights of the ranking web.
         

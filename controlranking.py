@@ -22,46 +22,36 @@ class loopranking:
     2) Determine the change of importance when variables change
     """
     
-    def __init__(self, fgainmatrixC, fvariablenamesC, fconnectionmatrixC, bgainmatrixC, bvariablenamesC, bconnectionmatrixC, nodummyvariablelistC, fgainmatrix, fvariablenames, fconnectionmatrix, bgainmatrix, bvariablenames, bconnectionmatrix, alpha = 0.35 ):
+    def __init__(self, fgainmatrix, fvariablenames, bgainmatrix, bvariablenames, nodummyvariablelist, alpha = 0.35):
         """This constructor will:
         1) create a graph with associated node importances based on local gain information
         2) create a graph with associated node importances based on partial correlation data"""
         
-        self.forwardgain = gRanking(self.normaliseMatrix(fgainmatrixC), fvariablenamesC)      
-        self.backwardgain = gRanking(self.normaliseMatrix(bgainmatrixC), bvariablenamesC)
-        self.forwardgainNC = gRanking(self.normaliseMatrix(fgainmatrix), fvariablenames)      
-        self.backwardgainNC = gRanking(self.normaliseMatrix(bgainmatrix), bvariablenames)
-        self.createBlendedRanking(nodummyvariablelistC, alpha)
-        self.createBlendedRankingNoControl(nodummyvariablelistC, alpha)
+        self.forwardgain = gRanking(self.normaliseMatrix(fgainmatrix), fvariablenames)      
+        self.backwardgain = gRanking(self.normaliseMatrix(bgainmatrix), bvariablenames)
+        self.createBlendedRanking(nodummyvariablelist, alpha)
+        self.variablelist = nodummyvariablelist
         
     def createBlendedRanking(self, nodummyvariablelist, alpha = 0.35):
         """This method will create a blended ranking profile of the object"""
         
-        self.variablelist = nodummyvariablelist
-        
+        blendedranking = dict()
+        for variable in nodummyvariablelist:
+            blendedranking[variable] = (1 - alpha) * self.forwardgain.rankDict[variable] + (alpha) * self.backwardgain.rankDict[variable]
+            
+        slist = sorted(blendedranking.iteritems(), key = itemgetter(1), reverse=True)
+        numberofentries = float(len(blendedranking))
         self.blendedranking = dict()
-        for variable in nodummyvariablelist:
-            self.blendedranking[variable] = (1 - alpha) * self.forwardgain.rankDict[variable] + (alpha) * self.backwardgain.rankDict[variable]
-            
-        slist = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
-        for x in slist:
-            print(x)
-        print("Done with Controlled Importances")
+        for i, v in enumerate(slist):
+            self.blendedranking[v[0]] = (numberofentries-i)/numberofentries
            
-    def createBlendedRankingNoControl(self, nodummyvariablelist, alpha = 0.35):
-        """This method will create a blended ranking profile given no
-        control"""
+    def printBlendedRanking(self):
+        """This method will just print the blended ranking dictionary in order"""
         
-        self.blendedrankingNC = dict()
-        for variable in nodummyvariablelist:
-            self.blendedrankingNC[variable] = (1 - alpha) * self.forwardgainNC.rankDict[variable] + (alpha) * self.backwardgainNC.rankDict[variable]
+        tt = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
+        for t in tt:
+            print(t)       
             
-        slist = sorted(self.blendedrankingNC.iteritems(), key = itemgetter(1), reverse=True)
-        for x in slist:
-            print(x)
-        
-        print("Done with No Control Importances")
-        
     def normaliseMatrix(self, inputmatrix):
         """This method normalises the absolute value of the input matrix
         in the columns i.e. all columns will sum to 1
@@ -84,7 +74,7 @@ class loopranking:
         normalisedmatrix = transpose(array(normalisedmatrix).reshape(r, c))
         return normalisedmatrix       
  
-    def displayControlImportances(self,nocontrolconnectionmatrix, controlconnectionmatrix ):
+    def displayImportancesCvsNC(self, nocontrolconnectionmatrix, rankingNoControl, controlconnectionmatrix, rankingControl):
         """This method will create a graph containing the 
         connectivity and importance of the system being displayed.
         Edge Attribute: color for control connection
@@ -115,7 +105,7 @@ class loopranking:
         
         
         for node in self.controlG.nodes():
-            self.controlG.add_node(node, nocontrolimportance = self.blendedrankingNC[node] , controlimportance = self.blendedranking[node])
+            self.controlG.add_node(node, nocontrolimportance = rankingNoControl[node] , controlimportance = rankingControl[node])
         
         plt.figure("The Controlled System")
         nx.draw_circular(self.controlG)
@@ -136,7 +126,30 @@ class loopranking:
         except:
             print("controlG does not exist")
         
-                     
+    def rankDifference(self, rank_initial, rank_now):
+        """This method will compute the difference in node importance for a system being controlled"""
+        
+        difference = dict()
+        for node in self.variablelist:
+            difference[node] = rank_initial[node] - rank_now[node]
+        
+        #the maximum imporance will always be 1 as we "normalise" the rankings earlier
+        slist = sorted(difference.iteritems(), key = itemgetter(1), reverse=True)
+        #returning a sorted list where the biggest changers will be displayed first
+        return slist, difference
+    
+    def differenceOfDifference(self, diff_initial, diff_now):
+        """This method will compute the difference of difference (in %) of the nodes for a system being controlled.
+        It does effectively the exact same thing as rankDifference but the name is used for convenience. """
+        
+        difference = dict()
+        for node in self.variablelist:
+            difference[node] = diff_initial[node] - diff_now[node]
+        
+        #the maximum imporance will always be 1 as we "normalise" the rankings earlier
+        slist = sorted(difference.iteritems(), key = itemgetter(1), reverse=True)
+        #returning a sorted list where the biggest changers will be displayed first
+        return slist, difference
         
 
 
