@@ -13,7 +13,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from operator import itemgetter
 
-testcase = 'local' #use local gains to calculate importances if == local
+testcase = 'local1' #use local gains to calculate importances if == local
 
 if testcase == 'local':
     
