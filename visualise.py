@@ -92,7 +92,7 @@ class visualiseOpenLoopSystem:
         for u in range(n):
             for v in range(n):
                 if (connectionmatrix[u, v] == 1):
-                    self.G.add_edge(variablenames[v], variablenames[u], localgain=round(localgainmatrix[u, v]))
+                    self.G.add_edge(variablenames[v], variablenames[u], localgain=localgainmatrix[u, v])
                     localgaindict[(variablenames[v], variablenames[u])] = localgainmatrix[u, v]
                     localgaindictformat[(variablenames[v], variablenames[u])] = round(localgainmatrix[u, v], 3)
                     
