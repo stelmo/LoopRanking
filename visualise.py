@@ -29,7 +29,7 @@ class visualiseOpenLoopSystem:
     This class will create several graphs:
     
     G = the directed connection graph with edge attribute 'localgain'
-    G1 = RGA recommended pairings using 0.5 criteria. edgecolour attribute
+    G1 = RGA recommended pairings using the greedy approach. edgecolour attribute
     G2 = RGA recommended pairings using max criteria. edgecolour attribute.
     GGF = Google Gain Forward (scaled) graph with node importance as node attribute 'importance' 
     LGF = Local Gain Forward (scaled) graph with node importance as node attribute 'importance'
@@ -112,18 +112,18 @@ class visualiseOpenLoopSystem:
         """This method will display the RGA pairings.
         
         It has 2 options of pairings:
-            1) pairingoption = 1 (the default) This displays the standard RGA
-            pairings where the decision to pair is positive if the relative gain
-            array has an element value of more than or equal to 0.5. 
+            1) pairingoption = 1 (the default) This method will display the greedy pairings
+            such that each input is matched to an output exactly once and that it is done
+            top down 
             2) pairingoption = 2 This displays the RGA pairs where each input is
-            forced to have a paired output. This is selected by using the maximum 
-            value in each column as a pair.
+            forced to have a paired output. This is done such that the maximum correlation
+            is used per input/output pairing.
             
         It has an optional parameter to set node positions. If left out
         the default node positions will be circular. """
 
         if pairingoption == 1:
-            pairingpattern = self.bristol.pairedvariablesHalf
+            pairingpattern = self.bristol.pairedvariablesGreedy
             message = "Standard RGA Pairings"
             self.G1 = nx.DiGraph()
             self.G1 = self.G.copy()
@@ -174,16 +174,26 @@ class visualiseOpenLoopSystem:
         """You want to re-order the rga matrix right here... It's the easiest way
         to make the output look better"""
         
+        pairs = []
         lenofinputs = len(self.listofinputs)
+        
+        for ii in range(lenofinputs):
+            mv = self.listofinputs[ii]
+            for jj in range(lenofinputs):
+                if mv in self.bristol.pairedvariablesMax[jj, :]:
+                    pairs.append(self.bristol.pairedvariablesMax[jj, :])
+        
+        pairs = array(pairs).reshape(-1, 2)
+                    
         outputs = self.bristol.vars[lenofinputs:]
-        renamedoutputs = outputs
-        tempmat = self.bristol.bristolmatrix.copy()# array(empty((r,c)))
-#        counter = 0
-#        for x in self.bristol.pairedvariablesMax:
-#            pos = outputs.index(x[0])
-#            tempmat[:, counter] = self.bristol.bristolmatrix[:, pos]
-#            renamedoutputs.append(x[0]) 
-#            counter += 1
+        renamedoutputs = []
+        tempmat = array(empty((r,c)))
+        counter = 0
+        for x in pairs:
+            pos = outputs.index(x[0])
+            tempmat[:, counter] = self.bristol.bristolmatrix[:, pos]
+            renamedoutputs.append(x[0]) 
+            counter += 1
 #            
         """The bristol matrix should be re-arranged now"""
         plt.imshow(tempmat, cmap=plt.cm.gray_r, interpolation='nearest', extent=[0, 1, 0, 1])

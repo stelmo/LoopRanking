@@ -10,13 +10,13 @@ from numpy import array
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 'b'
+testcase = 't'
 
 dispRGA = True
-dispEigenForwardAndBackward = True
-dispEigenBlend = True
-dispEdgeWeight = True
-dispBestControl = True
+dispEigenForwardAndBackward = False
+dispEigenBlend = False
+dispEdgeWeight = False
+dispBestControl = False
 
 if testcase == 'a':
 
@@ -123,9 +123,9 @@ if testcase == 't':
     test2.displayConnectivityAndLocalGains(test.nodummyconnection, test.nodummygain, test.nodummyvariablelist, nodepos)
     
     if dispRGA:
+        test2.displayRGAmatrix()
         test2.displayRGA(1, nodepos)
         test2.displayRGA(2, nodepos)
-        test2.displayRGAmatrix()
     
     if dispEigenForwardAndBackward:
         test2.displayEigenRankGGf(nodeposf)

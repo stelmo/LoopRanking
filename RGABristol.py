@@ -8,6 +8,7 @@ Created on Fri Mar 30 00:45:09 2012
 """Import classes and modules"""
 from numpy import array, transpose, argmax, copy, delete
 import numpy as np
+from operator import itemgetter
 
 class RGA:
     """This class implements the RGA method"""
@@ -19,7 +20,7 @@ class RGA:
         self.getOpenLoopGainArray(localdiffs, numberofinputs, variables, positioncontrol)
         self.calculateBristolmatrix()
         self.calculateBristolpairingsMax(self.vars, numberofinputs)
-        self.calculateBristolpairingsHalf(self.vars, numberofinputs)
+        self.calculateBristolpairingsGreedy(self.vars, numberofinputs)
     
     def getOpenLoopGainArray(self, localdiffs, numberofinputs, variables ,controlposition = None):
         """This method calculates the open loop gain matrix as used by the 
@@ -91,13 +92,13 @@ class RGA:
                 self.bristolmatrix.append(gij*rij)
             self.bristolmatrix = array(self.bristolmatrix).reshape(r,c)
         
-    def calculateBristolpairingsMax(self,vararrs,numofinputs):
+    def calculateBristolpairingsGreedy(self,vararrs,numofinputs):
         """This method determines which variables should be paired using the RGA.
         It assumed that each input WILL be paired and as such, it looks for the
         biggest value in each column and pairs accordingly.
-        This will allow only a single output (the best controllable case) to
-        map to a single output.
-        It uses a greedy approach... Trying to fix that  """
+        
+        This approach uses a greedy algorithm, going from the top down i.e.
+        Stream 2 gets matched first, then stream 3 etc... """
         
         self.inputvars = vararrs[:numofinputs]        
         self.outputvars = vararrs[numofinputs:]
@@ -114,30 +115,44 @@ class RGA:
             tempbristol = delete(tempbristol, pos, 1)
             tempoutputs.pop(pos)
             count += 1   
-        self.pairedvariablesMax = array(pairedvariables).reshape(-1,2)
+        self.pairedvariablesGreedy = array(pairedvariables).reshape(-1,2)
         
-    def calculateBristolpairingsHalf(self,vararrs,numofinputs):
-        """This method determines the best pairings of the RGA. It 
-        pairs only variables which are sufficiently decoupled ( >= 0.5 in RGA)
-        This will allow multiple outputs to be controlled by a single input."""
+    def calculateBristolpairingsMax(self,vararrs,numofinputs):
+        """This method tries to eliminate the greedy aspect of pairing."""
         
         self.inputvars = vararrs[:numofinputs]        
         self.outputvars = vararrs[numofinputs:]
-        tempoutputs = []
-        tempoutputs.extend(self.outputvars)
-        tempbristol = self.bristolmatrix.copy()
-        pairedvariables = []
-        [r, c] = tempbristol.shape
-        count = 0
-        for row in range(r):
-            pos = argmax(tempbristol[row, :])
-            if tempbristol[row, :][pos] >= 0.5:
-                pairedvariables.append(tempoutputs[pos])
-                pairedvariables.append(self.inputvars[count])
-                tempbristol = delete(tempbristol, pos, 1)
-                tempoutputs.pop(pos)
-            count += 1
-        self.pairedvariablesHalf = array(pairedvariables).reshape(-1,2)
+        [r, c] = self.bristolmatrix.shape
+        possiblepairlist = dict()
+        for x in range(r):
+            for y in range(c):
+                possiblepairlist[(self.outputvars[y], self.inputvars[x])] = self.bristolmatrix[x,y]
+
+        
+        tt = sorted(possiblepairlist.iteritems(), key = itemgetter(1), reverse=True)
+        usedMV = []
+        usedCV = []
+        bestpair = []
+        for t in tt:
+            if t[0][0] not in usedCV and t[0][1] not in usedMV:
+                bestpair.append( t[0][0] )
+                bestpair.append( t[0][1] )
+                usedMV.append( t[0][1] )
+                usedCV.append( t[0][0] )
+        
+        self.pairedvariablesMax = array(bestpair).reshape(-1,2)
+        
+                
+                
+                               
+
+        
+        
+                
+                
+                
+        
+        
            
         
             
