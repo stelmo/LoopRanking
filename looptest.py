@@ -13,7 +13,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from operator import itemgetter
 
-testcase = 'local' #use local gains to calculate importances if == local
+testcase = 'local1' #use local gains to calculate importances if == local
 
 if testcase == 'local':
     
@@ -32,19 +32,24 @@ if testcase == 'local':
     datamatrixBroken1 = formatmatrix("connectionsTEcontrol.csv", "localaveBROKEN1.txt", 18 ,0)
     brokencontrol1 = loopranking(datamatrixBroken1.scaledforwardgain, datamatrixBroken1.scaledforwardvariablelist, datamatrixBroken1.scaledbackwardgain, datamatrixBroken1.scaledbackwardvariablelist, datamatrixBroken1.nodummyvariablelist)
     
-    datamatrixBroken2 = formatmatrix("connectionsTEcontrol.csv", "localaveBROKEN3.txt", 18 ,0)
+    datamatrixBroken2 = formatmatrix("connectionsTEcontrol.csv", "localaveBROKEN2.txt", 18 ,0)
     brokencontrol2 = loopranking(datamatrixBroken2.scaledforwardgain, datamatrixBroken2.scaledforwardvariablelist, datamatrixBroken2.scaledbackwardgain, datamatrixBroken2.scaledbackwardvariablelist, datamatrixBroken2.nodummyvariablelist)
+    
+    datamatrixBroken3 = formatmatrix("connectionsTEcontrol.csv", "localaveBROKEN3.txt", 18 ,0)
+    brokencontrol3 = loopranking(datamatrixBroken3.scaledforwardgain, datamatrixBroken3.scaledforwardvariablelist, datamatrixBroken3.scaledbackwardgain, datamatrixBroken3.scaledbackwardvariablelist, datamatrixBroken3.nodummyvariablelist)
     
     
     [valvelist1, valvedict1] = brokencontrol1.rankDifference(controlobject.blendedranking, brokencontrol1.blendedranking)
     
     [valvelist2, valvedict2] = brokencontrol2.rankDifference(controlobject.blendedranking, brokencontrol2.blendedranking)
     
+    [valvelist3, valvedict3] = brokencontrol3.rankDifference(controlobject.blendedranking, brokencontrol3.blendedranking)
+    
     [out1, out2] = brokencontrol2.differenceOfDifference(valvedict1, valvedict2)
     
-    mvs = ['Stream 1', 'Stream 2', 'Stream 3', ' Stream 4', 'Compressor Recycle Valve','Purge Valve', ' Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow', 'Agitator Speed']
+    mvs = ['Stream 1', 'Stream 2', 'Stream 3', ' Stream 4', 'Compressor Recycle Valve','Purge Valve', ' Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
     
-    for x in out1:
+    for x in valvelist3:
         if x[0] in mvs:
             print(x)
     
@@ -66,19 +71,24 @@ else:
     datamatrixBroken1 = formatmatrix("connectionsTEcontrol.csv","controlcorrelationBROKEN1.txt",0,0,partialcorrelation=True)
     brokencontrol1 = loopranking(datamatrixBroken1.scaledforwardgain, datamatrixBroken1.scaledforwardvariablelist, datamatrixBroken1.scaledbackwardgain, datamatrixBroken1.scaledbackwardvariablelist, datamatrixBroken1.nodummyvariablelist)
     
-    datamatrixBroken2 = formatmatrix("connectionsTEcontrol.csv","controlcorrelationBROKEN3.txt",0,0,partialcorrelation=True)
+    datamatrixBroken2 = formatmatrix("connectionsTEcontrol.csv","controlcorrelationBROKEN2.txt",0,0,partialcorrelation=True)
     brokencontrol2 = loopranking(datamatrixBroken2.scaledforwardgain, datamatrixBroken2.scaledforwardvariablelist, datamatrixBroken2.scaledbackwardgain, datamatrixBroken2.scaledbackwardvariablelist, datamatrixBroken2.nodummyvariablelist)
+    
+    datamatrixBroken3 = formatmatrix("connectionsTEcontrol.csv","controlcorrelationBROKEN3.txt",0,0,partialcorrelation=True)
+    brokencontrol3 = loopranking(datamatrixBroken3.scaledforwardgain, datamatrixBroken3.scaledforwardvariablelist, datamatrixBroken3.scaledbackwardgain, datamatrixBroken3.scaledbackwardvariablelist, datamatrixBroken3.nodummyvariablelist)
     
     
     [valvelist1, valvedict1] = brokencontrol1.rankDifference(controlobject.blendedranking, brokencontrol1.blendedranking)
     
     [valvelist2, valvedict2] = brokencontrol2.rankDifference(controlobject.blendedranking, brokencontrol2.blendedranking)
     
+    [valvelist3, valvedict3] = brokencontrol3.rankDifference(controlobject.blendedranking, brokencontrol3.blendedranking)
+    
     [out1, out2] = brokencontrol2.differenceOfDifference(valvedict1, valvedict2)
     
     mvs = ['Stream 1', 'Stream 2', 'Stream 3', ' Stream 4', 'Compressor Recycle Valve','Purge Valve', ' Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow', 'Agitator Speed']
     
-    for x in out1:
+    for x in valvelist3:
         if x[0] in mvs:
             print(x)
       
