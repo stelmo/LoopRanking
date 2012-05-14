@@ -74,7 +74,7 @@ class loopranking:
         normalisedmatrix = transpose(array(normalisedmatrix).reshape(r, c))
         return normalisedmatrix       
  
-    def displayImportancesCvsNC(self, nocontrolconnectionmatrix, rankingNoControl, controlconnectionmatrix, rankingControl):
+    def displaySuperGraph(self, nocontrolconnectionmatrix, rankingNoControl, controlconnectionmatrix, rankingControl, mvlist, mvImportDict1, mvImportDict2, mvImportDict3):
         """This method will create a graph containing the 
         connectivity and importance of the system being displayed.
         Edge Attribute: color for control connection
@@ -106,6 +106,13 @@ class loopranking:
         
         for node in self.controlG.nodes():
             self.controlG.add_node(node, nocontrolimportance = rankingNoControl[node] , controlimportance = rankingControl[node])
+        
+        for node in mvlist:
+            self.controlG.add_node(node, time_1_importance = mvImportDict1[node], time_2_importance = mvImportDict2[node], time_3_importance = mvImportDict3[node], control_node = 1)
+            
+        for node in self.controlG.nodes():
+            if node not in mvlist:
+                self.controlG.add_node(node, time_1_importance = -2.0, time_2_importance = -2.0, time_3_importance = -2.0, control_node = 0)    
         
         plt.figure("The Controlled System")
         nx.draw_circular(self.controlG)

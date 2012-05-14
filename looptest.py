@@ -47,11 +47,14 @@ if testcase == 'local':
     
     [out1, out2] = brokencontrol2.differenceOfDifference(valvedict1, valvedict2)
     
-    mvs = ['Stream 1', 'Stream 2', 'Stream 3', ' Stream 4', 'Compressor Recycle Valve','Purge Valve', ' Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
+    mvs = ['Stream 1', 'Stream 2', 'Stream 3', 'Stream 4', 'Compressor Recycle Valve','Purge Valve', 'Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
     
     for x in valvelist3:
         if x[0] in mvs:
             print(x)
+            
+    controlobject.displaySuperGraph(datamatrixNC.nodummyconnection, nocontrolobject.blendedranking, datamatrix.nodummyconnection, controlobject.blendedranking, mvs, valvedict1, valvedict2, valvedict3)
+    controlobject.exportToGML()
     
 else:
     #this works
@@ -86,11 +89,15 @@ else:
     
     [out1, out2] = brokencontrol2.differenceOfDifference(valvedict1, valvedict2)
     
-    mvs = ['Stream 1', 'Stream 2', 'Stream 3', ' Stream 4', 'Compressor Recycle Valve','Purge Valve', ' Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow', 'Agitator Speed']
+    mvs = ['Stream 1', 'Stream 2', 'Stream 3', 'Stream 4', 'Compressor Recycle Valve','Purge Valve', 'Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
     
     for x in valvelist3:
         if x[0] in mvs:
             print(x)
+            
+    controlobject.displaySuperGraph(datamatrixNC.nodummyconnection, nocontrolobject.blendedranking, datamatrix.nodummyconnection, controlobject.blendedranking, mvs, valvedict1, valvedict2, valvedict3)
+    controlobject.exportToGML()
+    
       
      
     
