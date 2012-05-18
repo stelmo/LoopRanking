@@ -43,7 +43,7 @@ class loopranking:
         numberofentries = float(len(blendedranking))
         self.blendedranking = dict()
         for i, v in enumerate(slist):
-            self.blendedranking[v[0]] = (numberofentries-i)/numberofentries
+            self.blendedranking[v[0]] = (numberofentries-i-1)/(numberofentries-1)
            
     def printBlendedRanking(self):
         """This method will just print the blended ranking dictionary in order"""

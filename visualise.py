@@ -14,6 +14,7 @@ from gainRank import gRanking
 from operator import itemgetter
 from itertools import permutations, izip
 from math import isnan
+from sets import Set
 
 class visualiseOpenLoopSystem:
     """The class name is not strictly speaking accurate as some calculations are 
@@ -386,7 +387,7 @@ class visualiseOpenLoopSystem:
             numberofentries = float(len(self.blendedranking))
             self.blendedranking = dict()
             for i, v in enumerate(slist):
-                self.blendedranking[v[0]] = (numberofentries-i)/numberofentries 
+                self.blendedranking[v[0]] = (numberofentries-i-1)/(numberofentries-1) 
             
         
         self.EBG = nx.DiGraph()
@@ -438,6 +439,95 @@ class visualiseOpenLoopSystem:
         this end the default parameter permute will ensure that you use a greedy
         approach to determine pairings unless it is set to True. This greedy approach 
         takes about 2 min in the Tennessee Eastman problem. """
+
+    def createInteractionDict(self, focus_vars = None, alpha = 0.2):
+        """This method should try to quantify the interaction a MV has on all the other CVs."""
+                
+        #now create the forward and backward supergraphs
+        super_forward = nx.DiGraph()
+        super_backward = nx.DiGraph()
+        
+        for i in range(self.forwardgain.n):
+            for j in range(self.forwardgain.n):
+                if (self.forwardgain.gMatrix[i, j] != 0):
+                    super_forward.add_edge(self.forwardgain.gVariables[j], self.forwardgain.gVariables[i], weight = self.forwardgain.gMatrix[i,j])
+        
+        for i in range(self.backwardgain.n):
+            for j in range(self.backwardgain.n):
+                if self.backwardgain.gMatrix[i,j] !=0:
+                    super_backward.add_edge(self.backwardgain.gVariables[j], self.backwardgain.gVariables[i], weight = self.backwardgain.gMatrix[i,j])
+        
+        #super graph with implied weights created...
+        
+        temp_graph_f = nx.DiGraph() #this will be cleared after each iteration
+        temp_graph_b = nx.DiGraph()
+        
+        self.interaction_dict = dict()
+        
+        for mv in self.listofinputs:
+            temp_graph_f.clear()
+            temp_graph_f = super_forward.copy()#finished house-keeping
+            
+            temp_graph_b.clear()
+            temp_graph_b = super_backward.copy()
+            
+            for node in temp_graph_f.nodes():
+                if not nx.has_path(temp_graph_f, mv, node):
+                    temp_graph_f.remove_node(node)
+                if node in self.listofinputs and not mv:
+                    temp_graph_f.remove_node(node)
+            
+            for node in temp_graph_b.nodes():
+                if not nx.has_path(temp_graph_b, mv, node):
+                    temp_graph_b.remove_node(node)
+                if node in self.listofinputs and not mv:
+                    temp_graph_b.remove_node(node)        
+            #now you have the modified graph with extra mvs and their direct dependencies removed
+            
+            temp_gainmatrix_f = transpose(nx.to_numpy_matrix(temp_graph_f, weight = "weight"))
+            temp_variables_f = temp_graph_f.nodes()
+            temp_ranking_object_f = gRanking(self.normaliseMatrix(temp_gainmatrix_f), temp_variables_f)
+
+            temp_gainmatrix_b = transpose(nx.to_numpy_matrix(temp_graph_b, weight = "weight"))
+            temp_variables_b = temp_graph_b.nodes()
+            temp_ranking_object_b = gRanking(self.normaliseMatrix(temp_gainmatrix_b), temp_variables_b)
+
+            blendedranking = dict()
+            
+            var_list = []
+            for x in temp_graph_f.nodes():
+                if x in self.listofoutputs:
+                    var_list.append(x)
+            
+            for variable in var_list:
+                blendedranking[variable] = (1 - alpha) * temp_ranking_object_f.rankDict[variable] + (alpha) * temp_ranking_object_f.rankDict[variable]
+        
+            slist = sorted(blendedranking.iteritems(), key = itemgetter(1), reverse=True)
+            numberofentries = float(len(blendedranking))
+            blendedranking = dict()
+            for i, v in enumerate(slist):
+                blendedranking[v[0]] = (numberofentries-i-1)/(numberofentries-1) 
+            # nice! now you have a ranking dicitionary of all XMEASs for each case: this works!!!
+            
+            self.interaction_dict[mv] = blendedranking
+            
+        temp_interaction_dict = dict()    
+        
+        if focus_vars is not None:
+            for x in self.interaction_dict.iterkeys():
+                return_dict = self.interaction_dict[x]
+                temp_inner_dict = dict()
+                for y in return_dict.iterkeys():
+                    if y in focus_vars:
+                        temp_inner_dict[y] = return_dict[y]
+                temp_interaction_dict[x] = temp_inner_dict
+            self.interaction_dict = dict()
+            self.interaction_dict = temp_interaction_dict.copy()
+        #this just focuses the output to not display everything...
+            
+
+        
+        
 
     def exportToGML(self):
         """This method serves to export all the graphs created to GML files. It detects which 

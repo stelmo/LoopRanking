@@ -49,7 +49,7 @@ if testcase == 'local':
     
     mvs = ['Stream 1', 'Stream 2', 'Stream 3', 'Stream 4', 'Compressor Recycle Valve','Purge Valve', 'Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
     
-    for x in valvelist3:
+    for x in valvelist1:
         if x[0] in mvs:
             print(x)
             
@@ -91,7 +91,7 @@ else:
     
     mvs = ['Stream 1', 'Stream 2', 'Stream 3', 'Stream 4', 'Compressor Recycle Valve','Purge Valve', 'Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
     
-    for x in valvelist3:
+    for x in valvelist1:
         if x[0] in mvs:
             print(x)
             

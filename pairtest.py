@@ -10,11 +10,13 @@ from numpy import array
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 'b'
+testcase = 't'
 
-dispRGA = True
-dispEigenForwardAndBackward = True
+dispRGA = False
+dispEigenForwardAndBackward = False
 dispEigenBlend = True
+interaction = True
+
 
 if testcase == 'a':
 
@@ -43,6 +45,9 @@ if testcase == 'a':
         
     if dispEigenBlend:    
         test2.displayEigenRankBlend(test.nodummyvariablelist, 0.15, nodepos)
+        
+    if interaction:
+        test2.createInteractionDict()
 
     test2.showAll()
     test2.exportToGML()
@@ -75,7 +80,10 @@ if testcase == 'b':
     
     if dispEigenBlend:    
         test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1, nodepos, normaliseRankings=True)
-    
+        
+    if interaction:
+        test2.createInteractionDict()    
+        
     test2.showAll()
     test2.exportToGML()
     
@@ -110,6 +118,9 @@ if testcase == 't':
     
     if dispEigenBlend:    
         test2.displayEigenRankBlend(test.nodummyvariablelist,  0.35, nodepos)
+
+    if interaction:
+        test2.createInteractionDict(focus_vars = controlme)
         
     test2.showAll()
     test2.exportToGML()
