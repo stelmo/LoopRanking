@@ -31,6 +31,7 @@ class formatmatrix:
         self.removeDummyVariables(numberofdummyvariables,partialcorrelation) #can be zero!
         self.addforwardScale()
         self.addbackwardScale()
+        
            
     def initialiseSystem(self, locationofconnections, locationofstates, numberofruns,partialcorrelation=False):
         """This method should create the orignal gain matrix (incl dummy gains)
@@ -120,7 +121,7 @@ class formatmatrix:
         
         #now add connections where out degree == 1
         counter = 1
-        
+        # for partial correlation 0.2 works well but include in both forward and backward pass
         for node in M.nodes():
             if M.out_degree(node) == 1:
                 nameofscale = 'DV'+str(counter)

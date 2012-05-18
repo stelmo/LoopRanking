@@ -10,13 +10,11 @@ from numpy import array
 from visualise import visualiseOpenLoopSystem
 
 """This has been altered for the sake of convenience"""
-testcase = 't'
+testcase = 'b'
 
 dispRGA = True
 dispEigenForwardAndBackward = True
 dispEigenBlend = True
-dispEdgeWeight = True
-dispBestControl = True
 
 if testcase == 'a':
 
@@ -34,29 +32,18 @@ if testcase == 'a':
     test2.displayConnectivityAndLocalGains(test.nodummyconnection, test.nodummygain, test.nodummyvariablelist, nodepos)
     
     if dispRGA: 
-        test2.displayRGA(1, nodepos)
         test2.displayRGA(2, nodepos)
         test2.displayRGAmatrix()
     
     if dispEigenForwardAndBackward:
-        test2.displayEigenRankGGf(nodepos)
         test2.displayEigenRankLGf(nodepos)
-        test2.displayEigenRankGGb(nodepos)
         test2.displayEigenRankLGb(nodepos)
         test2.displayEigenRankNormalForward(nodepos)
         test2.displayEigenRankNormalBackward(nodepos)
         
     if dispEigenBlend:    
         test2.displayEigenRankBlend(test.nodummyvariablelist, 0.15, nodepos)
-        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.15, nodepos)
-        
-    if dispEdgeWeight & dispEigenBlend:
-        test2.displayEdgeWeights(nodepos)
-    
-    if dispBestControl & dispEdgeWeight & dispEigenBlend:
-        test2.calculateAndDisplayBestControl(nodepositions=nodepos)        
-        
-    
+
     test2.showAll()
     test2.exportToGML()
 
@@ -77,29 +64,18 @@ if testcase == 'b':
     test2.displayConnectivityAndLocalGains(test.nodummyconnection, test.nodummygain, test.nodummyvariablelist, nodepos)
     
     if dispRGA:
-        test2.displayRGA(1, nodepos)
         test2.displayRGA(2, nodepos)
         test2.displayRGAmatrix()
     
     if dispEigenForwardAndBackward:
-        test2.displayEigenRankGGf(nodeposf)
         test2.displayEigenRankLGf(nodeposf)
-        test2.displayEigenRankGGb(nodeposb)
         test2.displayEigenRankLGb(nodeposb)
         test2.displayEigenRankNormalForward(nodepos)
         test2.displayEigenRankNormalBackward(nodepos)
     
     if dispEigenBlend:    
-        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.1, nodepos)
-        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1, nodepos)
+        test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1, nodepos, normaliseRankings=True)
     
-    
-    if dispEdgeWeight & dispEigenBlend:
-        test2.displayEdgeWeights(nodepos)
-
-    if dispBestControl & dispEdgeWeight & dispEigenBlend :
-        test2.calculateAndDisplayBestControl(nodepositions = nodepos, permute = False, variablestocontrol = ['v4','v5'])
-        
     test2.showAll()
     test2.exportToGML()
     
@@ -107,7 +83,7 @@ if testcase == 't':
     
     test = formatmatrix("connectionsTE.csv","localave50statesNOCONTROLscaled.txt",13,0 )
     
-    controlme = ['Reactor Pressure', 'Reactor Temperature','S11 F', 'S11 E ', 'S9 D', 'S6 F', 'Reactor Level','Product Sep Temp', 'Stripper Temp', 'Stream 6',  'Stream 10','S9 F' ]    
+    controlme = ['S11 F', 'S11 E ', 'S9 D', 'S6 F','S9 F','Product Sep Temp', 'Stripper Temp','Stream 10', 'Stream 6','Reactor Pressure', 'Reactor Temperature','Reactor Level' ]    
     
     test2 = visualiseOpenLoopSystem(test.nodummyvariablelist, test.nodummydiff, 12,test.scaledforwardgain, test.scaledforwardconnection, test.scaledforwardvariablelist, test.scaledbackwardgain, test.scaledbackwardconnection, test.scaledbackwardvariablelist, test.nodummygain, test.nodummyconnection, controlme) 
     
@@ -124,27 +100,16 @@ if testcase == 't':
     
     if dispRGA:
         test2.displayRGAmatrix()
-        test2.displayRGA(1, nodepos)
         test2.displayRGA(2, nodepos)
     
     if dispEigenForwardAndBackward:
-        test2.displayEigenRankGGf(nodeposf)
         test2.displayEigenRankLGf(nodeposf)
-        test2.displayEigenRankGGb(nodeposb)
         test2.displayEigenRankLGb(nodeposb)
         test2.displayEigenRankNormalForward(nodepos)
         test2.displayEigenRankNormalBackward(nodepos)
     
     if dispEigenBlend:    
-        test2.displayEigenRankBlendGoogle(test.nodummyvariablelist, 0.35, nodepos)
         test2.displayEigenRankBlend(test.nodummyvariablelist,  0.35, nodepos)
-    
-    
-    if dispEdgeWeight & dispEigenBlend:
-        test2.displayEdgeWeights(nodepos)
-
-    if dispBestControl & dispEdgeWeight & dispEigenBlend :
-        test2.calculateAndDisplayBestControl(variablestocontrol = controlme, nodepositions = nodepos)
         
     test2.showAll()
     test2.exportToGML()

@@ -13,6 +13,7 @@ from RGABristol import RGA
 from gainRank import gRanking
 from operator import itemgetter
 from itertools import permutations, izip
+from math import isnan
 
 class visualiseOpenLoopSystem:
     """The class name is not strictly speaking accurate as some calculations are 
@@ -22,10 +23,7 @@ class visualiseOpenLoopSystem:
         1) Visualise the connectivity and local gain information
         2) Visualise the results of the RGA method
         3) Visualise the results of the eigen-vector approach method
-        4) Calculate the edge-weights based on the algorithm
-        5) Calculate and display the best pairing scheme according to the
-            eigen-method
-            
+
     This class will create several graphs:
     
     G = the directed connection graph with edge attribute 'localgain'
@@ -56,15 +54,11 @@ class visualiseOpenLoopSystem:
         
         self.bristol = RGA(variables, localdiff, numberofinputs, controlvarsforRGA)
         
-        self.forwardgain = gRanking(self.normaliseMatrix(fgainmatrix), fvariablenames)
-        self.gfgain = gRanking(self.normaliseMatrix(fconnectionmatrix), fvariablenames)        
-        
+        self.forwardgain = gRanking(self.normaliseMatrix(fgainmatrix), fvariablenames)      
         self.backwardgain = gRanking(self.normaliseMatrix(bgainmatrix), bvariablenames)
-        self.gbgain = gRanking(self.normaliseMatrix(bconnectionmatrix), bvariablenames)
         
         self.normalforwardgain = gRanking(self.normaliseMatrix(normalgains), variables)
         self.normalbackwardgain = gRanking(self.normaliseMatrix(transpose(normalgains)), variables)
-        self.normalforwardgoogle = gRanking(self.normaliseMatrix(normalconnections), variables)
         
         self.listofinputs = variables[:numberofinputs]
         self.listofoutputs = variables[numberofinputs:]
@@ -108,7 +102,7 @@ class visualiseOpenLoopSystem:
         nx.draw_networkx_nodes(self.G, pos=posdict, node_color='y', node_size=450)
         plt.axis("off") 
         
-    def displayRGA(self, pairingoption=1, nodepositions=None):
+    def displayRGA(self, pairingoption=2, nodepositions=None):
         """This method will display the RGA pairings.
         
         It has 2 options of pairings:
@@ -277,70 +271,7 @@ class visualiseOpenLoopSystem:
         
         nx.draw_networkx(self.LGF, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
         nx.draw_networkx_edges(self.LGF, pos=nodepos)
-        plt.axis("off")
-
-    def displayEigenRankGGf(self, nodepos=None):
-        """This method constructs a network graph showing connections and rankings
-        in terms of node size going FORWARD and using unity gains between all node
-        i.e. the google rank. 
-        
-        It has an optional parameter nodepos which sets the positions of the nodes,
-        if left out the node layout defaults to circular. """
-    
-        self.GGF = nx.DiGraph()
-        for i in range(self.gfgain.n):
-            for j in range(self.gfgain.n):
-                if (self.gfgain.gMatrix[i, j] != 0):
-                    self.GGF.add_edge(self.gfgain.gVariables[j], self.gfgain.gVariables[i])
-         
-         
-        plt.figure("Node Rankings: Google Gain Forward: Scaled")
-        rearrange = self.GGF.nodes()
-        
-        for node in self.GGF.nodes():
-            self.GGF.add_node(node, importance=self.gfgain.rankDict[node])
-        
-        nodelabels = dict((n, [n, round(self.gfgain.rankDict[n], 3)]) for n in self.GGF.nodes())
-        sizeArray = [self.gfgain.rankDict[var] * 10000 for var in rearrange]
-        
-        if nodepos == None:
-            nodepos = nx.circular_layout(self.GGF)           
-        
-        nx.draw_networkx(self.GGF, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
-        nx.draw_networkx_edges(self.GGF, pos=nodepos)
-        plt.axis("off")
-        
-    def displayEigenRankGGb(self, nodepos=None):
-        """This method constructs a network graph showing connections and rankings
-        in terms of node size going BACKWARD and using unity gains between all node
-        i.e. the google rank. 
-        
-        It has an optional parameter nodepos which sets the positions of the nodes,
-        if left out the node layout defaults to circular. """
-        
-        
-        self.GGB = nx.DiGraph()
-        for i in range(self.gbgain.n):
-            for j in range(self.gbgain.n):
-                if (self.gbgain.gMatrix[i, j] != 0):
-                    self.GGB.add_edge(self.gbgain.gVariables[j], self.gbgain.gVariables[i])
-         
-         
-        plt.figure("Node Rankings: Google Gain Backward: Scaled")
-        rearrange = self.GGB.nodes()
-    
-        for node in self.GGB.nodes():
-            self.GGB.add_node(node, importance=self.gbgain.rankDict[node])
-            
-        nodelabels = dict((n, [n, round(self.gbgain.rankDict[n], 3)]) for n in self.GGB.nodes())
-        sizeArray = [self.gbgain.rankDict[var] * 10000 for var in rearrange]
-        
-        if nodepos == None:
-            nodepos = nx.circular_layout(self.GGB)           
-        
-        nx.draw_networkx(self.GGB, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
-        nx.draw_networkx_edges(self.GGB, pos=nodepos)
-        plt.axis("off")
+        plt.axis("off")        
 
     def displayEigenRankLGb(self, nodepos=None):
         """This method constructs a network graph showing connections and rankings
@@ -437,16 +368,25 @@ class visualiseOpenLoopSystem:
         nx.draw_networkx_edges(self.NBG, pos=nodepos)
         plt.axis("off") 
         
-    def displayEigenRankBlend(self, nodummyvariablelist, alpha, nodepos=None):
+    def displayEigenRankBlend(self, nodummyvariablelist, alpha, nodepos=None, normaliseRankings = True):
         """This method displays the blended weightings of nodes i.e. it takes
         both forward and backward rankings into account.
         
         Note that this is purely ranking i.e. the standard google rankings do
-        not come into play yet."""
+        not come into play yet.
+        
+        The final parameter: normaliseRankings is only there for display purposes"""
         
         self.blendedranking = dict()
         for variable in nodummyvariablelist:
             self.blendedranking[variable] = (1 - alpha) * self.forwardgain.rankDict[variable] + (alpha) * self.backwardgain.rankDict[variable]
+        
+        if normaliseRankings: 
+            slist = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
+            numberofentries = float(len(self.blendedranking))
+            self.blendedranking = dict()
+            for i, v in enumerate(slist):
+                self.blendedranking[v[0]] = (numberofentries-i)/numberofentries 
             
         
         self.EBG = nx.DiGraph()
@@ -484,132 +424,7 @@ class visualiseOpenLoopSystem:
         nx.draw_networkx_edges(self.EBG, pos=nodepos)
         plt.axis("off")
         
-    def displayEigenRankBlendGoogle(self, nodummyvariablelist, alpha, nodepos=None):
-        """This method displays the blended weightings of nodes i.e. it takes
-        both forward and backward rankings into account.
-        
-        Note that this is purely ranking i.e. the standard google rankings do
-        not come into play yet."""
-        
-        self.blendedrankingGoogle = dict()
-        for variable in nodummyvariablelist:
-            self.blendedrankingGoogle[variable] = (1 - alpha) * self.gfgain.rankDict[variable] + (alpha) * self.gbgain.rankDict[variable]
-            
-        
-        self.EBGG = nx.DiGraph()
-        for i in range(self.normalforwardgain.n):
-            for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i, j] != 0):
-                    self.EBGG.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i]) #draws the connectivity graph to visualise rankArray
-         
-         
-        plt.figure("Blended Node Rankings: Google")
-        rearrange = self.EBGG.nodes()
-        
-        """Need to alter the blendedranking dictionary here: the initial dict contains relative imporances,
-        that needs to be altered to a more "absolute" importance"""
-#        tt = sorted(self.blendedrankingGoogle.iteritems(), key = itemgetter(1), reverse=True)
-#        numberofentries = float(len(self.blendedrankingGoogle))
-#        self.blendedrankingGoogle = dict()
-#        for i, v in enumerate(tt):
-#            self.blendedrankingGoogle[v[0]] = (numberofentries-i)/numberofentries
-        
-        for node in self.EBGG.nodes():
-            self.EBGG.add_node(node, importance=self.blendedrankingGoogle[node])
-        
-        nodelabels = dict((n, [n, round(self.blendedrankingGoogle[n], 3)]) for n in self.EBGG.nodes())
-        sizeArray = [self.blendedrankingGoogle[var] * 10000 for var in rearrange]
-        
-        if nodepos == None:
-            nodepos = nx.circular_layout(self.EBGG)        
-        
-        nx.draw_networkx(self.EBGG, pos=nodepos , labels=nodelabels, node_size=sizeArray, node_color='y')
-        nx.draw_networkx_edges(self.EBGG, pos=nodepos)
-        plt.axis("off")   
-        
-#        tt = sorted(self.blendedrankingGoogle.iteritems(), key = itemgetter(1), reverse=True)
-#        for t in tt:
-#            print(t)      
-#        
-   
-    def displayEdgeWeights(self, nodepos=None):
-        """This method will compute and store the edge weights of the ranking web.
-        
-        It *NEEDS* the methods displayEigenBlend and displayEigenBlendGoogle to have
-        been run!"""      
-                
-        self.P = nx.DiGraph()
-        self.edgelabels = dict()
-        
-        for i in range(self.normalforwardgain.n):
-            for j in range(self.normalforwardgain.n):
-                if (self.normalforwardgain.gMatrix[i, j] != 0):
-                    temp = self.normalforwardgain.gMatrix[i, j] * self.blendedranking[self.normalforwardgain.gVariables[j]] - self.blendedrankingGoogle[self.normalforwardgain.gVariables[j]] * self.normalforwardgoogle.gMatrix[i, j]
-                    self.edgelabels[(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i])] = round(-1 * temp, 4)
-                    self.P.add_edge(self.normalforwardgain.gVariables[j], self.normalforwardgain.gVariables[i], weight= -1 * temp)
-         
-        plt.figure("Edge Weight Graph")
-        
-        for node in self.P.nodes():
-            self.P.add_node(node, importanceNormal=self.blendedranking[node])
-            self.P.add_node(node, importanceGoogle=self.blendedrankingGoogle[node])
-        
-        if nodepos == None:
-            nodepos = nx.circular_layout(self.P)        
-        
-        nx.draw_networkx(self.P, pos=nodepos)
-        nx.draw_networkx_edge_labels(self.P, pos=nodepos, edge_labels=self.edgelabels, label_pos=0.3)
-        nx.draw_networkx_edges(self.P, pos=nodepos, width=2.5, edge_color='k', style='solid', alpha=0.15)
-        nx.draw_networkx_nodes(self.P, pos=nodepos, node_color='y', node_size=450)        
-        plt.axis("off") 
-        
-    def createPairingDict(self, variablestocontrol=None):
-        """This method should create a dictionary with every pairing as a distinct key
-        and the min path edge weight sum the value.
-        
-        This method requires dispEigenWeightsBlend etc..."""
-        #recursive method to return all the possible paths by traveling to a node
-        #only once
-        def getAllTours(graph, startnode, endnode, path=[]):
-            path = path + [startnode]
-            if startnode == endnode:
-                return [path]
-            if startnode not in nx.nodes(graph):
-                return []
-            paths = []
-            for node in nx.neighbors(graph, startnode):
-                if node not in path:
-                    newpaths = getAllTours(graph, node, endnode, path)
-                    for newpath in newpaths:
-                        paths.append(newpath)
-                        
-            return paths
-        
-        #this sub-method will calculate the minimum path length between 2 nodes
-        
-        def calculateMinTour(graph, inputnode, outputnode):
-            listofpossibletours = getAllTours(graph, inputnode, outputnode)
-            minweight = float('inf')    
-            for possibility in listofpossibletours:
-                pathweight = 0
-                for node in range(len(possibility) - 1):
-                    pathweight = pathweight + graph[possibility[node]][possibility[node + 1]]['weight']
-                if pathweight < minweight:
-                    minweight = pathweight
-            return minweight   
-   
-        if variablestocontrol == None:
-            controlme = self.listofoutputs
-        else:
-            controlme = variablestocontrol
 
-        
-        self.pathlengthsdict = dict()
-        for x in self.listofinputs:
-            for y in controlme:
-                self.pathlengthsdict[(x, y)] = calculateMinTour(self.P, x, y)
-
-    def calculateAndDisplayBestControl(self, variablestocontrol=None, nodepositions=None, permute=False):
         """This method should calculate the best possible control settings i.e.
         which variables to pair with which other variables.
         The default tries to control the most important variables according to
@@ -623,84 +438,7 @@ class visualiseOpenLoopSystem:
         this end the default parameter permute will ensure that you use a greedy
         approach to determine pairings unless it is set to True. This greedy approach 
         takes about 2 min in the Tennessee Eastman problem. """
-        
-        self.createPairingDict(variablestocontrol)   
-        print("Pair Dictionary Created")        
-        
-        if variablestocontrol == None:
-            controlme = self.listofoutputs
-        else:
-            controlme = variablestocontrol
-            
-        """Unfortunately, this method is not suitable for large systems. """ 
-        if permute:           
-            #calculate all control permutations
-            controllers = self.listofinputs
-            r = len(controllers)
-            sequence = permutations(controlme, r)
-            prevbestconfig = []
-            prevrowsum = float('inf')  
-            rowsum = 0
-            print("Start Itertions: All Permutations") #for your peace of mind
-            for x in sequence:
-                possiblepairing = []
-                for y in izip(controllers, x):
-                    possiblepairing.append(y)
-                    rowsum = rowsum + self.pathlengthsdict[y]
-                    if (rowsum == float('inf')):
-                        break
-                if rowsum < prevrowsum:
-                    prevbestconfig = possiblepairing
-                    prevrowsum = rowsum
-                rowsum = 0
-        else:
-            
-            """A more and less reasonable method to determine best pairs"""
-            prevbestconfig = []
-            rankingsdesc = [x[0] for x in sorted(self.blendedranking.iteritems(), key=itemgetter(1), reverse=True)]
-            controldesc = [y for y in rankingsdesc if y in controlme]
-            print("Start Iterations: Greedy Pairing")
-            """Fixed method: will attempt to force every MV to a unique CV"""
-            usedMV = []
-            for x in controldesc:
-                MV = None
-                previter = float('inf')
-                for y in self.listofinputs:
-                    index = (y, x)
-                    if y not in usedMV:
-                        if previter > self.pathlengthsdict[index]:
-                            recpair = index
-                            MV = y
-                            previter = self.pathlengthsdict[index]
-                    
-                    
-                usedMV.append(MV)
-                prevbestconfig.append(recpair)   
-               
-        print("The recommended control pairs")
-        for x in prevbestconfig:
-            print(x)
-        
-        self.F = nx.DiGraph()
-        self.F = self.G.copy() #remember G is the basis graph
-        self.F.add_edges_from(self.F.edges(), edgecolour='k')
-        
-        pairlist = []
-        for element in prevbestconfig:
-            pairlist.append((element[1], element[0]))
-            self.F.add_edge(element[1], element[0], edgecolour='r')
-          
-        edgecolorlist = ["r" if element in pairlist else "k" for element in self.F.edges()]
-        
-        if nodepositions == None:
-            nodepositions = nx.circular_layout(self.G)
-        
-        plt.figure("Best Controller Pairs: Eigenvector Approach")            
-        nx.draw_networkx(self.F, pos=nodepositions)
-        nx.draw_networkx_edges(self.F, pos=nodepositions, width=2.5, edge_color=edgecolorlist, style='solid', alpha=0.15)
-        nx.draw_networkx_nodes(self.F, pos=nodepositions, node_color='y', node_size=450)
-        plt.axis('off')
-        
+
     def exportToGML(self):
         """This method serves to export all the graphs created to GML files. It detects which 
         objects have been created."""

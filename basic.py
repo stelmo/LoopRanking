@@ -90,12 +90,14 @@ def showSystem(n, gMatrix, gVariables, rankDict, name):
 
 
 """Functional part"""
-showcase = False
+showcase = True
+
 
 if showcase:
     
     [prem1, var1, n1] = createConnectionMatrix("premise1.csv")
     rankings1 = gRanking(normaliseMatrix(prem1), var1)
+    print(rankings1.rankDict)
     showSystem(n1, prem1, var1, rankings1.rankDict, "premise1")
     
 else:
