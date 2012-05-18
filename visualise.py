@@ -472,7 +472,7 @@ class visualiseOpenLoopSystem:
                     temp_graph_f.remove_node(node)
             
             for node in temp_graph_b.nodes():
-                if not nx.has_path(temp_graph_b, mv, node):
+                if not nx.has_path(temp_graph_b, node, mv):
                     temp_graph_b.remove_node(node)
                 if node in self.listofinputs and not mv:
                     temp_graph_b.remove_node(node)        
@@ -494,7 +494,7 @@ class visualiseOpenLoopSystem:
                     var_list.append(x)
             
             for variable in var_list:
-                blendedranking[variable] = (1 - alpha) * temp_ranking_object_f.rankDict[variable] + (alpha) * temp_ranking_object_f.rankDict[variable]
+                blendedranking[variable] = (1 - alpha) * temp_ranking_object_f.rankDict[variable] + (alpha) * temp_ranking_object_b.rankDict[variable]
         
             slist = sorted(blendedranking.iteritems(), key = itemgetter(1), reverse=True)
             numberofentries = float(len(blendedranking))
@@ -558,7 +558,7 @@ class visualiseOpenLoopSystem:
             most_common.append(temp[0][0])
         #now get a new "most common" normalised eigen matrix
         [i, j] = self.eigenmatrix.shape
-        print(most_common)
+
         for x in range(i):
             for y in range(j):
                 self.eigenmatrix[x, y] = self.eigenmatrix[x, y]/most_common[y]    
