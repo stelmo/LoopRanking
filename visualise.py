@@ -6,15 +6,13 @@ Created on Sun Apr 15 14:52:25 2012
 """
 
 """Import classes"""
-from numpy import array, transpose, arange, empty
+from numpy import array, transpose, arange, empty, zeros
 import networkx as nx
 import matplotlib.pyplot as plt
 from RGABristol import RGA
 from gainRank import gRanking
 from operator import itemgetter
-from itertools import permutations, izip
-from math import isnan
-from sets import Set
+from collections import Counter
 
 class visualiseOpenLoopSystem:
     """The class name is not strictly speaking accurate as some calculations are 
@@ -30,19 +28,12 @@ class visualiseOpenLoopSystem:
     G = the directed connection graph with edge attribute 'localgain'
     G1 = RGA recommended pairings using the greedy approach. edgecolour attribute
     G2 = RGA recommended pairings using max criteria. edgecolour attribute.
-    GGF = Google Gain Forward (scaled) graph with node importance as node attribute 'importance' 
     LGF = Local Gain Forward (scaled) graph with node importance as node attribute 'importance'
-    GGB = Google Gain Forward (scaled) graph with node importance as node attribute 'importance'
     LGB = Local Gain Forward (scaled) graph with node importance as node attribute 'importance' 
     NFG = Normal Forward Gain (not scaled) graph with node importance as node attribute 'importance'
     NBG = Normal Backward Gain (not scaled) graph with node importance as node attribute 'importance'
     EBG = Eigen Blended Graph = Eigen approach using LGF and LGB to calculate node attribute 'importance' 
-    EBGG = Eigen Blended Google Graph = Eigen approach using GGF and GGB to calculate node attribute 'importance'  
-    P = A graph showing the various node importances and the associated edge weights.
-        Node Attributes: importanceNormal = blended importance; importanceGoogle = blended importance Google
-        Edge Attribute = weight = edge weight according to algorithm 
-    F = A graph showing the recommended control pairings with edge attribute 'edgecolour' to indicate a 
-        control pair. """
+    """
     
     def __init__(self, variables, localdiff, numberofinputs, fgainmatrix, fconnectionmatrix, fvariablenames, bgainmatrix, bconnectionmatrix, bvariablenames, normalgains, normalconnections, controlvarsforRGA=None):
         """This constructor will create an RGABristol object so that you simply
@@ -201,6 +192,9 @@ class visualiseOpenLoopSystem:
         revinputs.reverse()
         plt.yticks(arange(rstart, 1, rincr), revinputs, fontsize=10)
         plt.xticks(arange(cstart, 1, cincr), renamedoutputs, rotation= -45, fontsize=10)
+        
+        self.map_inputs = revinputs
+        self.map_outputs = renamedoutputs
         
         rowstart = (r - 1) * rincr + rstart
         for i in range(r):
@@ -523,12 +517,77 @@ class visualiseOpenLoopSystem:
                 temp_interaction_dict[x] = temp_inner_dict
             self.interaction_dict = dict()
             self.interaction_dict = temp_interaction_dict.copy()
-        #this just focuses the output to not display everything...
-            
-
+                    
+    def createInteractionGraph(self, focus_vars):
+        """This method will compare everything and hopefully generate useful results"""
         
+        self.relative_importance = dict()
+        for mv in self.interaction_dict.iterkeys():
+            inner_dict = self.interaction_dict[mv]
+            temp_dict = dict()
+            for cv in inner_dict.iterkeys():
+                temp_dict[cv] = inner_dict[cv]/self.blendedranking[cv]
+            self.relative_importance[mv] = temp_dict
         
+        #***********************************************#
+        #now create a numpy array of the data above!
+        #ASSUME it is square!!!!
+        size_of_matrix = len(self.listofinputs)
+        self.eigenmatrix = zeros((size_of_matrix, size_of_matrix))
+        rev_inputs = []
+        rev_inputs.extend(self.map_inputs)
+        rev_inputs.reverse()
+        
+        for row_num in range(len(self.map_inputs)):
+            mv = rev_inputs[row_num]
+            for col_num in range(len(self.map_outputs)):
+                cv = self.map_outputs[col_num]
+                
+                try:
+                    temp = self.relative_importance[mv][cv]
+                except KeyError:
+                    temp = -1.0
+                self.eigenmatrix[row_num, col_num] = temp
+        
+        #*********************************************3
+        #Aha: isolate misbehaving elements
+        most_common = []
+        for column_vector in transpose(self.eigenmatrix):
+            temp = Counter(column_vector)
+            most_common.append(temp)
+        #now get a new "most common" normalised eigen matrix
+        [i, j] = self.eigenmatrix.shape
+        print(most_common)
+        for x in range(i):
+            for y in range(j):
+                pass    
 
+        #*********************************************#
+        #now plot this in a similar fashion to the RGA
+        
+        r = size_of_matrix
+        c = size_of_matrix
+        plt.figure("Eigen Interactions")
+        plt.imshow(self.eigenmatrix, cmap=plt.cm.gray_r, interpolation='nearest', extent=[0, 1, 0, 1])
+        rstart = 1.0 / (2.0 * r)
+        cstart = 1.0 / (2.0 * c)
+        rincr = 1.0 / r
+        cincr = 1.0 / c
+        plt.yticks(arange(rstart, 1, rincr), self.map_inputs, fontsize=10)
+        plt.xticks(arange(cstart, 1, cincr), self.map_outputs, rotation= -45, fontsize=10)
+        
+        rowstart = (r - 1) * rincr + rstart
+        for i in range(r):
+            ypos = rowstart - i * rincr
+            for j in range(c):
+                xpos = cstart + cincr * j - 0.15 * cincr
+                val = round(self.eigenmatrix[i, j], 3)
+                if val <= 0.5:
+                    colour = 'k'
+                else:
+                    colour = 'w'
+                plt.text(xpos, ypos, val, color=colour, fontsize=10)       
+        
     def exportToGML(self):
         """This method serves to export all the graphs created to GML files. It detects which 
         objects have been created."""

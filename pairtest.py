@@ -12,7 +12,7 @@ from visualise import visualiseOpenLoopSystem
 """This has been altered for the sake of convenience"""
 testcase = 't'
 
-dispRGA = False
+dispRGA = True
 dispEigenForwardAndBackward = False
 dispEigenBlend = True
 interaction = True
@@ -47,7 +47,8 @@ if testcase == 'a':
         test2.displayEigenRankBlend(test.nodummyvariablelist, 0.15, nodepos)
         
     if interaction:
-        test2.createInteractionDict()
+        test2.createInteractionDict(focus_vars = ['v3','v4'])
+        test2.createInteractionGraph(['v3','v4'])
 
     test2.showAll()
     test2.exportToGML()
@@ -82,7 +83,8 @@ if testcase == 'b':
         test2.displayEigenRankBlend(test.nodummyvariablelist,  0.1, nodepos, normaliseRankings=True)
         
     if interaction:
-        test2.createInteractionDict()    
+        test2.createInteractionDict(focus_vars = ['v3','v4'])
+        test2.createInteractionGraph(['v3','v4'])    
         
     test2.showAll()
     test2.exportToGML()
@@ -121,6 +123,7 @@ if testcase == 't':
 
     if interaction:
         test2.createInteractionDict(focus_vars = controlme)
+        test2.createInteractionGraph(controlme)
         
     test2.showAll()
     test2.exportToGML()
