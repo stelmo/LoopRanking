@@ -554,13 +554,14 @@ class visualiseOpenLoopSystem:
         most_common = []
         for column_vector in transpose(self.eigenmatrix):
             temp = Counter(column_vector)
-            most_common.append(temp)
+            temp = temp.most_common(1)
+            most_common.append(temp[0][0])
         #now get a new "most common" normalised eigen matrix
         [i, j] = self.eigenmatrix.shape
         print(most_common)
         for x in range(i):
             for y in range(j):
-                pass    
+                self.eigenmatrix[x, y] = self.eigenmatrix[x, y]/most_common[y]    
 
         #*********************************************#
         #now plot this in a similar fashion to the RGA
@@ -582,7 +583,7 @@ class visualiseOpenLoopSystem:
             for j in range(c):
                 xpos = cstart + cincr * j - 0.15 * cincr
                 val = round(self.eigenmatrix[i, j], 3)
-                if val <= 0.5:
+                if val <= 1:
                     colour = 'k'
                 else:
                     colour = 'w'
