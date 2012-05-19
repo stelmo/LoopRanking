@@ -546,7 +546,7 @@ class visualiseOpenLoopSystem:
                 try:
                     temp = self.relative_importance[mv][cv]
                 except KeyError:
-                    temp = -1.0
+                    temp = 1.0
                 self.eigenmatrix[row_num, col_num] = temp
         
         #*********************************************3
