@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from operator import itemgetter
 from itertools import permutations, izip
 import csv
+import numpy as np
 
 
 class loopranking:
@@ -45,12 +46,12 @@ class loopranking:
         for i, v in enumerate(slist):
             self.blendedranking[v[0]] = (numberofentries-i-1)/(numberofentries-1)
            
-    def printBlendedRanking(self):
+    def printBlendedRanking(self, name):
         """This method will just print the blended ranking dictionary in order"""
         
         tt = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
         for t in tt:
-            print(t)       
+            print(t)
             
     def normaliseMatrix(self, inputmatrix):
         """This method normalises the absolute value of the input matrix

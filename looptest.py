@@ -13,13 +13,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from operator import itemgetter
 
-testcase = 'local' #use local gains to calculate importances if == local
+testcase = 'local1' #use local gains to calculate importances if == local
 
 if testcase == 'local':
     
     datamatrix = formatmatrix("connectionsTEcontrol.csv", "localave50statesscaled.txt", 17 ,0)
     controlobject = loopranking(datamatrix.scaledforwardgain, datamatrix.scaledforwardvariablelist, datamatrix.scaledbackwardgain, datamatrix.scaledbackwardvariablelist, datamatrix.nodummyvariablelist)
-    
+    #controlobject.printBlendedRanking("contr_local.txt")
     datamatrixNC = formatmatrix("connectionsTE.csv","localave50statesNOCONTROLscaled.txt",13,0 )
     nocontrolobject = loopranking(datamatrixNC.scaledforwardgain, datamatrixNC.scaledforwardvariablelist, datamatrixNC.scaledbackwardgain, datamatrixNC.scaledbackwardvariablelist, datamatrixNC.nodummyvariablelist)
    
@@ -49,7 +49,7 @@ if testcase == 'local':
     
     mvs = ['Stream 1', 'Stream 2', 'Stream 3', 'Stream 4', 'Compressor Recycle Valve','Purge Valve', 'Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
     
-    for x in valvelist1:
+    for x in valvelist3:
         if x[0] in mvs:
             print(x)
             
@@ -91,7 +91,7 @@ else:
     
     mvs = ['Stream 1', 'Stream 2', 'Stream 3', 'Stream 4', 'Compressor Recycle Valve','Purge Valve', 'Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
     
-    for x in valvelist1:
+    for x in valvelist3:
         if x[0] in mvs:
             print(x)
             
