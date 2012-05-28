@@ -19,15 +19,9 @@ if testcase == 'local':
     
     datamatrix = formatmatrix("connectionsTEcontrol.csv", "localave50statesscaled.txt", 17 ,0)
     controlobject = loopranking(datamatrix.scaledforwardgain, datamatrix.scaledforwardvariablelist, datamatrix.scaledbackwardgain, datamatrix.scaledbackwardvariablelist, datamatrix.nodummyvariablelist)
-    #controlobject.printBlendedRanking("contr_local.txt")
+
     datamatrixNC = formatmatrix("connectionsTE.csv","localave50statesNOCONTROLscaled.txt",13,0 )
     nocontrolobject = loopranking(datamatrixNC.scaledforwardgain, datamatrixNC.scaledforwardvariablelist, datamatrixNC.scaledbackwardgain, datamatrixNC.scaledbackwardvariablelist, datamatrixNC.nodummyvariablelist)
-   
-#    controlobject.printBlendedRanking()
-#    nocontrolobject.printBlendedRanking()
-#    
-#    controlobject.displayImportancesCvsNC(datamatrixNC.nodummyconnection, nocontrolobject.blendedranking, datamatrix.nodummyconnection, controlobject.blendedranking)
-#    controlobject.exportToGML()
 
     datamatrixBroken1 = formatmatrix("connectionsTEcontrol.csv", "localaveBROKEN1.txt", 18 ,0)
     brokencontrol1 = loopranking(datamatrixBroken1.scaledforwardgain, datamatrixBroken1.scaledforwardvariablelist, datamatrixBroken1.scaledbackwardgain, datamatrixBroken1.scaledbackwardvariablelist, datamatrixBroken1.nodummyvariablelist)
@@ -49,9 +43,11 @@ if testcase == 'local':
     
     mvs = ['Stream 1', 'Stream 2', 'Stream 3', 'Stream 4', 'Compressor Recycle Valve','Purge Valve', 'Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
     
-    for x in valvelist3:
-        if x[0] in mvs:
-            print(x)
+#    for x in valvelist1:
+#        if x[0] in mvs:
+#            print(x)
+            
+    controlobject.conciseView(controlobject.blendedranking, valvedict1, valvedict2, valvedict3, mvs)
             
     controlobject.displaySuperGraph(datamatrixNC.nodummyconnection, nocontrolobject.blendedranking, datamatrix.nodummyconnection, controlobject.blendedranking, mvs, valvedict1, valvedict2, valvedict3)
     controlobject.exportToGML()
@@ -90,10 +86,10 @@ else:
     [out1, out2] = brokencontrol2.differenceOfDifference(valvedict1, valvedict2)
     
     mvs = ['Stream 1', 'Stream 2', 'Stream 3', 'Stream 4', 'Compressor Recycle Valve','Purge Valve', 'Product Separator (stream 10)', 'Stripper underflow (stream 11)', 'Stripper Steam Valve', 'Reactor Cooling Water Flow', 'Condensor Cooling Water Flow']
-    
-    for x in valvelist3:
-        if x[0] in mvs:
-            print(x)
+    controlobject.conciseView(controlobject.blendedranking, valvedict1, valvedict2, valvedict3, mvs)
+#    for x in valvelist3:
+#        if x[0] in mvs:
+#            print(x)
             
     controlobject.displaySuperGraph(datamatrixNC.nodummyconnection, nocontrolobject.blendedranking, datamatrix.nodummyconnection, controlobject.blendedranking, mvs, valvedict1, valvedict2, valvedict3)
     controlobject.exportToGML()

@@ -46,12 +46,13 @@ class loopranking:
         for i, v in enumerate(slist):
             self.blendedranking[v[0]] = (numberofentries-i-1)/(numberofentries-1)
            
-    def printBlendedRanking(self, name):
+    def printBlendedRanking(self, mvlist = None):
         """This method will just print the blended ranking dictionary in order"""
         
         tt = sorted(self.blendedranking.iteritems(), key = itemgetter(1), reverse=True)
         for t in tt:
-            print(t)
+            if t[0] in mvlist:
+                print(t)
             
     def normaliseMatrix(self, inputmatrix):
         """This method normalises the absolute value of the input matrix
@@ -159,8 +160,17 @@ class loopranking:
         #returning a sorted list where the biggest changers will be displayed first
         return slist, difference
         
+    def conciseView(self, inirank, dict1, dict2, dict3, mvlist):
+        """Will display all rank data on one line concisely"""
+        
+        dict0 = inirank
+ 
+        concise = dict()
+        for element in mvlist:
+            concise[element] = [dict1[element], dict2[element], dict3[element]]
 
-
+        for compound in concise.iteritems():
+            print compound
 
 
 

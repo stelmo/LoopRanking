@@ -201,7 +201,7 @@ class visualiseOpenLoopSystem:
             ypos = rowstart - i * rincr
             for j in range(c):
                 xpos = cstart + cincr * j - 0.15 * cincr
-                val = round(tempmat[i, j], 3)
+                val = round(tempmat[i, j], 2)
                 if val <= 0.5:
                     colour = 'k'
                 else:
